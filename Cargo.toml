@@ -1,0 +1,6 @@
+[package]
+name = "half"
+version = "0.1.0"
+authors = ["Kathryn Long <squeeself@gmail.com>"]
+
+[dependencies]
