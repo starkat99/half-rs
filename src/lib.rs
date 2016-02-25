@@ -27,11 +27,11 @@ use std::mem;
 use std::num::{FpCategory, ParseFloatError};
 use std::cmp::Ordering;
 use std::str::FromStr;
-use std::fmt::{Display, LowerExp, UpperExp, Formatter, Error};
+use std::fmt::{Debug, Display, LowerExp, UpperExp, Formatter, Error};
 
 /// The 16-bit floating point type.
 #[allow(non_camel_case_types)]
-#[derive(Debug, Clone, Copy, Default)]
+#[derive(Clone, Copy, Default)]
 pub struct f16(u16);
 
 /// 16-bit equivalent of `std::f32::DIGITS`
@@ -606,6 +606,12 @@ impl FromStr for f16 {
     type Err = ParseFloatError;
     fn from_str(src: &str) -> Result<f16, ParseFloatError> {
         f32::from_str(src).map(|x| f16::from_f32(x))
+    }
+}
+
+impl Debug for f16 {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        write!(f, "{:x}", self.0)
     }
 }
 
