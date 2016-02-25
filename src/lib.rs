@@ -33,34 +33,85 @@ use std::fmt::{Debug, Display, LowerExp, UpperExp, Formatter, Error};
 #[derive(Clone, Copy, Default)]
 pub struct f16(u16);
 
-/// 16-bit equivalent of `std::f32::DIGITS`
-pub const DIGITS: u32 = 3;
-/// 16-bit floating point epsilon.
-pub const EPSILON: f16 = f16(0x1700u16); // 0.00097656;
-/// 16-bit positive infinity.
-pub const INFINITY: f16 = f16(0x7C00u16);
-/// 16-bit equivalent of `std::f32::MANTISSA_DIGITS`
-pub const MANTISSA_DIGITS: u32 = 11;
-/// Largest finite `f16` value.
-pub const MAX: f16 = f16(0x7BFF);
-/// 16-bit equivalent of `std::f32::MAX_10_EXP`
-pub const MAX_10_EXP: i32 = 9;
-/// 16-bit equivalent of `std::f32::MAX_EXP`
-pub const MAX_EXP: i32 = 15;
-/// Smallest finite `f16` value.
-pub const MIN: f16 = f16(0xFBFF);
-/// 16-bit equivalent of `std::f32::MIN_10_EXP`
-pub const MIN_10_EXP: i32 = -9;
-/// 16-bit equivalent of `std::f32::MIN_EXP`
-pub const MIN_EXP: i32 = -14;
-/// Smallest positive, normalized `f16` value.
-pub const MIN_POSITIVE: f16 = f16(0x0400u16);
-/// 16-bit NaN.
-pub const NAN: f16 = f16(0xFE00u16);
-/// 16-bit negative infinity.
-pub const NEG_INFINITY: f16 = f16(0xFC00u16);
-/// 16-bit equivalent of `std::f32::RADIX`
-pub const RADIX: u32 = 2;
+pub mod consts {
+    //! Useful `f16` constants.
+
+    use super::f16;
+
+    /// 16-bit equivalent of `std::f32::DIGITS`
+    pub const DIGITS: u32 = 3;
+    /// 16-bit floating point epsilon. `9.7656e-4`
+    pub const EPSILON: f16 = f16(0x1700u16);
+    /// 16-bit positive infinity.
+    pub const INFINITY: f16 = f16(0x7C00u16);
+    /// 16-bit equivalent of `std::f32::MANTISSA_DIGITS`
+    pub const MANTISSA_DIGITS: u32 = 11;
+    /// Largest finite `f16` value. `65504`
+    pub const MAX: f16 = f16(0x7BFF);
+    /// 16-bit equivalent of `std::f32::MAX_10_EXP`
+    pub const MAX_10_EXP: i32 = 9;
+    /// 16-bit equivalent of `std::f32::MAX_EXP`
+    pub const MAX_EXP: i32 = 15;
+    /// Smallest finite `f16` value.
+    pub const MIN: f16 = f16(0xFBFF);
+    /// 16-bit equivalent of `std::f32::MIN_10_EXP`
+    pub const MIN_10_EXP: i32 = -9;
+    /// 16-bit equivalent of `std::f32::MIN_EXP`
+    pub const MIN_EXP: i32 = -14;
+    /// Smallest positive, normalized `f16` value. Approx. `6.10352e−5`
+    pub const MIN_POSITIVE: f16 = f16(0x0400u16);
+    /// 16-bit NaN.
+    pub const NAN: f16 = f16(0xFE00u16);
+    /// 16-bit negative infinity.
+    pub const NEG_INFINITY: f16 = f16(0xFC00u16);
+    /// 16-bit equivalent of `std::f32::RADIX`
+    pub const RADIX: u32 = 2;
+
+    /// 16-bit minimum positive subnormal value. Approx. `5.96046e−8`
+    pub const MIN_POSITIVE_SUBNORMAL: f16 = f16(0x0001u16);
+    /// 16-bit maximum subnormal value. Approx. `6.09756e−5`
+    pub const MAX_SUBNORMAL: f16 = f16(0x03FFu16);
+
+    /// 16-bit floating point `1.0`
+    pub const ONE: f16 = f16(0x3C00u16);
+    /// 16-bit floating point `0.0`
+    pub const ZERO: f16 = f16(0x0000u16);
+    /// 16-bit floating point `-0.0`
+    pub const NEG_ZERO: f16 = f16(0x8000u16);
+
+    /// Euler's number.
+    pub const E: f16 = f16(0x4170u16);
+    /// Archimedes' constant.
+    pub const PI: f16 = f16(0x4248u16);
+    /// 1.0/pi
+    pub const FRAC_1_PI: f16 = f16(0x3518u16);
+    /// 1.0/sqrt(2.0)
+    pub const FRAC_1_SQRT_2: f16 = f16(0x39A8u16);
+    /// 2.0/pi
+    pub const FRAC_2_PI: f16 = f16(0x3918u16);
+    /// 2.0/sqrt(pi)
+    pub const FRAC_2_SQRT_PI: f16 = f16(0x3C83u16);
+    /// pi/2.0
+    pub const FRAC_PI_2: f16 = f16(0x3E48u16);
+    /// pi/3.0
+    pub const FRAC_PI_3: f16 = f16(0x3C30u16);
+    /// pi/4.0
+    pub const FRAC_PI_4: f16 = f16(0x3A48u16);
+    /// pi/6.0
+    pub const FRAC_PI_6: f16 = f16(0x3830u16);
+    /// pi/8.0
+    pub const FRAC_PI_8: f16 = f16(0x3648u16);
+    /// ln(10.0)
+    pub const LN_10: f16 = f16(0x409Bu16);
+    /// ln(2.0)
+    pub const LN_2: f16 = f16(0x398Cu16);
+    /// log10(e)
+    pub const LOG10_E: f16 = f16(0x36F3u16);
+    /// log2(e)
+    pub const LOG2_E: f16 = f16(0x3DC5u16);
+    /// sqrt(2)
+    pub const SQRT_2: f16 = f16(0x3DA8u16);
+}
 
 impl f16 {
     /// Constructs a 16-bit floating point value from the raw bits.
@@ -124,7 +175,7 @@ impl f16 {
     /// ```rust
     /// use f16::*;
     ///
-    /// let nan = NAN;
+    /// let nan = consts::NAN;
     /// let f = f16::from_f32(7.0_f32);
     ///
     /// assert!(nan.is_nan());
@@ -144,9 +195,9 @@ impl f16 {
     /// use f16::*;
     ///
     /// let f = f16::from_f32(7.0f32);
-    /// let inf = INFINITY;
-    /// let neg_inf = NEG_INFINITY;
-    /// let nan = NAN;
+    /// let inf = consts::INFINITY;
+    /// let neg_inf = consts::NEG_INFINITY;
+    /// let nan = consts::NAN;
     ///
     /// assert!(!f.is_infinite());
     /// assert!(!nan.is_infinite());
@@ -167,9 +218,9 @@ impl f16 {
     /// use f16::*;
     ///
     /// let f = f16::from_f32(7.0f32);
-    /// let inf = INFINITY;
-    /// let neg_inf = NEG_INFINITY;
-    /// let nan = NAN;
+    /// let inf = consts::INFINITY;
+    /// let neg_inf = consts::NEG_INFINITY;
+    /// let nan = consts::NAN;
     ///
     /// assert!(f.is_finite());
     ///
@@ -189,8 +240,8 @@ impl f16 {
     /// ```rust
     /// use f16::*;
     ///
-    /// let min = MIN_POSITIVE;
-    /// let max = MAX;
+    /// let min = consts::MIN_POSITIVE;
+    /// let max = consts::MAX;
     /// let lower_than_min = f16::from_f32(1.0e-10_f32);
     /// let zero = f16::from_f32(0.0_f32);
     ///
@@ -198,8 +249,8 @@ impl f16 {
     /// assert!(max.is_normal());
     ///
     /// assert!(!zero.is_normal());
-    /// assert!(!NAN.is_normal());
-    /// assert!(!INFINITY.is_normal());
+    /// assert!(!consts::NAN.is_normal());
+    /// assert!(!consts::INFINITY.is_normal());
     /// // Values between `0` and `min` are Subnormal.
     /// assert!(!lower_than_min.is_normal());
     /// ```
@@ -221,7 +272,7 @@ impl f16 {
     /// use f16::*;
     ///
     /// let num = f16::from_f32(12.4_f32);
-    /// let inf = INFINITY;
+    /// let inf = consts::INFINITY;
     ///
     /// assert_eq!(num.classify(), FpCategory::Normal);
     /// assert_eq!(inf.classify(), FpCategory::Infinite);
@@ -260,9 +311,9 @@ impl f16 {
     /// let f = f16::from_f32(3.5_f32);
     ///
     /// assert_eq!(f.signum(), f16::from_f32(1.0));
-    /// assert_eq!(NEG_INFINITY.signum(), f16::from_f32(-1.0));
+    /// assert_eq!(consts::NEG_INFINITY.signum(), f16::from_f32(-1.0));
     ///
-    /// assert!(NAN.signum().is_nan());
+    /// assert!(consts::NAN.signum().is_nan());
     /// ```
     pub fn signum(self) -> f16 {
         if self.is_nan() {
@@ -281,7 +332,7 @@ impl f16 {
     /// ```rust
     /// use f16::*;
     ///
-    /// let nan = NAN;
+    /// let nan = consts::NAN;
     /// let f = f16::from_f32(7.0_f32);
     /// let g = f16::from_f32(-7.0_f32);
     ///
@@ -302,7 +353,7 @@ impl f16 {
     /// ```rust
     /// use f16::*;
     ///
-    /// let nan = NAN;
+    /// let nan = consts::NAN;
     /// let f = f16::from_f32(7.0f32);
     /// let g = f16::from_f32(-7.0f32);
     ///
@@ -476,10 +527,10 @@ mod convert {
         if exp == 0x7F800000u32 {
             // A mantissa of zero is a signed Infinity
             if man == 0 {
-                return ((x >> 16) | 0x7C00u32) as u16;
+                return ((sign >> 16) | 0x7C00u32) as u16;
             }
             // Otherwise, this is NaN
-            return NAN.0;
+            return consts::NAN.0;
         }
 
         // The number is normalized, start assembling half precision version
@@ -548,10 +599,10 @@ mod convert {
         if exp == 0x7FF00000u32 {
             // A mantissa of zero is a signed Infinity
             if man == 0 {
-                return ((x >> 16) | 0x7C00u32) as u16;
+                return ((sign >> 16) | 0x7C00u32) as u16;
             }
             // Otherwise, this is NaN
-            return NAN.0;
+            return consts::NAN.0;
         }
 
         // The number is normalized, start assembling half precision version
@@ -693,5 +744,137 @@ mod convert {
         // Rebias exponent for a normalized normal
         let exp = ((unbiased_exp + 1023) << 52) as u64;
         unsafe { mem::transmute(sign | exp | man) }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use std;
+    use super::*;
+
+    #[test]
+    fn test_f16_consts_from_f32() {
+        let one = f16::from_f32(1.0);
+        let zero = f16::from_f32(0.0);
+        let neg_zero = f16::from_f32(-0.0);
+        let inf = f16::from_f32(std::f32::INFINITY);
+        let neg_inf = f16::from_f32(std::f32::NEG_INFINITY);
+        let nan = f16::from_f32(std::f32::NAN);
+
+        assert_eq!(consts::ONE, one);
+        assert_eq!(consts::ZERO, zero);
+        assert_eq!(consts::NEG_ZERO, neg_zero);
+        assert_eq!(consts::INFINITY, inf);
+        assert_eq!(consts::NEG_INFINITY, neg_inf);
+        assert!(nan.is_nan());
+        assert!(consts::NAN.is_nan());
+
+        let e = f16::from_f32(std::f32::consts::E);
+        let pi = f16::from_f32(std::f32::consts::PI);
+        let frac_1_pi = f16::from_f32(std::f32::consts::FRAC_1_PI);
+        let frac_1_sqrt_2 = f16::from_f32(std::f32::consts::FRAC_1_SQRT_2);
+        let frac_2_pi = f16::from_f32(std::f32::consts::FRAC_2_PI);
+        let frac_2_sqrt_pi = f16::from_f32(std::f32::consts::FRAC_2_SQRT_PI);
+        let frac_pi_2 = f16::from_f32(std::f32::consts::FRAC_PI_2);
+        let frac_pi_3 = f16::from_f32(std::f32::consts::FRAC_PI_3);
+        let frac_pi_4 = f16::from_f32(std::f32::consts::FRAC_PI_4);
+        let frac_pi_6 = f16::from_f32(std::f32::consts::FRAC_PI_6);
+        let frac_pi_8 = f16::from_f32(std::f32::consts::FRAC_PI_8);
+        let ln_10 = f16::from_f32(std::f32::consts::LN_10);
+        let ln_2 = f16::from_f32(std::f32::consts::LN_2);
+        let log10_e = f16::from_f32(std::f32::consts::LOG10_E);
+        let log2_e = f16::from_f32(std::f32::consts::LOG2_E);
+        let sqrt_2 = f16::from_f32(std::f32::consts::SQRT_2);
+
+        assert_eq!(consts::E, e);
+        assert_eq!(consts::PI, pi);
+        assert_eq!(consts::FRAC_1_PI, frac_1_pi);
+        assert_eq!(consts::FRAC_1_SQRT_2, frac_1_sqrt_2);
+        assert_eq!(consts::FRAC_2_PI, frac_2_pi);
+        assert_eq!(consts::FRAC_2_SQRT_PI, frac_2_sqrt_pi);
+        assert_eq!(consts::FRAC_PI_2, frac_pi_2);
+        assert_eq!(consts::FRAC_PI_3, frac_pi_3);
+        assert_eq!(consts::FRAC_PI_4, frac_pi_4);
+        assert_eq!(consts::FRAC_PI_6, frac_pi_6);
+        assert_eq!(consts::FRAC_PI_8, frac_pi_8);
+        assert_eq!(consts::LN_10, ln_10);
+        assert_eq!(consts::LN_2, ln_2);
+        assert_eq!(consts::LOG10_E, log10_e);
+        assert_eq!(consts::LOG2_E, log2_e);
+        assert_eq!(consts::SQRT_2, sqrt_2);
+    }
+
+    #[test]
+    fn test_f16_consts_from_f64() {
+        let one = f16::from_f64(1.0);
+        let zero = f16::from_f64(0.0);
+        let neg_zero = f16::from_f64(-0.0);
+        let inf = f16::from_f64(std::f64::INFINITY);
+        let neg_inf = f16::from_f64(std::f64::NEG_INFINITY);
+        let nan = f16::from_f64(std::f64::NAN);
+
+        assert_eq!(consts::ONE, one);
+        assert_eq!(consts::ZERO, zero);
+        assert_eq!(consts::NEG_ZERO, neg_zero);
+        assert_eq!(consts::INFINITY, inf);
+        assert_eq!(consts::NEG_INFINITY, neg_inf);
+        assert!(nan.is_nan());
+        assert!(consts::NAN.is_nan());
+
+        let e = f16::from_f64(std::f64::consts::E);
+        let pi = f16::from_f64(std::f64::consts::PI);
+        let frac_1_pi = f16::from_f64(std::f64::consts::FRAC_1_PI);
+        let frac_1_sqrt_2 = f16::from_f64(std::f64::consts::FRAC_1_SQRT_2);
+        let frac_2_pi = f16::from_f64(std::f64::consts::FRAC_2_PI);
+        let frac_2_sqrt_pi = f16::from_f64(std::f64::consts::FRAC_2_SQRT_PI);
+        let frac_pi_2 = f16::from_f64(std::f64::consts::FRAC_PI_2);
+        let frac_pi_3 = f16::from_f64(std::f64::consts::FRAC_PI_3);
+        let frac_pi_4 = f16::from_f64(std::f64::consts::FRAC_PI_4);
+        let frac_pi_6 = f16::from_f64(std::f64::consts::FRAC_PI_6);
+        let frac_pi_8 = f16::from_f64(std::f64::consts::FRAC_PI_8);
+        let ln_10 = f16::from_f64(std::f64::consts::LN_10);
+        let ln_2 = f16::from_f64(std::f64::consts::LN_2);
+        let log10_e = f16::from_f64(std::f64::consts::LOG10_E);
+        let log2_e = f16::from_f64(std::f64::consts::LOG2_E);
+        let sqrt_2 = f16::from_f64(std::f64::consts::SQRT_2);
+
+        assert_eq!(consts::E, e);
+        assert_eq!(consts::PI, pi);
+        assert_eq!(consts::FRAC_1_PI, frac_1_pi);
+        assert_eq!(consts::FRAC_1_SQRT_2, frac_1_sqrt_2);
+        assert_eq!(consts::FRAC_2_PI, frac_2_pi);
+        assert_eq!(consts::FRAC_2_SQRT_PI, frac_2_sqrt_pi);
+        assert_eq!(consts::FRAC_PI_2, frac_pi_2);
+        assert_eq!(consts::FRAC_PI_3, frac_pi_3);
+        assert_eq!(consts::FRAC_PI_4, frac_pi_4);
+        assert_eq!(consts::FRAC_PI_6, frac_pi_6);
+        assert_eq!(consts::FRAC_PI_8, frac_pi_8);
+        assert_eq!(consts::LN_10, ln_10);
+        assert_eq!(consts::LN_2, ln_2);
+        assert_eq!(consts::LOG10_E, log10_e);
+        assert_eq!(consts::LOG2_E, log2_e);
+        assert_eq!(consts::SQRT_2, sqrt_2);
+    }
+
+    #[test]
+    fn test_f16_to_f32() {
+        let f = f16::from_f32(7.0);
+        assert_eq!(f.to_f32(), 7.0f32);
+
+        // 7.1 is NOT exactly representable in 16-bit, it's rounded
+        let f = f16::from_f32(7.1);
+        let diff = (f.to_f32() - 7.1f32).abs();
+        assert!(diff <= consts::EPSILON.to_f32());
+    }
+
+    #[test]
+    fn test_f16_to_f64() {
+        let f = f16::from_f64(7.0);
+        assert_eq!(f.to_f64(), 7.0f64);
+
+        // 7.1 is NOT exactly representable in 16-bit, it's rounded
+        let f = f16::from_f64(7.1);
+        let diff = (f.to_f64() - 7.1f64).abs();
+        assert!(diff <= consts::EPSILON.to_f64());
     }
 }
