@@ -1,13 +1,13 @@
 language: rust
 rust:
   - stable
-  - 1.5.0
+  - 1.6.0
   - beta
   - nightly
 matrix:
   include:
     - rust: nightly
-      env: FEATURES=--features use-intrinsics
+      env: FEATURES="--features use-intrinsics"
 branches:
   except:
     - gh-pages
