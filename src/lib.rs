@@ -173,9 +173,9 @@ impl f16 {
     /// # Examples
     ///
     /// ```rust
-    /// use f16::*;
+    /// use half::f16;
     ///
-    /// let nan = consts::NAN;
+    /// let nan = half::consts::NAN;
     /// let f = f16::from_f32(7.0_f32);
     ///
     /// assert!(nan.is_nan());
@@ -192,12 +192,12 @@ impl f16 {
     /// # Examples
     ///
     /// ```rust
-    /// use f16::*;
+    /// use half::f16;
     ///
     /// let f = f16::from_f32(7.0f32);
-    /// let inf = consts::INFINITY;
-    /// let neg_inf = consts::NEG_INFINITY;
-    /// let nan = consts::NAN;
+    /// let inf = half::consts::INFINITY;
+    /// let neg_inf = half::consts::NEG_INFINITY;
+    /// let nan = half::consts::NAN;
     ///
     /// assert!(!f.is_infinite());
     /// assert!(!nan.is_infinite());
@@ -215,12 +215,12 @@ impl f16 {
     /// # Examples
     ///
     /// ```rust
-    /// use f16::*;
+    /// use half::f16;
     ///
     /// let f = f16::from_f32(7.0f32);
-    /// let inf = consts::INFINITY;
-    /// let neg_inf = consts::NEG_INFINITY;
-    /// let nan = consts::NAN;
+    /// let inf = half::consts::INFINITY;
+    /// let neg_inf = half::consts::NEG_INFINITY;
+    /// let nan = half::consts::NAN;
     ///
     /// assert!(f.is_finite());
     ///
@@ -238,10 +238,10 @@ impl f16 {
     /// # Examples
     ///
     /// ```rust
-    /// use f16::*;
+    /// use half::f16;
     ///
-    /// let min = consts::MIN_POSITIVE;
-    /// let max = consts::MAX;
+    /// let min = half::consts::MIN_POSITIVE;
+    /// let max = half::consts::MAX;
     /// let lower_than_min = f16::from_f32(1.0e-10_f32);
     /// let zero = f16::from_f32(0.0_f32);
     ///
@@ -249,8 +249,8 @@ impl f16 {
     /// assert!(max.is_normal());
     ///
     /// assert!(!zero.is_normal());
-    /// assert!(!consts::NAN.is_normal());
-    /// assert!(!consts::INFINITY.is_normal());
+    /// assert!(!half::consts::NAN.is_normal());
+    /// assert!(!half::consts::INFINITY.is_normal());
     /// // Values between `0` and `min` are Subnormal.
     /// assert!(!lower_than_min.is_normal());
     /// ```
@@ -269,10 +269,10 @@ impl f16 {
     ///
     /// ```rust
     /// use std::num::FpCategory;
-    /// use f16::*;
+    /// use half::f16;
     ///
     /// let num = f16::from_f32(12.4_f32);
-    /// let inf = consts::INFINITY;
+    /// let inf = half::consts::INFINITY;
     ///
     /// assert_eq!(num.classify(), FpCategory::Normal);
     /// assert_eq!(inf.classify(), FpCategory::Infinite);
@@ -306,14 +306,14 @@ impl f16 {
     /// # Examples
     ///
     /// ```rust
-    /// use f16::*;
+    /// use half::f16;
     ///
     /// let f = f16::from_f32(3.5_f32);
     ///
     /// assert_eq!(f.signum(), f16::from_f32(1.0));
-    /// assert_eq!(consts::NEG_INFINITY.signum(), f16::from_f32(-1.0));
+    /// assert_eq!(half::consts::NEG_INFINITY.signum(), f16::from_f32(-1.0));
     ///
-    /// assert!(consts::NAN.signum().is_nan());
+    /// assert!(half::consts::NAN.signum().is_nan());
     /// ```
     pub fn signum(self) -> f16 {
         if self.is_nan() {
@@ -330,9 +330,9 @@ impl f16 {
     /// # Examples
     ///
     /// ```rust
-    /// use f16::*;
+    /// use half::f16;
     ///
-    /// let nan = consts::NAN;
+    /// let nan = half::consts::NAN;
     /// let f = f16::from_f32(7.0_f32);
     /// let g = f16::from_f32(-7.0_f32);
     ///
@@ -351,9 +351,9 @@ impl f16 {
     /// # Examples
     ///
     /// ```rust
-    /// use f16::*;
+    /// use half::f16;
     ///
-    /// let nan = consts::NAN;
+    /// let nan = half::consts::NAN;
     /// let f = f16::from_f32(7.0f32);
     /// let g = f16::from_f32(-7.0f32);
     ///
