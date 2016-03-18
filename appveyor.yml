@@ -1,6 +1,10 @@
 # Appveyor configuration template for Rust
 # https://github.com/starkat99/appveyor-rust
 
+branches:
+  except:
+    - gh-pages
+
 ## Operating System (VM environment) ##
 
 # Rust needs at least Visual Studio 2013 Appveyor OS for MSVC targets.
