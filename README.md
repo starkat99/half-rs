@@ -1,6 +1,10 @@
 # Rust half crate
 
-Half-precision floating point type for Rust implementing the IEEE 754-2008 `binary16` type.
+Half-precision floating point `f16` type for Rust implementing the IEEE 754-2008 `binary16` type.
+
+## Documentation
+
+Documentation can be found [online](http://starkat99.github.io/half-rs/half/).
 
 ## License
 
