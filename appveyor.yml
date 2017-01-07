@@ -55,11 +55,11 @@ environment:
   # Nightly 64-bit MSVC
     - channel: nightly
       target: x86_64-pc-windows-msvc
-      features: --features use-intrinsics
+      features: --features "use-intrinsics serialize"
   # Nightly 32-bit MSVC
     - channel: nightly
       target: i686-pc-windows-msvc
-      features: --features use-intrinsics
+      features: --features "use-intrinsics serialize"
 
 ### GNU Toolchains ###
 
@@ -84,11 +84,11 @@ environment:
   # Nightly 64-bit GNU
     - channel: nightly
       target: x86_64-pc-windows-gnu
-      features: --features use-intrinsics
+      features: --features "use-intrinsics serialize"
   # Nightly 32-bit GNU
     - channel: nightly
       target: i686-pc-windows-gnu
-      features: --features use-intrinsics
+      features: --features "use-intrinsics serialize"
 
 ### Allowed failures ###
 
