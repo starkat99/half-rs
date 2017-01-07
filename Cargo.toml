@@ -1,6 +1,6 @@
 [package]
 name = "half"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Kathryn Long <squeeself@gmail.com>"]
 description = "Half-precision floating point f16 type for Rust implementing the IEEE 754-2008 binary16 type."
 repository = "https://github.com/starkat99/half-rs.git"
@@ -12,3 +12,8 @@ license = "MIT/Apache-2.0"
 
 [features]
 use-intrinsics = []
+serialize = ["serde", "serde_derive"]
+
+[dependencies]
+serde = { version = "0.8.12", optional = true }
+serde_derive = { version = "0.8.12", optional = true }

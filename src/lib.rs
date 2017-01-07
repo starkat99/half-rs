@@ -12,6 +12,10 @@
 //! Some hardware architectures provide support for 16-bit floating point conversions. Enable the
 //! `use-intrinsics` feature to use LLVM intrinsics for hardware conversions. This crate does no
 //! checks on whether the hardware supports the feature.
+//!
+//! Support for serde crate `Serialize` and `Deserialize` traits is provided when the `serialize`
+//! feature is enabled. This requires the currently unstable `proc_macro` Rust feature, so will
+//! only compile on nightly until the feature is stablized.
 
 #![warn(missing_docs,
         missing_copy_implementations,
@@ -22,6 +26,11 @@
         unused_import_braces,
         unused_qualifications)]
 #![cfg_attr(feature = "use-intrinsics", feature(link_llvm_intrinsics))]
+#![cfg_attr(feature = "serialize", feature(proc_macro))]
+
+#[cfg(feature = "serialize")]
+#[macro_use]
+extern crate serde_derive;
 
 use std::num::{FpCategory, ParseFloatError};
 use std::cmp::Ordering;
@@ -31,6 +40,7 @@ use std::fmt::{Debug, Display, LowerExp, UpperExp, Formatter, Error};
 /// The 16-bit floating point type.
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, Default)]
+#[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
 pub struct f16(u16);
 
 pub mod consts {
