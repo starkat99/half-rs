@@ -122,7 +122,10 @@ environment:
 #
 # The file appveyor_rust_install.ps1 must exist in the root directory of the repository.
 install:
-- ps: .\appveyor_rust_install.ps1
+  - appveyor DownloadFile https://win.rustup.rs/ -FileName rustup-init.exe
+  - rustup-init -yv --default-toolchain %channel% --default-host %target%
+  - rustc -vV
+  - cargo -vV
 
 # Alternative install command for simple configurations without build matrix (uncomment line and
 # comment above line):
@@ -138,4 +141,4 @@ build: false
 # perform other testing commands. Rust will automatically be placed in the PATH environment
 # variable.
 test_script:
-- cmd: cargo test --verbose %features%
+  - cargo test --verbose %features%
