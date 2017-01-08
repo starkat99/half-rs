@@ -25,6 +25,7 @@
         unused_extern_crates,
         unused_import_braces,
         unused_qualifications)]
+#![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(feature = "use-intrinsics", feature(link_llvm_intrinsics))]
 #![cfg_attr(feature = "serialize", feature(proc_macro))]
 
@@ -32,10 +33,13 @@
 #[macro_use]
 extern crate serde_derive;
 
-use std::num::{FpCategory, ParseFloatError};
-use std::cmp::Ordering;
-use std::str::FromStr;
-use std::fmt::{Debug, Display, LowerExp, UpperExp, Formatter, Error};
+#[cfg(feature = "std")]
+extern crate core;
+
+use core::num::{FpCategory, ParseFloatError};
+use core::cmp::Ordering;
+use core::str::FromStr;
+use core::fmt::{Debug, Display, LowerExp, UpperExp, Formatter, Error};
 
 /// The 16-bit floating point type.
 #[allow(non_camel_case_types)]
@@ -510,8 +514,9 @@ mod convert {
 
 #[cfg(not(feature = "use-intrinsics"))]
 mod convert {
-    use std;
-    use std::mem;
+    use core;
+    use core::mem;
+
     use super::*;
 
     pub fn f32_to_f16(value: f32) -> u16 {
@@ -673,7 +678,7 @@ mod convert {
                 return unsafe { mem::transmute((half_sign << 16) | 0x7F800000u32) };
             } else {
                 // NaN, only 1st mantissa bit is set
-                return std::f32::NAN;
+                return core::f32::NAN;
             }
         }
 
@@ -723,7 +728,7 @@ mod convert {
                 return unsafe { mem::transmute((half_sign << 48) | 0x7FF0000000000000u64) };
             } else {
                 // NaN, only 1st mantissa bit is set
-                return std::f64::NAN;
+                return core::f64::NAN;
             }
         }
 
@@ -759,7 +764,7 @@ mod convert {
 
 #[cfg(test)]
 mod test {
-    use std;
+    use core;
     use super::*;
 
     #[test]
@@ -767,9 +772,9 @@ mod test {
         let one = f16::from_f32(1.0);
         let zero = f16::from_f32(0.0);
         let neg_zero = f16::from_f32(-0.0);
-        let inf = f16::from_f32(std::f32::INFINITY);
-        let neg_inf = f16::from_f32(std::f32::NEG_INFINITY);
-        let nan = f16::from_f32(std::f32::NAN);
+        let inf = f16::from_f32(core::f32::INFINITY);
+        let neg_inf = f16::from_f32(core::f32::NEG_INFINITY);
+        let nan = f16::from_f32(core::f32::NAN);
 
         assert_eq!(consts::ONE, one);
         assert_eq!(consts::ZERO, zero);
@@ -779,22 +784,22 @@ mod test {
         assert!(nan.is_nan());
         assert!(consts::NAN.is_nan());
 
-        let e = f16::from_f32(std::f32::consts::E);
-        let pi = f16::from_f32(std::f32::consts::PI);
-        let frac_1_pi = f16::from_f32(std::f32::consts::FRAC_1_PI);
-        let frac_1_sqrt_2 = f16::from_f32(std::f32::consts::FRAC_1_SQRT_2);
-        let frac_2_pi = f16::from_f32(std::f32::consts::FRAC_2_PI);
-        let frac_2_sqrt_pi = f16::from_f32(std::f32::consts::FRAC_2_SQRT_PI);
-        let frac_pi_2 = f16::from_f32(std::f32::consts::FRAC_PI_2);
-        let frac_pi_3 = f16::from_f32(std::f32::consts::FRAC_PI_3);
-        let frac_pi_4 = f16::from_f32(std::f32::consts::FRAC_PI_4);
-        let frac_pi_6 = f16::from_f32(std::f32::consts::FRAC_PI_6);
-        let frac_pi_8 = f16::from_f32(std::f32::consts::FRAC_PI_8);
-        let ln_10 = f16::from_f32(std::f32::consts::LN_10);
-        let ln_2 = f16::from_f32(std::f32::consts::LN_2);
-        let log10_e = f16::from_f32(std::f32::consts::LOG10_E);
-        let log2_e = f16::from_f32(std::f32::consts::LOG2_E);
-        let sqrt_2 = f16::from_f32(std::f32::consts::SQRT_2);
+        let e = f16::from_f32(core::f32::consts::E);
+        let pi = f16::from_f32(core::f32::consts::PI);
+        let frac_1_pi = f16::from_f32(core::f32::consts::FRAC_1_PI);
+        let frac_1_sqrt_2 = f16::from_f32(core::f32::consts::FRAC_1_SQRT_2);
+        let frac_2_pi = f16::from_f32(core::f32::consts::FRAC_2_PI);
+        let frac_2_sqrt_pi = f16::from_f32(core::f32::consts::FRAC_2_SQRT_PI);
+        let frac_pi_2 = f16::from_f32(core::f32::consts::FRAC_PI_2);
+        let frac_pi_3 = f16::from_f32(core::f32::consts::FRAC_PI_3);
+        let frac_pi_4 = f16::from_f32(core::f32::consts::FRAC_PI_4);
+        let frac_pi_6 = f16::from_f32(core::f32::consts::FRAC_PI_6);
+        let frac_pi_8 = f16::from_f32(core::f32::consts::FRAC_PI_8);
+        let ln_10 = f16::from_f32(core::f32::consts::LN_10);
+        let ln_2 = f16::from_f32(core::f32::consts::LN_2);
+        let log10_e = f16::from_f32(core::f32::consts::LOG10_E);
+        let log2_e = f16::from_f32(core::f32::consts::LOG2_E);
+        let sqrt_2 = f16::from_f32(core::f32::consts::SQRT_2);
 
         assert_eq!(consts::E, e);
         assert_eq!(consts::PI, pi);
@@ -819,9 +824,9 @@ mod test {
         let one = f16::from_f64(1.0);
         let zero = f16::from_f64(0.0);
         let neg_zero = f16::from_f64(-0.0);
-        let inf = f16::from_f64(std::f64::INFINITY);
-        let neg_inf = f16::from_f64(std::f64::NEG_INFINITY);
-        let nan = f16::from_f64(std::f64::NAN);
+        let inf = f16::from_f64(core::f64::INFINITY);
+        let neg_inf = f16::from_f64(core::f64::NEG_INFINITY);
+        let nan = f16::from_f64(core::f64::NAN);
 
         assert_eq!(consts::ONE, one);
         assert_eq!(consts::ZERO, zero);
@@ -831,22 +836,22 @@ mod test {
         assert!(nan.is_nan());
         assert!(consts::NAN.is_nan());
 
-        let e = f16::from_f64(std::f64::consts::E);
-        let pi = f16::from_f64(std::f64::consts::PI);
-        let frac_1_pi = f16::from_f64(std::f64::consts::FRAC_1_PI);
-        let frac_1_sqrt_2 = f16::from_f64(std::f64::consts::FRAC_1_SQRT_2);
-        let frac_2_pi = f16::from_f64(std::f64::consts::FRAC_2_PI);
-        let frac_2_sqrt_pi = f16::from_f64(std::f64::consts::FRAC_2_SQRT_PI);
-        let frac_pi_2 = f16::from_f64(std::f64::consts::FRAC_PI_2);
-        let frac_pi_3 = f16::from_f64(std::f64::consts::FRAC_PI_3);
-        let frac_pi_4 = f16::from_f64(std::f64::consts::FRAC_PI_4);
-        let frac_pi_6 = f16::from_f64(std::f64::consts::FRAC_PI_6);
-        let frac_pi_8 = f16::from_f64(std::f64::consts::FRAC_PI_8);
-        let ln_10 = f16::from_f64(std::f64::consts::LN_10);
-        let ln_2 = f16::from_f64(std::f64::consts::LN_2);
-        let log10_e = f16::from_f64(std::f64::consts::LOG10_E);
-        let log2_e = f16::from_f64(std::f64::consts::LOG2_E);
-        let sqrt_2 = f16::from_f64(std::f64::consts::SQRT_2);
+        let e = f16::from_f64(core::f64::consts::E);
+        let pi = f16::from_f64(core::f64::consts::PI);
+        let frac_1_pi = f16::from_f64(core::f64::consts::FRAC_1_PI);
+        let frac_1_sqrt_2 = f16::from_f64(core::f64::consts::FRAC_1_SQRT_2);
+        let frac_2_pi = f16::from_f64(core::f64::consts::FRAC_2_PI);
+        let frac_2_sqrt_pi = f16::from_f64(core::f64::consts::FRAC_2_SQRT_PI);
+        let frac_pi_2 = f16::from_f64(core::f64::consts::FRAC_PI_2);
+        let frac_pi_3 = f16::from_f64(core::f64::consts::FRAC_PI_3);
+        let frac_pi_4 = f16::from_f64(core::f64::consts::FRAC_PI_4);
+        let frac_pi_6 = f16::from_f64(core::f64::consts::FRAC_PI_6);
+        let frac_pi_8 = f16::from_f64(core::f64::consts::FRAC_PI_8);
+        let ln_10 = f16::from_f64(core::f64::consts::LN_10);
+        let ln_2 = f16::from_f64(core::f64::consts::LN_2);
+        let log10_e = f16::from_f64(core::f64::consts::LOG10_E);
+        let log2_e = f16::from_f64(core::f64::consts::LOG2_E);
+        let sqrt_2 = f16::from_f64(core::f64::consts::SQRT_2);
 
         assert_eq!(consts::E, e);
         assert_eq!(consts::PI, pi);
