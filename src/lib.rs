@@ -11,11 +11,12 @@
 //!
 //! Some hardware architectures provide support for 16-bit floating point conversions. Enable the
 //! `use-intrinsics` feature to use LLVM intrinsics for hardware conversions. This crate does no
-//! checks on whether the hardware supports the feature.
+//! checks on whether the hardware supports the feature. This feature currently only works on
+//! nightly Rust due to a compiler feature gate.
 //!
 //! Support for serde crate `Serialize` and `Deserialize` traits is provided when the `serialize`
-//! feature is enabled. This requires the currently unstable `proc_macro` Rust feature, so will
-//! only compile on nightly until the feature is stablized.
+//! feature is enabled. This adds a dependency on `serde` crate so is an optional feature that works
+//! on Rust 1.15 or newer.
 
 #![warn(missing_docs,
         missing_copy_implementations,
