@@ -27,7 +27,6 @@
         unused_qualifications)]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(feature = "use-intrinsics", feature(link_llvm_intrinsics))]
-#![cfg_attr(feature = "serialize", feature(proc_macro))]
 
 #[cfg(feature = "serialize")]
 #[macro_use]

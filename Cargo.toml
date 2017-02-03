@@ -13,8 +13,8 @@ license = "MIT/Apache-2.0"
 [features]
 std = []
 use-intrinsics = []
-serialize = ["serde", "serde_derive", "std"] # Serde_derive has bug requiring std until 0.9, see https://github.com/serde-rs/serde/issues/666
+serialize = ["serde", "serde_derive"]
 
 [dependencies]
-serde = { version = "0.8.12", optional = true }
-serde_derive = { version = "0.8.12", optional = true }
+serde = { version = "0.9", optional = true }
+serde_derive = { version = "0.9", optional = true }
