@@ -8,11 +8,11 @@ rust:
 matrix:
   include:
     - rust: stable
-      env: CARGOFLAGS=--features "serialize"
+      env: CARGOFLAGS=--features="serialize"
     - rust: stable
-      env: CARGOFLAGS=--features "std"
+      env: CARGOFLAGS=--features="std"
     - rust: stable
-      env: CARGOFLAGS=--features "std serialize"
+      env: CARGOFLAGS=--features="std serialize"
 branches:
   except:
   - gh-pages
