@@ -5,6 +5,14 @@ rust:
 - 1.10.0
 - beta
 - nightly
+matrix:
+  include:
+    - rust: stable
+      env: CARGOFLAGS=--features "serialize"
+    - rust: stable
+      env: CARGOFLAGS=--features "std"
+    - rust: stable
+      env: CARGOFLAGS=--features "std serialize"
 branches:
   except:
   - gh-pages
@@ -14,11 +22,11 @@ before_script:
   export PATH=$HOME/.local/bin:$PATH
 script:
 - |
-  travis-cargo build &&
-  travis-cargo test &&
-  travis-cargo --only stable doc
+  travis-cargo build -- $CARGOFLAGS &&
+  travis-cargo test -- $CARGOFLAGS &&
+  travis-cargo --only beta doc
 after_success:
-- travis-cargo --only stable doc-upload
+- travis-cargo --only beta doc-upload
 env:
   global:
-  - TRAVIS_CARGO_NIGHTLY_FEATURE="use-intrinsics serialize"
+  - TRAVIS_CARGO_NIGHTLY_FEATURE="use-intrinsics"
