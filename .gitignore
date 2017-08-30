@@ -1,2 +1,11 @@
-target
+# Rust
+target/
 Cargo.lock
+**/*.rs.bak
+
+# IntelliJ
+.idea/
+*.iml
+
+# VS Code
+.vscode/
