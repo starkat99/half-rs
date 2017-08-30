@@ -14,9 +14,13 @@
 //! checks on whether the hardware supports the feature. This feature currently only works on
 //! nightly Rust due to a compiler feature gate.
 //!
-//! Support for serde crate `Serialize` and `Deserialize` traits is provided when the `serialize`
+//! Support for `serde` crate `Serialize` and `Deserialize` traits is provided when the `serialize`
 //! feature is enabled. This adds a dependency on `serde` crate so is an optional feature that works
 //! on Rust 1.15 or newer.
+//!
+//! The crate uses `#[no_std]` by default, so can be used in embedded environments without using the
+//! Rust `std` library. While a `std` feature is available, at present there are no additional
+//! changes when the feature is enabled and is merely provided for forward-compatibility.
 
 #![warn(missing_docs,
         missing_copy_implementations,
