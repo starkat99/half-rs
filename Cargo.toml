@@ -3,12 +3,16 @@ name = "half"
 version = "1.0.0"
 authors = ["Kathryn Long <squeeself@gmail.com>"]
 description = "Half-precision floating point f16 type for Rust implementing the IEEE 754-2008 binary16 type."
-repository = "https://github.com/starkat99/half-rs.git"
-homepage = "https://github.com/starkat99/half-rs"
-documentation = "http://starkat99.github.io/half-rs/half/"
+repository = "https://github.com/starkat99/half-rs"
 readme = "README.md"
 keywords = ["f16", "no_std"]
 license = "MIT/Apache-2.0"
+categories = ["no-std", "data-structures", "encoding"]
+
+[badges]
+appveyor = { repository = "starkat99/half-rs" }
+travis-ci = { repository = "starkat99/half-rs" }
+maintenance = { status = "passively-maintained" }
 
 [features]
 std = []
@@ -16,5 +20,5 @@ use-intrinsics = []
 serialize = ["serde", "serde_derive"]
 
 [dependencies]
-serde = { version = "0.9", optional = true }
-serde_derive = { version = "0.9", optional = true }
+serde = { version = "1", optional = true }
+serde_derive = { version = "1", optional = true }
