@@ -23,10 +23,7 @@ before_script:
 script:
 - |
   travis-cargo build -- $CARGOFLAGS &&
-  travis-cargo test -- $CARGOFLAGS &&
-  travis-cargo --only beta doc
-after_success:
-- travis-cargo --only beta doc-upload
+  travis-cargo test -- $CARGOFLAGS
 env:
   global:
   - TRAVIS_CARGO_NIGHTLY_FEATURE="use-intrinsics"
