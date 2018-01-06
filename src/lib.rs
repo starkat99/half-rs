@@ -343,7 +343,8 @@ impl f16 {
         }
     }
 
-    /// Returns `true` if `self`'s sign bit is positive, including `+0.0` and `INFINITY`.
+    /// Returns `true` if and only if `self` has a positive sign, including `+0.0`, `NaNs` with
+    /// positive sign bit and positive infinity.
     ///
     /// # Examples
     ///
@@ -356,15 +357,16 @@ impl f16 {
     ///
     /// assert!(f.is_sign_positive());
     /// assert!(!g.is_sign_positive());
-    /// // Requires both tests to determine if is `NaN`
-    /// assert!(!nan.is_sign_positive() && !nan.is_sign_negative());
+    /// // `NaN` can be either positive or negative
+    /// assert!(nan.is_sign_positive() != nan.is_sign_negative());
     /// ```
     #[inline]
     pub fn is_sign_positive(self) -> bool {
-        !self.is_nan() && self.0 & 0x8000u16 == 0
+        self.0 & 0x8000u16 == 0
     }
 
-    /// Returns `true` if self's sign is negative, including `-0.0` and `NEG_INFINITY`.
+    /// Returns `true` if and only if `self` has a negative sign, including `-0.0`, `NaNs` with
+    /// negative sign bit and negative infinity.
     ///
     /// # Examples
     ///
@@ -377,12 +379,12 @@ impl f16 {
     ///
     /// assert!(!f.is_sign_negative());
     /// assert!(g.is_sign_negative());
-    /// // Requires both tests to determine if is `NaN`.
-    /// assert!(!nan.is_sign_positive() && !nan.is_sign_negative());
+    /// // `NaN` can be either positive or negative
+    /// assert!(nan.is_sign_positive() != nan.is_sign_negative());
     /// ```
     #[inline]
     pub fn is_sign_negative(self) -> bool {
-        !self.is_nan() && self.0 & 0x8000u16 != 0
+        self.0 & 0x8000u16 != 0
     }
 }
 
