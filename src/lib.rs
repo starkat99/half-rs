@@ -201,7 +201,7 @@ impl f16 {
     /// ```
     #[inline]
     pub fn is_nan(self) -> bool {
-        (self.0 & 0x7C00u16 == 0x7C00u16) && (self.0 & 0x03FFu16 != 0)
+        self.0 & 0x7FFFu16 > 0x7C00u16
     }
 
     /// Returns `true` if this value is positive infinity or negative infinity and `false`
@@ -225,7 +225,7 @@ impl f16 {
     /// ```
     #[inline]
     pub fn is_infinite(self) -> bool {
-        (self.0 & 0x7C00u16 == 0x7C00u16) && (self.0 & 0x03FFu16 == 0)
+        self.0 & 0x7FFFu16 == 0x7C00u16
     }
 
     /// Returns `true` if this number is neither infinite nor `NaN`.
