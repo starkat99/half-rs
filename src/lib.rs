@@ -22,14 +22,8 @@
 //! Rust `std` library. While a `std` feature is available, at present there are no additional
 //! changes when the feature is enabled and is merely provided for forward-compatibility.
 
-#![warn(missing_docs,
-        missing_copy_implementations,
-        missing_debug_implementations,
-        trivial_casts,
-        trivial_numeric_casts,
-        unused_extern_crates,
-        unused_import_braces,
-        unused_qualifications)]
+#![warn(missing_docs, missing_copy_implementations, missing_debug_implementations, trivial_casts,
+        trivial_numeric_casts, unused_extern_crates, unused_import_braces, unused_qualifications)]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(feature = "use-intrinsics", feature(link_llvm_intrinsics))]
 
@@ -43,7 +37,7 @@ extern crate core;
 use core::num::{FpCategory, ParseFloatError};
 use core::cmp::Ordering;
 use core::str::FromStr;
-use core::fmt::{Debug, Display, LowerExp, UpperExp, Formatter, Error};
+use core::fmt::{Debug, Display, Error, Formatter, LowerExp, UpperExp};
 
 /// The 16-bit floating point type.
 #[allow(non_camel_case_types)]
