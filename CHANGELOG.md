@@ -6,12 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Changed
 - Update behavior of `is_sign_positive` and `is_sign_negative` to match the IEEE754 conforming
-behavior of the standard library since Rust 1.20.0. Fixes #3, by @tspiteri.
-- Small optimization on `is_nan` and `is_infinite` from @tspiteri.
+behavior of the standard library since Rust 1.20.0. Fixes [#3], by [@tspiteri].
+- Small optimization on `is_nan` and `is_infinite` from [@tspiteri].
 ### Fixed
-- Fix comparisons of +0 to -0 and comparisons involving negative numbers. Fixes #2, by @tspiteri.
+- Fix comparisons of +0 to -0 and comparisons involving negative numbers. Fixes [#2], by [@tspiteri].
 - Fix loss of sign when converting `f16` and `f32` to `f16`, and case where `f64` NaN could be
-converted to `f16` infinity instead of NaN. Fixes #5, by @tspiteri.
+converted to `f16` infinity instead of NaN. Fixes [#5], by [@tspiteri].
 
 ## [1.0.1] - 2017-08-30 <a name="1.0.1"></a>
 ### Added
@@ -34,6 +34,12 @@ converted to `f16` infinity instead of NaN. Fixes #5, by @tspiteri.
 ## 0.1.0 - 2016-03-17 <a name="0.1.0"></a>
 ### Added
 - Initial release of `f16` type.
+
+[#2]: https://github.com/starkat99/half-rs/issues/2
+[#3]: https://github.com/starkat99/half-rs/issues/3
+[#5]: https://github.com/starkat99/half-rs/issues/5
+
+[@tspiteri]: https://github.com/tspiteri
 
 [Unreleased]: https://github.com/starkat99/half-rs/compare/v1.0.1...HEAD
 [1.0.1]: https://github.com/starkat99/half-rs/compare/v1.0.0...v1.0.1
