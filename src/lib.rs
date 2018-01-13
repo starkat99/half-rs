@@ -201,7 +201,7 @@ impl f16 {
     /// ```
     #[inline]
     pub fn is_nan(self) -> bool {
-        (self.0 & 0x7C00u16 == 0x7C00u16) && (self.0 & 0x03FFu16 != 0)
+        self.0 & 0x7FFFu16 > 0x7C00u16
     }
 
     /// Returns `true` if this value is positive infinity or negative infinity and `false`
@@ -225,7 +225,7 @@ impl f16 {
     /// ```
     #[inline]
     pub fn is_infinite(self) -> bool {
-        (self.0 & 0x7C00u16 == 0x7C00u16) && (self.0 & 0x03FFu16 == 0)
+        self.0 & 0x7FFFu16 == 0x7C00u16
     }
 
     /// Returns `true` if this number is neither infinite nor `NaN`.
@@ -343,7 +343,8 @@ impl f16 {
         }
     }
 
-    /// Returns `true` if `self`'s sign bit is positive, including `+0.0` and `INFINITY`.
+    /// Returns `true` if and only if `self` has a positive sign, including `+0.0`, `NaNs` with
+    /// positive sign bit and positive infinity.
     ///
     /// # Examples
     ///
@@ -356,15 +357,16 @@ impl f16 {
     ///
     /// assert!(f.is_sign_positive());
     /// assert!(!g.is_sign_positive());
-    /// // Requires both tests to determine if is `NaN`
-    /// assert!(!nan.is_sign_positive() && !nan.is_sign_negative());
+    /// // `NaN` can be either positive or negative
+    /// assert!(nan.is_sign_positive() != nan.is_sign_negative());
     /// ```
     #[inline]
     pub fn is_sign_positive(self) -> bool {
-        !self.is_nan() && self.0 & 0x8000u16 == 0
+        self.0 & 0x8000u16 == 0
     }
 
-    /// Returns `true` if self's sign is negative, including `-0.0` and `NEG_INFINITY`.
+    /// Returns `true` if and only if `self` has a negative sign, including `-0.0`, `NaNs` with
+    /// negative sign bit and negative infinity.
     ///
     /// # Examples
     ///
@@ -377,12 +379,12 @@ impl f16 {
     ///
     /// assert!(!f.is_sign_negative());
     /// assert!(g.is_sign_negative());
-    /// // Requires both tests to determine if is `NaN`.
-    /// assert!(!nan.is_sign_positive() && !nan.is_sign_negative());
+    /// // `NaN` can be either positive or negative
+    /// assert!(nan.is_sign_positive() != nan.is_sign_negative());
     /// ```
     #[inline]
     pub fn is_sign_negative(self) -> bool {
-        !self.is_nan() && self.0 & 0x8000u16 != 0
+        self.0 & 0x8000u16 != 0
     }
 }
 
@@ -414,7 +416,11 @@ impl From<u8> for f16 {
 
 impl PartialEq for f16 {
     fn eq(&self, other: &f16) -> bool {
-        !self.is_nan() && !other.is_nan() && self.0 == other.0
+        if self.is_nan() || other.is_nan() {
+            false
+        } else {
+            (self.0 == other.0) || ((self.0 | other.0) & 0x7FFFu16 == 0)
+        }
     }
 }
 
@@ -422,29 +428,88 @@ impl PartialOrd for f16 {
     fn partial_cmp(&self, other: &f16) -> Option<Ordering> {
         if self.is_nan() || other.is_nan() {
             None
-        } else if self.0 == other.0 {
-            Some(Ordering::Equal)
-        } else if self.0 < other.0 {
-            Some(Ordering::Less)
         } else {
-            Some(Ordering::Greater)
+            let neg = self.0 & 0x8000u16 != 0;
+            let other_neg = other.0 & 0x8000u16 != 0;
+            match (neg, other_neg) {
+                (false, false) => Some(self.0.cmp(&other.0)),
+                (false, true) => {
+                    if (self.0 | other.0) & 0x7FFFu16 == 0 {
+                        Some(Ordering::Equal)
+                    } else {
+                        Some(Ordering::Greater)
+                    }
+                }
+                (true, false) => {
+                    if (self.0 | other.0) & 0x7FFFu16 == 0 {
+                        Some(Ordering::Equal)
+                    } else {
+                        Some(Ordering::Less)
+                    }
+                }
+                (true, true) => Some(other.0.cmp(&self.0)),
+            }
         }
     }
 
     fn lt(&self, other: &f16) -> bool {
-        !self.is_nan() && !other.is_nan() && self.0 < other.0
+        if self.is_nan() || other.is_nan() {
+            false
+        } else {
+            let neg = self.0 & 0x8000u16 != 0;
+            let other_neg = other.0 & 0x8000u16 != 0;
+            match (neg, other_neg) {
+                (false, false) => self.0 < other.0,
+                (false, true) => false,
+                (true, false) => (self.0 | other.0) & 0x7FFFu16 != 0,
+                (true, true) => self.0 > other.0,
+            }
+        }
     }
 
     fn le(&self, other: &f16) -> bool {
-        !self.is_nan() && !other.is_nan() && self.0 <= other.0
+        if self.is_nan() || other.is_nan() {
+            false
+        } else {
+            let neg = self.0 & 0x8000u16 != 0;
+            let other_neg = other.0 & 0x8000u16 != 0;
+            match (neg, other_neg) {
+                (false, false) => self.0 <= other.0,
+                (false, true) => (self.0 | other.0) & 0x7FFFu16 == 0,
+                (true, false) => true,
+                (true, true) => self.0 >= other.0,
+            }
+        }
     }
 
     fn gt(&self, other: &f16) -> bool {
-        !self.is_nan() && !other.is_nan() && self.0 > other.0
+        if self.is_nan() || other.is_nan() {
+            false
+        } else {
+            let neg = self.0 & 0x8000u16 != 0;
+            let other_neg = other.0 & 0x8000u16 != 0;
+            match (neg, other_neg) {
+                (false, false) => self.0 > other.0,
+                (false, true) => (self.0 | other.0) & 0x7FFFu16 != 0,
+                (true, false) => false,
+                (true, true) => self.0 < other.0,
+            }
+        }
     }
 
     fn ge(&self, other: &f16) -> bool {
-        !self.is_nan() && !other.is_nan() && self.0 >= other.0
+        if self.is_nan() || other.is_nan() {
+            false
+        } else {
+            let neg = self.0 & 0x8000u16 != 0;
+            let other_neg = other.0 & 0x8000u16 != 0;
+            match (neg, other_neg) {
+                (false, false) => self.0 >= other.0,
+                (false, true) => true,
+                (true, false) => (self.0 | other.0) & 0x7FFFu16 == 0,
+                (true, true) => self.0 <= other.0,
+            }
+        }
     }
 }
 
@@ -769,6 +834,7 @@ mod convert {
 #[cfg(test)]
 mod test {
     use core;
+    use core::cmp::Ordering;
     use super::*;
 
     #[test]
@@ -895,5 +961,58 @@ mod test {
         let f = f16::from_f64(7.1);
         let diff = (f.to_f64() - 7.1f64).abs();
         assert!(diff <= consts::EPSILON.to_f64());
+    }
+
+    #[test]
+    fn test_comparisons() {
+        let zero = f16::from_f64(0.0);
+        let one = f16::from_f64(1.0);
+        let neg_zero = f16::from_f64(-0.0);
+        let neg_one = f16::from_f64(-1.0);
+
+        assert_eq!(zero.partial_cmp(&neg_zero), Some(Ordering::Equal));
+        assert_eq!(neg_zero.partial_cmp(&zero), Some(Ordering::Equal));
+        assert!(zero == neg_zero);
+        assert!(neg_zero == zero);
+        assert!(!(zero != neg_zero));
+        assert!(!(neg_zero != zero));
+        assert!(!(zero < neg_zero));
+        assert!(!(neg_zero < zero));
+        assert!(zero <= neg_zero);
+        assert!(neg_zero <= zero);
+        assert!(!(zero > neg_zero));
+        assert!(!(neg_zero > zero));
+        assert!(zero >= neg_zero);
+        assert!(neg_zero >= zero);
+
+        assert_eq!(one.partial_cmp(&neg_zero), Some(Ordering::Greater));
+        assert_eq!(neg_zero.partial_cmp(&one), Some(Ordering::Less));
+        assert!(!(one == neg_zero));
+        assert!(!(neg_zero == one));
+        assert!(one != neg_zero);
+        assert!(neg_zero != one);
+        assert!(!(one < neg_zero));
+        assert!(neg_zero < one);
+        assert!(!(one <= neg_zero));
+        assert!(neg_zero <= one);
+        assert!(one > neg_zero);
+        assert!(!(neg_zero > one));
+        assert!(one >= neg_zero);
+        assert!(!(neg_zero >= one));
+
+        assert_eq!(one.partial_cmp(&neg_one), Some(Ordering::Greater));
+        assert_eq!(neg_one.partial_cmp(&one), Some(Ordering::Less));
+        assert!(!(one == neg_one));
+        assert!(!(neg_one == one));
+        assert!(one != neg_one);
+        assert!(neg_one != one);
+        assert!(!(one < neg_one));
+        assert!(neg_one < one);
+        assert!(!(one <= neg_one));
+        assert!(neg_one <= one);
+        assert!(one > neg_one);
+        assert!(!(neg_one > one));
+        assert!(one >= neg_one);
+        assert!(!(neg_one >= one));
     }
 }
