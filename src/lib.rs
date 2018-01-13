@@ -586,8 +586,6 @@ mod convert {
     use core;
     use core::mem;
 
-    use super::*;
-
     pub fn f32_to_f16(value: f32) -> u16 {
         // Convert to raw bytes
         let x: u32 = unsafe { mem::transmute(value) };
@@ -614,7 +612,7 @@ mod convert {
                 return ((sign >> 16) | 0x7C00u32) as u16;
             }
             // Otherwise, this is NaN
-            return consts::NAN.0;
+            return ((sign >> 16) | 0x7E00u32) as u16;
         }
 
         // The number is normalized, start assembling half precision version
@@ -681,12 +679,12 @@ mod convert {
 
         // Check for all exponent bits being set, which is Infinity or NaN
         if exp == 0x7FF00000u32 {
-            // A mantissa of zero is a signed Infinity
-            if man == 0 {
+            // A mantissa of zero is a signed Infinity. We also have to check the last 32 bits.
+            if (man == 0) && (val as u32 == 0) {
                 return ((sign >> 16) | 0x7C00u32) as u16;
             }
             // Otherwise, this is NaN
-            return consts::NAN.0;
+            return ((sign >> 16) | 0x7E00u32) as u16;
         }
 
         // The number is normalized, start assembling half precision version
@@ -939,6 +937,74 @@ mod test {
         assert_eq!(consts::LOG10_E, log10_e);
         assert_eq!(consts::LOG2_E, log2_e);
         assert_eq!(consts::SQRT_2, sqrt_2);
+    }
+
+    #[test]
+    fn test_nan_conversion() {
+        use core::mem;
+        let nan64: f64;
+        let neg_nan64: f64;
+        let nan32: f32;
+        let neg_nan32: f32;
+        unsafe {
+            nan64 = mem::transmute(0x7ff0_0000_0000_0001u64);
+            neg_nan64 = mem::transmute(0xfff0_0000_0000_0001u64);
+            nan32 = mem::transmute(0x7f80_0001u32);
+            neg_nan32 = mem::transmute(0xff80_0001u32);
+        }
+        let nan32_from_64 = nan64 as f32;
+        let neg_nan32_from_64 = neg_nan64 as f32;
+        let nan16_from_64 = f16::from_f64(nan64);
+        let neg_nan16_from_64 = f16::from_f64(neg_nan64);
+        let nan16_from_32 = f16::from_f32(nan32);
+        let neg_nan16_from_32 = f16::from_f32(neg_nan32);
+
+        assert!(nan64.is_nan());
+        assert!(neg_nan64.is_nan());
+        assert!(nan32.is_nan());
+        assert!(neg_nan32.is_nan());
+        assert!(nan32_from_64.is_nan());
+        assert!(neg_nan32_from_64.is_nan());
+        assert!(nan16_from_64.is_nan());
+        assert!(neg_nan16_from_64.is_nan());
+        assert!(nan16_from_32.is_nan());
+        assert!(neg_nan16_from_32.is_nan());
+
+        let sign64 = 1u64 << 63;
+        let sign32 = 1u32 << 31;
+        let sign16 = 1u16 << 15;
+        let nan64_u: u64;
+        let neg_nan64_u: u64;
+        let nan32_u: u32;
+        let neg_nan32_u: u32;
+        let nan32_from_64_u: u32;
+        let neg_nan32_from_64_u: u32;
+        let nan16_from_64_u: u16;
+        let neg_nan16_from_64_u: u16;
+        let nan16_from_32_u: u16;
+        let neg_nan16_from_32_u: u16;
+        unsafe {
+            nan64_u = mem::transmute(nan64);
+            neg_nan64_u = mem::transmute(neg_nan64);
+            nan32_u = mem::transmute(nan32);
+            neg_nan32_u = mem::transmute(neg_nan32);
+            nan32_from_64_u = mem::transmute(nan32_from_64);
+            neg_nan32_from_64_u = mem::transmute(neg_nan32_from_64);
+            nan16_from_64_u = mem::transmute(nan16_from_64);
+            neg_nan16_from_64_u = mem::transmute(neg_nan16_from_64);
+            nan16_from_32_u = mem::transmute(nan16_from_32);
+            neg_nan16_from_32_u = mem::transmute(neg_nan16_from_32);
+        }
+        assert_eq!(nan64_u & sign64, 0);
+        assert_eq!(neg_nan64_u & sign64, sign64);
+        assert_eq!(nan32_u & sign32, 0);
+        assert_eq!(neg_nan32_u & sign32, sign32);
+        assert_eq!(nan32_from_64_u & sign32, 0);
+        assert_eq!(neg_nan32_from_64_u & sign32, sign32);
+        assert_eq!(nan16_from_64_u & sign16, 0);
+        assert_eq!(neg_nan16_from_64_u & sign16, sign16);
+        assert_eq!(nan16_from_32_u & sign16, 0);
+        assert_eq!(neg_nan16_from_32_u & sign16, sign16);
     }
 
     #[test]
