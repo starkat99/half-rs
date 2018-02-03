@@ -1,5 +1,5 @@
-# half: `f16` type for Rust 
-[![Crates.io](https://img.shields.io/crates/v/half.svg)](https://crates.io/crates/half/) [![Build Status](https://travis-ci.org/starkat99/half-rs.svg?branch=master)](https://travis-ci.org/starkat99/half-rs) [![Build status](https://ci.appveyor.com/api/projects/status/bi18aypi3h5r88gs?svg=true)](https://ci.appveyor.com/project/starkat99/half-rs)
+# half: `f16` type for Rust
+[![Crates.io](https://img.shields.io/crates/v/half.svg)](https://crates.io/crates/half/) [![docs.rs](https://docs.rs/half/badge.svg)](https://docs.rs/half/) [![Build Status](https://travis-ci.org/starkat99/half-rs.svg?branch=master)](https://travis-ci.org/starkat99/half-rs) [![Build status](https://ci.appveyor.com/api/projects/status/bi18aypi3h5r88gs?svg=true)](https://ci.appveyor.com/project/starkat99/half-rs)
 
 This crate implements a half-precision floating point `f16` type for Rust implementing the IEEE 754-2008 `binary16` type.
 
@@ -13,10 +13,10 @@ See the [crate documentation](https://docs.rs/half/) for more details.
 
 ### Optional Features
 
-- **`serialize`** - Implement `Serialize` and `Deserialize` traits for `f16`. This adds a dependency on the `serde` 
+- **`serialize`** - Implement `Serialize` and `Deserialize` traits for `f16`. This adds a dependency on the `serde`
 crate. *Requires Rust >= 1.15.*
 
-- **`use-intrinsics`** - Use hardware intrinsics for `f16` conversions if available on the compiler host target. By 
+- **`use-intrinsics`** - Use hardware intrinsics for `f16` conversions if available on the compiler host target. By
 default, without this feature, conversions are done only in software, which will be the fallback if the host target does
 not have hardware support. **Available only on Rust nightly channel.**
 
