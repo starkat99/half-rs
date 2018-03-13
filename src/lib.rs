@@ -167,7 +167,7 @@ impl f16 {
     /// This conversion is lossless as all 16-bit floating point values can be represented exactly
     /// in 32-bit floating point.
     #[inline]
-    fn to_f32(self) -> f32 {
+    pub fn to_f32(self) -> f32 {
         convert::f16_to_f32(self.0)
     }
 
@@ -176,7 +176,7 @@ impl f16 {
     /// This conversion is lossless as all 16-bit floating point values can be represented exactly
     /// in 64-bit floating point.
     #[inline]
-    fn to_f64(self) -> f64 {
+    pub fn to_f64(self) -> f64 {
         convert::f16_to_f64(self.0)
     }
 
