@@ -1015,6 +1015,9 @@ mod test {
         
         assert_eq!(f16::from_bits(0x0000_0001).to_f32(), 2.0f32.powi(-24));
         assert_eq!(f16::from_bits(0x0000_0005).to_f32(), 5.0 * 2.0f32.powi(-24));
+        
+        assert_eq!(f16::from_bits(0x0000_0001), f16::from_f32(2.0f32.powi(-24)));
+        assert_eq!(f16::from_bits(0x0000_0005), f16::from_f32(5.0 * 2.0f32.powi(-24)));
     }
 
     #[test]
@@ -1029,6 +1032,9 @@ mod test {
         
         assert_eq!(f16::from_bits(0x0000_0001).to_f64(), 2.0f64.powi(-24));
         assert_eq!(f16::from_bits(0x0000_0005).to_f64(), 5.0 * 2.0f64.powi(-24));
+        
+        assert_eq!(f16::from_bits(0x0000_0001), f16::from_f64(2.0f64.powi(-24)));
+        assert_eq!(f16::from_bits(0x0000_0005), f16::from_f64(5.0 * 2.0f64.powi(-24)));
     }
 
     #[test]
