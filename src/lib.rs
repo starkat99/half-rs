@@ -751,18 +751,10 @@ mod convert {
         // Check for subnormals, which will be normalized by adjusting exponent
         if half_exp == 0 {
             // Calculate how much to adjust the exponent by
-            let e = {
-                let mut e_adj = 0;
-                let mut hm_adj = half_man << 1;
-                while hm_adj & 0x0400u32 == 0 {
-                    e_adj += 1;
-                    hm_adj <<= 1;
-                }
-                e_adj
-            };
+            let e = (half_man as u16).leading_zeros() - 6;
 
             // Rebias and adjust exponent
-            let exp = ((127 - 15 - e) as u32) << 23;
+            let exp = (127 - 15 - e) << 23;
             let man = (half_man << (14+e)) & 0x7F_FF_FFu32;
             return f32::from_bits(sign | exp | man);
         }
@@ -802,15 +794,7 @@ mod convert {
         // Check for subnormals, which will be normalized by adjusting exponent
         if half_exp == 0 {
             // Calculate how much to adjust the exponent by
-            let e = {
-                let mut e_adj = 0;
-                let mut hm_adj = half_man << 1;
-                while hm_adj & 0x0400u64 == 0 {
-                    e_adj += 1;
-                    hm_adj <<= 1;
-                }
-                e_adj
-            };
+            let e = (half_man as u16).leading_zeros() - 6;
 
             // Rebias and adjust exponent
             let exp = ((1023 - 15 - e) as u64) << 52;
