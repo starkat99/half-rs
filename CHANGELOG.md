@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.1.1] - 2018-06-24 <a name="1.1.1"></a>
+### Fixed
+- Fix subnormal float conversions when `use-intrinsics` is not enabled. By [@Moongoodboy-K].
+
 ## [1.1.0] - 2018-03-17 <a name="1.1.0"></a>
 ### Added
 - Made `to_f32` and `to_f64` public. Fixes [#7], by [@PSeitz].
@@ -49,7 +53,8 @@ converted to `f16` infinity instead of NaN. Fixes [#5], by [@tspiteri].
 [@tspiteri]: https://github.com/tspiteri
 [@PSeitz]: https://github.com/PSeitz
 
-[Unreleased]: https://github.com/starkat99/half-rs/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/starkat99/half-rs/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/starkat99/half-rs/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/starkat99/half-rs/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/starkat99/half-rs/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/starkat99/half-rs/compare/v1.0.0...v1.0.1
