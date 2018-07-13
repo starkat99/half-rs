@@ -5,7 +5,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [1.1.1] - 2018-06-24 <a name="1.1.1"></a>
+## [1.1.2] - 2018-07-12 <a name="1.1.2"></a>
+### Fixed
+- Fixed compilation error in 1.1.1 on rustc < 1.27, now compiles again on rustc >= 1.10. Fixes [#11].
+
+## [1.1.1] - 2018-06-24 - **Yanked** <a name="1.1.1"></a>
+### ***Yanked***
+*Not recommended due to introducing compilation error on rustc versions prior to 1.27.*
 ### Fixed
 - Fix subnormal float conversions when `use-intrinsics` is not enabled. By [@Moongoodboy-K].
 
@@ -48,12 +54,15 @@ converted to `f16` infinity instead of NaN. Fixes [#5], by [@tspiteri].
 [#2]: https://github.com/starkat99/half-rs/issues/2
 [#3]: https://github.com/starkat99/half-rs/issues/3
 [#5]: https://github.com/starkat99/half-rs/issues/5
-[#7]: https://github.com/starkat99/half-rs/issues/5
+[#7]: https://github.com/starkat99/half-rs/issues/7
+[#11]: https://github.com/starkat99/half-rs/issues/11
 
 [@tspiteri]: https://github.com/tspiteri
 [@PSeitz]: https://github.com/PSeitz
+[@Moongoodboy-K]: https://github.com/Moongoodboy-K
 
-[Unreleased]: https://github.com/starkat99/half-rs/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/starkat99/half-rs/compare/v1.1.2...HEAD
+[1.1.2]: https://github.com/starkat99/half-rs/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/starkat99/half-rs/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/starkat99/half-rs/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/starkat99/half-rs/compare/v1.0.1...v1.0.2
