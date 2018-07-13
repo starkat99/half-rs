@@ -725,7 +725,7 @@ mod convert {
     pub fn f16_to_f32(i: u16) -> f32 {
         // Check for signed zero
         if i & 0x7FFFu16 == 0 {
-            return f32::from_bits((i as u32) << 16);
+            return unsafe { mem::transmute((i as u32) << 16) };
         }
 
         let half_sign = (i & 0x8000u16) as u32;
@@ -736,7 +736,7 @@ mod convert {
         if half_exp == 0x7C00u32 {
             // Check for signed infinity if mantissa is zero
             if half_man == 0 {
-                return f32::from_bits((half_sign << 16) | 0x7F800000u32);
+                return unsafe { mem::transmute((half_sign << 16) | 0x7F800000u32) };
             } else {
                 // NaN, only 1st mantissa bit is set
                 return core::f32::NAN;
@@ -756,19 +756,19 @@ mod convert {
             // Rebias and adjust exponent
             let exp = (127 - 15 - e) << 23;
             let man = (half_man << (14+e)) & 0x7F_FF_FFu32;
-            return f32::from_bits(sign | exp | man);
+            return unsafe { mem::transmute(sign | exp | man) };
         }
 
         // Rebias exponent for a normalized normal
         let exp = ((unbiased_exp + 127) as u32) << 23;
         let man = (half_man & 0x03FFu32) << 13;
-        f32::from_bits(sign | exp | man)
+        unsafe { mem::transmute(sign | exp | man) }
     }
 
     pub fn f16_to_f64(i: u16) -> f64 {
         // Check for signed zero
         if i & 0x7FFFu16 == 0 {
-            return f64::from_bits((i as u64) << 48);
+            return unsafe { mem::transmute((i as u64) << 48) };
         }
 
         let half_sign = (i & 0x8000u16) as u64;
@@ -779,7 +779,7 @@ mod convert {
         if half_exp == 0x7C00u64 {
             // Check for signed infinity if mantissa is zero
             if half_man == 0 {
-                return f64::from_bits((half_sign << 48) | 0x7FF0000000000000u64);
+                return unsafe { mem::transmute((half_sign << 48) | 0x7FF0000000000000u64) };
             } else {
                 // NaN, only 1st mantissa bit is set
                 return core::f64::NAN;
@@ -799,13 +799,13 @@ mod convert {
             // Rebias and adjust exponent
             let exp = ((1023 - 15 - e) as u64) << 52;
             let man = (half_man << (43+e)) & 0xF_FFFF_FFFF_FFFFu64;
-            return f64::from_bits(sign | exp | man);
+            return unsafe { mem::transmute(sign | exp | man) };
         }
 
         // Rebias exponent for a normalized normal
         let exp = ((unbiased_exp + 1023) as u64) << 52;
         let man = (half_man & 0x03FFu64) << 42;
-        f64::from_bits(sign | exp | man)
+        unsafe { mem::transmute(sign | exp | man) }
     }
 }
 
@@ -996,10 +996,10 @@ mod test {
         let f = f16::from_f32(7.1);
         let diff = (f.to_f32() - 7.1f32).abs();
         assert!(diff <= consts::EPSILON.to_f32());
-        
+
         assert_eq!(f16::from_bits(0x0000_0001).to_f32(), 2.0f32.powi(-24));
         assert_eq!(f16::from_bits(0x0000_0005).to_f32(), 5.0 * 2.0f32.powi(-24));
-        
+
         assert_eq!(f16::from_bits(0x0000_0001), f16::from_f32(2.0f32.powi(-24)));
         assert_eq!(f16::from_bits(0x0000_0005), f16::from_f32(5.0 * 2.0f32.powi(-24)));
     }
@@ -1013,10 +1013,10 @@ mod test {
         let f = f16::from_f64(7.1);
         let diff = (f.to_f64() - 7.1f64).abs();
         assert!(diff <= consts::EPSILON.to_f64());
-        
+
         assert_eq!(f16::from_bits(0x0000_0001).to_f64(), 2.0f64.powi(-24));
         assert_eq!(f16::from_bits(0x0000_0005).to_f64(), 5.0 * 2.0f64.powi(-24));
-        
+
         assert_eq!(f16::from_bits(0x0000_0001), f16::from_f64(2.0f64.powi(-24)));
         assert_eq!(f16::from_bits(0x0000_0005), f16::from_f64(5.0 * 2.0f64.powi(-24)));
     }
