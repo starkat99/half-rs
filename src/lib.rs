@@ -158,8 +158,15 @@ impl f16 {
 
     /// Converts an `f16` into the underlying bit representation.
     #[inline]
-    pub fn as_bits(self) -> u16 {
+    pub fn to_bits(self) -> u16 {
         self.0
+    }
+
+    /// Converts an `f16` into the underlying bit representation.
+    #[deprecated(since = "1.2.0", note = "renamed to to_bits")]
+    #[inline]
+    pub fn as_bits(self) -> u16 {
+        self.to_bits()
     }
 
     /// Converts an `f16` value in a `f32` value.
