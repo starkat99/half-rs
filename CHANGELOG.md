@@ -4,6 +4,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- `to_bits` added to replace `as_bits`. Fixes [#12], by [@tspiteri].
+### Deprecated
+- `as_bits` has been deprecated; use `to_bits` instead.
 
 ## [1.1.2] - 2018-07-12 <a name="1.1.2"></a>
 ### Fixed
@@ -56,6 +60,7 @@ converted to `f16` infinity instead of NaN. Fixes [#5], by [@tspiteri].
 [#5]: https://github.com/starkat99/half-rs/issues/5
 [#7]: https://github.com/starkat99/half-rs/issues/7
 [#11]: https://github.com/starkat99/half-rs/issues/11
+[#12]: https://github.com/starkat99/half-rs/issues/12
 
 [@tspiteri]: https://github.com/tspiteri
 [@PSeitz]: https://github.com/PSeitz
