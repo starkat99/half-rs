@@ -828,6 +828,7 @@ pub mod slice {
 
     /// Reinterpret a slice of u16 bits as a slice of f16 numbers.
     // the transmuted slice has the same life time as the original
+    #[inline]
     pub fn from_bits<'s>(bits: &'s [u16]) -> &'s [f16] {
         let pointer = bits.as_ptr() as *const f16;
         let length = bits.len();
@@ -836,6 +837,7 @@ pub mod slice {
 
     /// Reinterpret a slice of f16 numbers as a slice of u16 bits.
     // the transmuted slice has the same life time as the original
+    #[inline]
     pub fn to_bits<'s>(bits: &'s [f16]) -> &'s [u16] {
         let pointer = bits.as_ptr() as *const u16;
         let length = bits.len();
@@ -1198,11 +1200,11 @@ mod test {
         // Checks only pointer and len,
         // but we know these are the same
         // because we just transmuted them, so
-        assert_eq!(a, b, "array conversion: pointer and length equality");
+        assert_eq!(a, b);
 
         // We need to perform manual content equality checks
         for (a, b) in a.iter().zip(b.iter()) {
-            assert_eq!(a, b, "array conversion: element equality");
+            assert_eq!(a, b);
         }
     }
 }
