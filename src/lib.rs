@@ -1196,7 +1196,7 @@ mod test {
         assert_slice_contents_eq(&to_bits, &bits_cloned);
     }
 
-    fn assert_slice_contents_eq<T: PartialEq + Debug>(a: &[T], b: &[T]){
+    fn assert_slice_contents_eq<T: PartialEq + core::fmt::Debug>(a: &[T], b: &[T]){
         // Checks only pointer and len,
         // but we know these are the same
         // because we just transmuted them, so
