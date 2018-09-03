@@ -50,11 +50,11 @@ environment:
   # Stable 64-bit MSVC w/ optional features
     - channel: stable
       target: x86_64-pc-windows-msvc
-      cargoflags: --features "serialize"
+      cargoflags: --features "std serialize"
   # Stable 32-bit MSVC w/ optional features
     - channel: stable
       target: i686-pc-windows-msvc
-      cargoflags: --features "serialize"
+      cargoflags: --features "std serialize"
   # Beta 64-bit MSVC
     - channel: beta
       target: x86_64-pc-windows-msvc
@@ -81,11 +81,11 @@ environment:
   # Stable 64-bit GNU w/ optional features
     - channel: stable
       target: x86_64-pc-windows-gnu
-      cargoflags: --features "serialize"
+      cargoflags: --features "std serialize"
   # Stable 32-bit GNU w/ optional features
     - channel: stable
       target: i686-pc-windows-gnu
-      cargoflags: --features "serialize"
+      cargoflags: --features "std serialize"
   # Beta 64-bit GNU
     - channel: beta
       target: x86_64-pc-windows-gnu
