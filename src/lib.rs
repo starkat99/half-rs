@@ -816,6 +816,89 @@ mod convert {
     }
 }
 
+/// Contains utility functions to convert between slices of u16 bits and f16 numbers.
+pub mod slice {
+    use super::f16;
+    use core::slice;
+
+    // `from_bits_mut` and `to_bits_mut` would result in
+    // multiple mutable slices (the original and the reinterpreted)
+    // pointing to the same block of data, which violates basic mutability rules.
+
+
+    /// Reinterpret a slice of u16 bits as a slice of f16 numbers.
+    // the transmuted slice has the same life time as the original
+    #[inline]
+    pub fn from_bits<'s>(bits: &'s [u16]) -> &'s [f16] {
+        let pointer = bits.as_ptr() as *const f16;
+        let length = bits.len();
+        unsafe { slice::from_raw_parts(pointer, length) }
+    }
+
+    /// Reinterpret a slice of f16 numbers as a slice of u16 bits.
+    // the transmuted slice has the same life time as the original
+    #[inline]
+    pub fn to_bits<'s>(bits: &'s [f16]) -> &'s [u16] {
+        let pointer = bits.as_ptr() as *const u16;
+        let length = bits.len();
+        unsafe { slice::from_raw_parts(pointer, length) }
+    }
+}
+
+/// Contains utility functions to convert between vectors of u16 bits and f16 vectors.
+#[cfg(feature = "std")]
+pub mod vec {
+    use super::f16;
+    use core::mem;
+
+    /// Converts a vector of u16 elements into a vector of f16 elements.
+    /// This function merely reinterprets the contents of the vector,
+    /// so it's basically a free operation.
+    #[inline]
+    pub fn from_bits(bits: Vec<u16>) -> Vec<f16> {
+        let mut bits = bits;
+
+        // An f16 array has same length and capacity as u16 array
+        let length = bits.len();
+        let capacity = bits.capacity();
+
+        // Actually reinterpret the contents of the Vec<u16> as f16,
+        // knowing that structs are represented as only their members in memory,
+        // which is the u16 part of `f16(u16)`
+        let pointer = bits.as_mut_ptr() as *mut f16;
+
+        // Prevent running a destructor on the old Vec<u16>, so the pointer won't be deleted
+        mem::forget(bits);
+
+        // Finally construct a new Vec<f16> from the raw pointer
+        unsafe { Vec::from_raw_parts(pointer, length, capacity) }
+    }
+
+    /// Converts a vector of f16 elements into a vector of u16 elements.
+    /// This function merely reinterprets the contents of the vector,
+    /// so it's basically a free operation.
+    #[inline]
+    pub fn to_bits(numbers: Vec<f16>) -> Vec<u16> {
+        let mut numbers = numbers;
+
+        // An f16 array has same length and capacity as u16 array
+        let length = numbers.len();
+        let capacity = numbers.capacity();
+
+        // Actually reinterpret the contents of the Vec<f16> as u16,
+        // knowing that structs are represented as only their members in memory,
+        // which is the u16 part of `f16(u16)`
+        let pointer = numbers.as_mut_ptr() as *mut u16;
+
+        // Prevent running a destructor on the old Vec<u16>, so the pointer won't be deleted
+        mem::forget(numbers);
+
+        // Finally construct a new Vec<f16> from the raw pointer
+        unsafe { Vec::from_raw_parts(pointer, length, capacity) }
+    }
+}
+
+
 #[cfg(test)]
 mod test {
     use core;
@@ -1079,5 +1162,49 @@ mod test {
         assert!(!(neg_one > one));
         assert!(one >= neg_one);
         assert!(!(neg_one >= one));
+    }
+
+    #[test]
+    fn test_slice_conversions(){
+        use consts::*;
+        let bits = &[E.to_bits(), PI.to_bits(), EPSILON.to_bits(), FRAC_1_SQRT_2.to_bits()];
+        let numbers = &[E, PI, EPSILON, FRAC_1_SQRT_2];
+
+        // Convert from bits to numbers
+        let from_bits = slice::from_bits(bits);
+        assert_slice_contents_eq(from_bits, numbers);
+
+        // Convert from numbers back to bits
+        let to_bits = slice::to_bits(from_bits);
+        assert_slice_contents_eq(to_bits, bits);
+    }
+
+    #[test]
+    #[cfg(feature = "std")]
+    fn test_vec_conversions(){
+        use consts::*;
+        let numbers = vec![E, PI, EPSILON, FRAC_1_SQRT_2];
+        let bits = vec![E.to_bits(), PI.to_bits(), EPSILON.to_bits(), FRAC_1_SQRT_2.to_bits()];
+        let bits_cloned = bits.clone();
+
+        // Convert from bits to numbers
+        let from_bits = vec::from_bits(bits);
+        assert_slice_contents_eq(&from_bits, &numbers);
+
+        // Convert from numbers back to bits
+        let to_bits = vec::to_bits(from_bits);
+        assert_slice_contents_eq(&to_bits, &bits_cloned);
+    }
+
+    fn assert_slice_contents_eq<T: PartialEq + core::fmt::Debug>(a: &[T], b: &[T]){
+        // Checks only pointer and len,
+        // but we know these are the same
+        // because we just transmuted them, so
+        assert_eq!(a, b);
+
+        // We need to perform manual content equality checks
+        for (a, b) in a.iter().zip(b.iter()) {
+            assert_eq!(a, b);
+        }
     }
 }
