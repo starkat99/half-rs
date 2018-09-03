@@ -22,8 +22,10 @@
 //! Rust `std` library. While a `std` feature is available, at present there are no additional
 //! changes when the feature is enabled and is merely provided for forward-compatibility.
 
-#![warn(missing_docs, missing_copy_implementations, missing_debug_implementations, trivial_casts,
-        trivial_numeric_casts, unused_extern_crates, unused_import_braces, unused_qualifications)]
+#![warn(
+    missing_docs, missing_copy_implementations, missing_debug_implementations, trivial_casts,
+    trivial_numeric_casts, unused_extern_crates, unused_import_braces
+)]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(feature = "use-intrinsics", feature(link_llvm_intrinsics))]
 
@@ -34,10 +36,10 @@ extern crate serde_derive;
 #[cfg(feature = "std")]
 extern crate core;
 
-use core::num::{FpCategory, ParseFloatError};
 use core::cmp::Ordering;
-use core::str::FromStr;
 use core::fmt::{Debug, Display, Error, Formatter, LowerExp, UpperExp};
+use core::num::{FpCategory, ParseFloatError};
+use core::str::FromStr;
 
 /// The 16-bit floating point type.
 #[allow(non_camel_case_types)]
@@ -762,7 +764,7 @@ mod convert {
 
             // Rebias and adjust exponent
             let exp = (127 - 15 - e) << 23;
-            let man = (half_man << (14+e)) & 0x7F_FF_FFu32;
+            let man = (half_man << (14 + e)) & 0x7F_FF_FFu32;
             return unsafe { mem::transmute(sign | exp | man) };
         }
 
@@ -805,7 +807,7 @@ mod convert {
 
             // Rebias and adjust exponent
             let exp = ((1023 - 15 - e) as u64) << 52;
-            let man = (half_man << (43+e)) & 0xF_FFFF_FFFF_FFFFu64;
+            let man = (half_man << (43 + e)) & 0xF_FFFF_FFFF_FFFFu64;
             return unsafe { mem::transmute(sign | exp | man) };
         }
 
@@ -824,7 +826,6 @@ pub mod slice {
     // `from_bits_mut` and `to_bits_mut` would result in
     // multiple mutable slices (the original and the reinterpreted)
     // pointing to the same block of data, which violates basic mutability rules.
-
 
     /// Reinterpret a slice of u16 bits as a slice of f16 numbers.
     // the transmuted slice has the same life time as the original
@@ -898,12 +899,11 @@ pub mod vec {
     }
 }
 
-
 #[cfg(test)]
 mod test {
+    use super::*;
     use core;
     use core::cmp::Ordering;
-    use super::*;
 
     #[test]
     fn test_f16_consts_from_f32() {
@@ -1091,7 +1091,10 @@ mod test {
         assert_eq!(f16::from_bits(0x0000_0005).to_f32(), 5.0 * 2.0f32.powi(-24));
 
         assert_eq!(f16::from_bits(0x0000_0001), f16::from_f32(2.0f32.powi(-24)));
-        assert_eq!(f16::from_bits(0x0000_0005), f16::from_f32(5.0 * 2.0f32.powi(-24)));
+        assert_eq!(
+            f16::from_bits(0x0000_0005),
+            f16::from_f32(5.0 * 2.0f32.powi(-24))
+        );
     }
 
     #[test]
@@ -1108,7 +1111,10 @@ mod test {
         assert_eq!(f16::from_bits(0x0000_0005).to_f64(), 5.0 * 2.0f64.powi(-24));
 
         assert_eq!(f16::from_bits(0x0000_0001), f16::from_f64(2.0f64.powi(-24)));
-        assert_eq!(f16::from_bits(0x0000_0005), f16::from_f64(5.0 * 2.0f64.powi(-24)));
+        assert_eq!(
+            f16::from_bits(0x0000_0005),
+            f16::from_f64(5.0 * 2.0f64.powi(-24))
+        );
     }
 
     #[test]
@@ -1165,9 +1171,14 @@ mod test {
     }
 
     #[test]
-    fn test_slice_conversions(){
+    fn test_slice_conversions() {
         use consts::*;
-        let bits = &[E.to_bits(), PI.to_bits(), EPSILON.to_bits(), FRAC_1_SQRT_2.to_bits()];
+        let bits = &[
+            E.to_bits(),
+            PI.to_bits(),
+            EPSILON.to_bits(),
+            FRAC_1_SQRT_2.to_bits(),
+        ];
         let numbers = &[E, PI, EPSILON, FRAC_1_SQRT_2];
 
         // Convert from bits to numbers
@@ -1181,10 +1192,15 @@ mod test {
 
     #[test]
     #[cfg(feature = "std")]
-    fn test_vec_conversions(){
+    fn test_vec_conversions() {
         use consts::*;
         let numbers = vec![E, PI, EPSILON, FRAC_1_SQRT_2];
-        let bits = vec![E.to_bits(), PI.to_bits(), EPSILON.to_bits(), FRAC_1_SQRT_2.to_bits()];
+        let bits = vec![
+            E.to_bits(),
+            PI.to_bits(),
+            EPSILON.to_bits(),
+            FRAC_1_SQRT_2.to_bits(),
+        ];
         let bits_cloned = bits.clone();
 
         // Convert from bits to numbers
@@ -1196,7 +1212,7 @@ mod test {
         assert_slice_contents_eq(&to_bits, &bits_cloned);
     }
 
-    fn assert_slice_contents_eq<T: PartialEq + core::fmt::Debug>(a: &[T], b: &[T]){
+    fn assert_slice_contents_eq<T: PartialEq + core::fmt::Debug>(a: &[T], b: &[T]) {
         // Checks only pointer and len,
         // but we know these are the same
         // because we just transmuted them, so
