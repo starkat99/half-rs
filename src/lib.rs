@@ -14,7 +14,7 @@
 //! checks on whether the hardware supports the feature. This feature currently only works on
 //! nightly Rust due to a compiler feature gate.
 //!
-//! Support for `serde` crate `Serialize` and `Deserialize` traits is provided when the `serialize`
+//! Support for `serde` crate `Serialize` and `Deserialize` traits is provided when the `serde`
 //! feature is enabled. This adds a dependency on `serde` crate so is an optional feature that works
 //! on Rust 1.15 or newer.
 //!
@@ -29,9 +29,9 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(feature = "use-intrinsics", feature(link_llvm_intrinsics))]
 
-#[cfg(feature = "serialize")]
+#[cfg(feature = "serde")]
 #[macro_use]
-extern crate serde_derive;
+extern crate serde;
 
 #[cfg(feature = "std")]
 extern crate core;
@@ -44,7 +44,7 @@ use core::str::FromStr;
 /// The 16-bit floating point type.
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, Default)]
-#[cfg_attr(feature = "serialize", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct f16(u16);
 
 pub mod consts {

@@ -8,8 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - `slice` and optional `vec` (only included with `std` feature) modules for conversions between `u16` and `f16`
 buffers. Fixes [#14], by [@johannesvollmer].
 - `to_bits` added to replace `as_bits`. Fixes [#12], by [@tspiteri].
+### Fixed
+- `serde` optional dependency no longer uses its default `std` feature.
 ### Deprecated
 - `as_bits` has been deprecated; use `to_bits` instead.
+- `serialize` cargo feature is deprecated; use `serde` instead.
 
 ## [1.1.2] - 2018-07-12 <a name="1.1.2"></a>
 ### Fixed

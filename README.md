@@ -15,7 +15,7 @@ See the [crate documentation](https://docs.rs/half/) for more details.
 
 ### Optional Features
 
-- **`serialize`** - Implement `Serialize` and `Deserialize` traits for `f16`. This adds a dependency on the `serde`
+- **`serde`** - Implement `Serialize` and `Deserialize` traits for `f16`. This adds a dependency on the `serde`
 crate. *Requires Rust >= 1.15.*
 
 - **`use-intrinsics`** - Use hardware intrinsics for `f16` conversions if available on the compiler host target. By

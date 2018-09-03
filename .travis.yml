@@ -8,13 +8,13 @@ rust:
 matrix:
   include:
     - rust: stable
-      env: CARGOFLAGS=--features="serialize"
+      env: CARGOFLAGS=--features="serde"
     - rust: stable
       env: CARGOFLAGS=--features="std"
     - rust: stable
-      env: CARGOFLAGS=--features="std serialize"
+      env: CARGOFLAGS=--features="std serde"
     - rust: nightly
-      env: CARGOFLAGS=--features="serialize use-intrinsics"
+      env: CARGOFLAGS=--features="serde use-intrinsics"
 branches:
   except:
   - gh-pages
