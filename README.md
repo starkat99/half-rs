@@ -9,6 +9,8 @@ The `f16` type provides all the same operations as a normal Rust float type, but
 minimal floating point storage and no major hardware implements them, all math operations are done as an `f32` type.
 `f16` by default provides `no_std` support so can easily be used in embedded code where a smaller float is most useful.
 
+*Requries Rust 1.10 or greater.*
+
 See the [crate documentation](https://docs.rs/half/) for more details.
 
 ### Optional Features
@@ -20,8 +22,8 @@ crate. *Requires Rust >= 1.15.*
 default, without this feature, conversions are done only in software, which will be the fallback if the host target does
 not have hardware support. **Available only on Rust nightly channel.**
 
-- **`std`** - Use Rust `std` library. Currently no additional functionality is enabled by this feature. Provided only
-for forward-compatibility.
+- **`std`** - Use Rust `std` library. This enables the `vec` module, which contains zero-copy conversions for the `Vec`
+type. This allows fast conversion between raw `Vec<u16>` bits and `Vec<f16>` arrays, and vice versa.
 
 ### More Documentation
 

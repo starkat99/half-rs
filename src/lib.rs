@@ -19,8 +19,8 @@
 //! on Rust 1.15 or newer.
 //!
 //! The crate uses `#[no_std]` by default, so can be used in embedded environments without using the
-//! Rust `std` library. While a `std` feature is available, at present there are no additional
-//! changes when the feature is enabled and is merely provided for forward-compatibility.
+//! Rust `std` library. A `std` feature is available, which enables additional utilities using the
+//! `std` library, such as the `vec` module that provides zero-copy `Vec` conversions.
 
 #![warn(
     missing_docs, missing_copy_implementations, missing_debug_implementations, trivial_casts,
@@ -827,7 +827,7 @@ pub mod slice {
     // multiple mutable slices (the original and the reinterpreted)
     // pointing to the same block of data, which violates basic mutability rules.
 
-    /// Reinterpret a slice of u16 bits as a slice of f16 numbers.
+    /// Reinterpret a slice of `u16` bits as a slice of `f16` numbers.
     // the transmuted slice has the same life time as the original
     #[inline]
     pub fn from_bits<'s>(bits: &'s [u16]) -> &'s [f16] {
@@ -836,7 +836,7 @@ pub mod slice {
         unsafe { slice::from_raw_parts(pointer, length) }
     }
 
-    /// Reinterpret a slice of f16 numbers as a slice of u16 bits.
+    /// Reinterpret a slice of `f16` numbers as a slice of `u16` bits.
     // the transmuted slice has the same life time as the original
     #[inline]
     pub fn to_bits<'s>(bits: &'s [f16]) -> &'s [u16] {
@@ -846,15 +846,17 @@ pub mod slice {
     }
 }
 
-/// Contains utility functions to convert between vectors of u16 bits and f16 vectors.
+/// Contains utility functions to convert between vectors of `u16` bits and `f16` vectors.
+///
+/// This module is only available with the `std` feature.
 #[cfg(feature = "std")]
 pub mod vec {
     use super::f16;
     use core::mem;
 
-    /// Converts a vector of u16 elements into a vector of f16 elements.
+    /// Converts a vector of `u16` elements into a vector of `f16` elements.
     /// This function merely reinterprets the contents of the vector,
-    /// so it's basically a free operation.
+    /// so it's a zero-copy operation.
     #[inline]
     pub fn from_bits(bits: Vec<u16>) -> Vec<f16> {
         let mut bits = bits;
@@ -875,9 +877,9 @@ pub mod vec {
         unsafe { Vec::from_raw_parts(pointer, length, capacity) }
     }
 
-    /// Converts a vector of f16 elements into a vector of u16 elements.
+    /// Converts a vector of `f16` elements into a vector of `u16` elements.
     /// This function merely reinterprets the contents of the vector,
-    /// so it's basically a free operation.
+    /// so it's a zero-copy operation.
     #[inline]
     pub fn to_bits(numbers: Vec<f16>) -> Vec<u16> {
         let mut numbers = numbers;

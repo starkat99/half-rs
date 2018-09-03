@@ -5,6 +5,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
+- `slice` and optional `vec` (only included with `std` feature) modules for conversions between `u16` and `f16`
+buffers. Fixes [#14], by [@johannesvollmer].
 - `to_bits` added to replace `as_bits`. Fixes [#12], by [@tspiteri].
 ### Deprecated
 - `as_bits` has been deprecated; use `to_bits` instead.
@@ -61,10 +63,12 @@ converted to `f16` infinity instead of NaN. Fixes [#5], by [@tspiteri].
 [#7]: https://github.com/starkat99/half-rs/issues/7
 [#11]: https://github.com/starkat99/half-rs/issues/11
 [#12]: https://github.com/starkat99/half-rs/issues/12
+[#14]: https://github.com/starkat99/half-rs/issues/14
 
 [@tspiteri]: https://github.com/tspiteri
 [@PSeitz]: https://github.com/PSeitz
 [@Moongoodboy-K]: https://github.com/Moongoodboy-K
+[@johannesvollmer]: https://github.com/johannesvollmer
 
 [Unreleased]: https://github.com/starkat99/half-rs/compare/v1.1.2...HEAD
 [1.1.2]: https://github.com/starkat99/half-rs/compare/v1.1.1...v1.1.2
