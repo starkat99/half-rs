@@ -4,6 +4,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.2.0] - 2018-09-03 <a name="1.2.0"></a>
 ### Added
 - `slice` and optional `vec` (only included with `std` feature) modules for conversions between `u16` and `f16`
 buffers. Fixes [#14], by [@johannesvollmer].
@@ -73,7 +75,8 @@ converted to `f16` infinity instead of NaN. Fixes [#5], by [@tspiteri].
 [@Moongoodboy-K]: https://github.com/Moongoodboy-K
 [@johannesvollmer]: https://github.com/johannesvollmer
 
-[Unreleased]: https://github.com/starkat99/half-rs/compare/v1.1.2...HEAD
+[Unreleased]: https://github.com/starkat99/half-rs/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/starkat99/half-rs/compare/v1.1.2...v1.2.0
 [1.1.2]: https://github.com/starkat99/half-rs/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/starkat99/half-rs/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/starkat99/half-rs/compare/v1.0.2...v1.1.0
