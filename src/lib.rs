@@ -824,9 +824,9 @@ pub mod slice {
     use core::slice;
 
     /// Reinterpret a mutable slice of `u16` bits as a mutable slice of `f16` numbers.
-    // the transmuted slice has the same life time as the original,
-    // which prevents mutating the borrowed `mut [u16]` argument
-    // as long as the returned `mut [f16]` is borrowed.
+    // The transmuted slice has the same life time as the original,
+    // Which prevents mutating the borrowed `mut [u16]` argument
+    // As long as the returned `mut [f16]` is borrowed.
     #[inline]
     pub fn from_bits_mut<'s>(bits: &'s mut [u16]) -> &'s mut [f16] {
         let pointer = bits.as_ptr() as *mut f16;
@@ -834,10 +834,10 @@ pub mod slice {
         unsafe { slice::from_raw_parts_mut(pointer, length) }
     }
 
-    /// Reinterpret a mutable slice of `f16` bits as a mutable slice of `u16` numbers.
-    // the transmuted slice has the same life time as the original,
-    // which prevents mutating the borrowed `mut [f16]` argument
-    // as long as the returned `mut [u16]` is borrowed.
+    /// Reinterpret a mutable slice of `f16` numbers as a mutable slice of `u16` bits.
+    // The transmuted slice has the same life time as the original,
+    // Which prevents mutating the borrowed `mut [f16]` argument
+    // As long as the returned `mut [u16]` is borrowed.
     #[inline]
     pub fn to_bits_mut<'s>(bits: &'s mut [f16]) -> &'s mut [u16] {
         let pointer = bits.as_ptr() as *mut u16;
@@ -846,7 +846,7 @@ pub mod slice {
     }
 
     /// Reinterpret a slice of `u16` bits as a slice of `f16` numbers.
-    // the transmuted slice has the same life time as the original
+    // The transmuted slice has the same life time as the original
     #[inline]
     pub fn from_bits<'s>(bits: &'s [u16]) -> &'s [f16] {
         let pointer = bits.as_ptr() as *const f16;
@@ -855,7 +855,7 @@ pub mod slice {
     }
 
     /// Reinterpret a slice of `f16` numbers as a slice of `u16` bits.
-    // the transmuted slice has the same life time as the original
+    // The transmuted slice has the same life time as the original
     #[inline]
     pub fn to_bits<'s>(bits: &'s [f16]) -> &'s [u16] {
         let pointer = bits.as_ptr() as *const u16;
