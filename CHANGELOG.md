@@ -5,6 +5,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.3.0] - 2018-10-02 <a name="1.3.0"></a>
+### Added
+- `slice::from_bits_mut` and `slice::to_bits_mut` for conversion between mutable `u16` and `f16`
+slices. Fixes [#16], by [@johannesvollmer].
+
 ## [1.2.0] - 2018-09-03 <a name="1.2.0"></a>
 ### Added
 - `slice` and optional `vec` (only included with `std` feature) modules for conversions between `u16` and `f16`
@@ -69,13 +74,15 @@ converted to `f16` infinity instead of NaN. Fixes [#5], by [@tspiteri].
 [#11]: https://github.com/starkat99/half-rs/issues/11
 [#12]: https://github.com/starkat99/half-rs/issues/12
 [#14]: https://github.com/starkat99/half-rs/issues/14
+[#16]: https://github.com/starkat99/half-rs/issues/16
 
 [@tspiteri]: https://github.com/tspiteri
 [@PSeitz]: https://github.com/PSeitz
 [@Moongoodboy-K]: https://github.com/Moongoodboy-K
 [@johannesvollmer]: https://github.com/johannesvollmer
 
-[Unreleased]: https://github.com/starkat99/half-rs/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/starkat99/half-rs/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/starkat99/half-rs/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/starkat99/half-rs/compare/v1.1.2...v1.2.0
 [1.1.2]: https://github.com/starkat99/half-rs/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/starkat99/half-rs/compare/v1.1.0...v1.1.1
