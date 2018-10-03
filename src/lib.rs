@@ -818,17 +818,35 @@ mod convert {
     }
 }
 
-/// Contains utility functions to convert between slices of u16 bits and f16 numbers.
+/// Contains utility functions to convert between slices of `u16` bits and `f16` numbers.
 pub mod slice {
     use super::f16;
     use core::slice;
 
-    // `from_bits_mut` and `to_bits_mut` would result in
-    // multiple mutable slices (the original and the reinterpreted)
-    // pointing to the same block of data, which violates basic mutability rules.
+    /// Reinterpret a mutable slice of `u16` bits as a mutable slice of `f16` numbers.
+    // The transmuted slice has the same life time as the original,
+    // Which prevents mutating the borrowed `mut [u16]` argument
+    // As long as the returned `mut [f16]` is borrowed.
+    #[inline]
+    pub fn from_bits_mut<'s>(bits: &'s mut [u16]) -> &'s mut [f16] {
+        let pointer = bits.as_ptr() as *mut f16;
+        let length = bits.len();
+        unsafe { slice::from_raw_parts_mut(pointer, length) }
+    }
+
+    /// Reinterpret a mutable slice of `f16` numbers as a mutable slice of `u16` bits.
+    // The transmuted slice has the same life time as the original,
+    // Which prevents mutating the borrowed `mut [f16]` argument
+    // As long as the returned `mut [u16]` is borrowed.
+    #[inline]
+    pub fn to_bits_mut<'s>(bits: &'s mut [f16]) -> &'s mut [u16] {
+        let pointer = bits.as_ptr() as *mut u16;
+        let length = bits.len();
+        unsafe { slice::from_raw_parts_mut(pointer, length) }
+    }
 
     /// Reinterpret a slice of `u16` bits as a slice of `f16` numbers.
-    // the transmuted slice has the same life time as the original
+    // The transmuted slice has the same life time as the original
     #[inline]
     pub fn from_bits<'s>(bits: &'s [u16]) -> &'s [f16] {
         let pointer = bits.as_ptr() as *const f16;
@@ -837,7 +855,7 @@ pub mod slice {
     }
 
     /// Reinterpret a slice of `f16` numbers as a slice of `u16` bits.
-    // the transmuted slice has the same life time as the original
+    // The transmuted slice has the same life time as the original
     #[inline]
     pub fn to_bits<'s>(bits: &'s [f16]) -> &'s [u16] {
         let pointer = bits.as_ptr() as *const u16;
@@ -1224,5 +1242,23 @@ mod test {
         for (a, b) in a.iter().zip(b.iter()) {
             assert_eq!(a, b);
         }
+    }
+
+    #[test]
+    fn test_mutablility(){
+        use consts::*;
+        let mut bits_array = [ PI.to_bits() ];
+        let bits = &mut bits_array[..];
+
+        {   // would not compile without these braces
+            // TODO: add automated test to check that it does not compile without braces
+            let numbers = slice::from_bits_mut(bits);
+            numbers[0] = E;
+        }
+
+        assert_eq!(bits, &[ E.to_bits() ]);
+
+        bits[0] = LN_2.to_bits();
+        assert_eq!(bits, &[ LN_2.to_bits() ]);
     }
 }
