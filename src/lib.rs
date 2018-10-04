@@ -828,7 +828,7 @@ pub mod slice {
     // Which prevents mutating the borrowed `mut [u16]` argument
     // As long as the returned `mut [f16]` is borrowed.
     #[inline]
-    pub fn from_bits_mut<'s>(bits: &'s mut [u16]) -> &'s mut [f16] {
+    pub fn from_bits_mut(bits: &mut [u16]) -> &mut [f16] {
         let pointer = bits.as_ptr() as *mut f16;
         let length = bits.len();
         unsafe { slice::from_raw_parts_mut(pointer, length) }
@@ -839,7 +839,7 @@ pub mod slice {
     // Which prevents mutating the borrowed `mut [f16]` argument
     // As long as the returned `mut [u16]` is borrowed.
     #[inline]
-    pub fn to_bits_mut<'s>(bits: &'s mut [f16]) -> &'s mut [u16] {
+    pub fn to_bits_mut(bits: &mut [f16]) -> &mut [u16] {
         let pointer = bits.as_ptr() as *mut u16;
         let length = bits.len();
         unsafe { slice::from_raw_parts_mut(pointer, length) }
@@ -848,7 +848,7 @@ pub mod slice {
     /// Reinterpret a slice of `u16` bits as a slice of `f16` numbers.
     // The transmuted slice has the same life time as the original
     #[inline]
-    pub fn from_bits<'s>(bits: &'s [u16]) -> &'s [f16] {
+    pub fn from_bits(bits: &[u16]) -> &[f16] {
         let pointer = bits.as_ptr() as *const f16;
         let length = bits.len();
         unsafe { slice::from_raw_parts(pointer, length) }
@@ -857,7 +857,7 @@ pub mod slice {
     /// Reinterpret a slice of `f16` numbers as a slice of `u16` bits.
     // The transmuted slice has the same life time as the original
     #[inline]
-    pub fn to_bits<'s>(bits: &'s [f16]) -> &'s [u16] {
+    pub fn to_bits(bits: &[f16]) -> &[u16] {
         let pointer = bits.as_ptr() as *const u16;
         let length = bits.len();
         unsafe { slice::from_raw_parts(pointer, length) }
