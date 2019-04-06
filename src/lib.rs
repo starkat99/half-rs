@@ -1105,7 +1105,8 @@ mod test {
         // 7.1 is NOT exactly representable in 16-bit, it's rounded
         let f = f16::from_f32(7.1);
         let diff = (f.to_f32() - 7.1f32).abs();
-        assert!(diff <= consts::EPSILON.to_f32());
+        // diff must be <= 4 * EPSILON, as 7 has two more significant bits than 1
+        assert!(diff <= 4.0 * consts::EPSILON.to_f32());
 
         assert_eq!(f16::from_bits(0x0000_0001).to_f32(), 2.0f32.powi(-24));
         assert_eq!(f16::from_bits(0x0000_0005).to_f32(), 5.0 * 2.0f32.powi(-24));
@@ -1125,7 +1126,8 @@ mod test {
         // 7.1 is NOT exactly representable in 16-bit, it's rounded
         let f = f16::from_f64(7.1);
         let diff = (f.to_f64() - 7.1f64).abs();
-        assert!(diff <= consts::EPSILON.to_f64());
+        // diff must be <= 4 * EPSILON, as 7 has two more significant bits than 1
+        assert!(diff <= 4.0 * consts::EPSILON.to_f64());
 
         assert_eq!(f16::from_bits(0x0000_0001).to_f64(), 2.0f64.powi(-24));
         assert_eq!(f16::from_bits(0x0000_0005).to_f64(), 5.0 * 2.0f64.powi(-24));
