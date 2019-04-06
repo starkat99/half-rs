@@ -63,7 +63,7 @@ pub mod consts {
     /// Largest finite `f16` value. `65504`
     pub const MAX: f16 = f16(0x7BFF);
     /// 16-bit equivalent of `std::f32::MAX_10_EXP`
-    pub const MAX_10_EXP: i32 = 5;
+    pub const MAX_10_EXP: i32 = 4;
     /// 16-bit equivalent of `std::f32::MAX_EXP`
     pub const MAX_EXP: i32 = 16;
     /// Smallest finite `f16` value. `-65504`
@@ -925,6 +925,64 @@ mod test {
     use core;
     use core::cmp::Ordering;
 
+    fn f32_from_bits(bits: u32) -> f32 {
+        unsafe { core::mem::transmute(bits) }
+    }
+
+    fn f32_to_bits(val: f32) -> u32 {
+        unsafe { core::mem::transmute(val) }
+    }
+
+    #[test]
+    fn test_f16_consts() {
+        // DIGITS
+        let digits = ((consts::MANTISSA_DIGITS as f32 - 1.0) * 2f32.log10()).floor() as u32;
+        assert_eq!(consts::DIGITS, digits);
+        // sanity check to show test is good
+        let digits32 = ((core::f32::MANTISSA_DIGITS as f32 - 1.0) * 2f32.log10()).floor() as u32;
+        assert_eq!(core::f32::DIGITS, digits32);
+
+        // EPSILON
+        let one = f16::from_f32(1.0);
+        let one_plus_epsilon = f16::from_bits(one.to_bits() + 1);
+        let epsilon = f16::from_f32(one_plus_epsilon.to_f32() - 1.0);
+        assert_eq!(consts::EPSILON, epsilon);
+        // sanity check to show test is good
+        let one_plus_epsilon32= f32_from_bits(f32_to_bits(1.0) + 1);
+        let epsilon32 = one_plus_epsilon32 - 1f32;
+        assert_eq!(core::f32::EPSILON, epsilon32);
+
+        // MAX, MIN and MIN_POSITIVE
+        let max = f16::from_bits(consts::INFINITY.to_bits() - 1);
+        let min = f16::from_bits(consts::NEG_INFINITY.to_bits() - 1);
+        let min_pos = f16::from_f32(2f32.powi(consts::MIN_EXP - 1));
+        assert_eq!(consts::MAX, max);
+        assert_eq!(consts::MIN, min);
+        assert_eq!(consts::MIN_POSITIVE, min_pos);
+        // sanity check to show test is good
+        let max32 = f32_from_bits(f32_to_bits(core::f32::INFINITY) - 1);
+        let min32 = f32_from_bits(f32_to_bits(core::f32::NEG_INFINITY) - 1);
+        let min_pos32 = 2f32.powi(core::f32::MIN_EXP - 1);
+        assert_eq!(core::f32::MAX, max32);
+        assert_eq!(core::f32::MIN, min32);
+        assert_eq!(core::f32::MIN_POSITIVE, min_pos32);
+
+        // MIN_10_EXP and MAX_10_EXP
+        let ten_to_min = 10f32.powi(consts::MIN_10_EXP);
+        assert!(ten_to_min / 10.0 < consts::MIN_POSITIVE.to_f32());
+        assert!(ten_to_min > consts::MIN_POSITIVE.to_f32());
+        let ten_to_max = 10f32.powi(consts::MAX_10_EXP);
+        assert!(ten_to_max < consts::MAX.to_f32());
+        assert!(ten_to_max * 10.0 > consts::MAX.to_f32());
+        // sanity check to show test is good
+        let ten_to_min32 = 10f64.powi(core::f32::MIN_10_EXP);
+        assert!(ten_to_min32 / 10.0 < f64::from(core::f32::MIN_POSITIVE));
+        assert!(ten_to_min32 > f64::from(core::f32::MIN_POSITIVE));
+        let ten_to_max32 = 10f64.powi(core::f32::MAX_10_EXP);
+        assert!(ten_to_max32 < f64::from(core::f32::MAX));
+        assert!(ten_to_max32 * 10.0 > f64::from(core::f32::MAX));
+    }
+
     #[test]
     fn test_f16_consts_from_f32() {
         let one = f16::from_f32(1.0);
@@ -936,7 +994,9 @@ mod test {
 
         assert_eq!(consts::ONE, one);
         assert_eq!(consts::ZERO, zero);
+        assert!(zero.is_sign_positive());
         assert_eq!(consts::NEG_ZERO, neg_zero);
+        assert!(neg_zero.is_sign_negative());
         assert_eq!(consts::INFINITY, inf);
         assert_eq!(consts::NEG_INFINITY, neg_inf);
         assert!(nan.is_nan());
@@ -988,7 +1048,9 @@ mod test {
 
         assert_eq!(consts::ONE, one);
         assert_eq!(consts::ZERO, zero);
+        assert!(zero.is_sign_positive());
         assert_eq!(consts::NEG_ZERO, neg_zero);
+        assert!(neg_zero.is_sign_negative());
         assert_eq!(consts::INFINITY, inf);
         assert_eq!(consts::NEG_INFINITY, neg_inf);
         assert!(nan.is_nan());
