@@ -55,7 +55,7 @@ pub mod consts {
     /// 16-bit equivalent of `std::f32::DIGITS`
     pub const DIGITS: u32 = 3;
     /// 16-bit floating point epsilon. `9.7656e-4`
-    pub const EPSILON: f16 = f16(0x1700u16);
+    pub const EPSILON: f16 = f16(0x1400u16);
     /// 16-bit positive infinity.
     pub const INFINITY: f16 = f16(0x7C00u16);
     /// 16-bit equivalent of `std::f32::MANTISSA_DIGITS`
@@ -63,19 +63,19 @@ pub mod consts {
     /// Largest finite `f16` value. `65504`
     pub const MAX: f16 = f16(0x7BFF);
     /// 16-bit equivalent of `std::f32::MAX_10_EXP`
-    pub const MAX_10_EXP: i32 = 9;
+    pub const MAX_10_EXP: i32 = 5;
     /// 16-bit equivalent of `std::f32::MAX_EXP`
-    pub const MAX_EXP: i32 = 15;
-    /// Smallest finite `f16` value.
+    pub const MAX_EXP: i32 = 16;
+    /// Smallest finite `f16` value. `-65504`
     pub const MIN: f16 = f16(0xFBFF);
     /// 16-bit equivalent of `std::f32::MIN_10_EXP`
-    pub const MIN_10_EXP: i32 = -9;
+    pub const MIN_10_EXP: i32 = -4;
     /// 16-bit equivalent of `std::f32::MIN_EXP`
-    pub const MIN_EXP: i32 = -14;
+    pub const MIN_EXP: i32 = -13;
     /// Smallest positive, normalized `f16` value. Approx. `6.10352e−5`
     pub const MIN_POSITIVE: f16 = f16(0x0400u16);
     /// 16-bit NaN.
-    pub const NAN: f16 = f16(0xFE00u16);
+    pub const NAN: f16 = f16(0x7E00u16);
     /// 16-bit negative infinity.
     pub const NEG_INFINITY: f16 = f16(0xFC00u16);
     /// 16-bit equivalent of `std::f32::RADIX`
