@@ -1257,7 +1257,7 @@ mod test {
     #[test]
     #[cfg(feature = "std")]
     fn test_vec_conversions() {
-        use consts::*;
+        use super::consts::*;
         let numbers = vec![E, PI, EPSILON, FRAC_1_SQRT_2];
         let bits = vec![
             E.to_bits(),
