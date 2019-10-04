@@ -11,23 +11,23 @@ rust:
 matrix:
   include:
     - rust: stable
-      env: CARGOFLAGS=--features serde
+      env: CARGOFLAGS="--features serde"
     - rust: stable
-      env: CARGOFLAGS=--features std
+      env: CARGOFLAGS="--features std"
     - rust: stable
-      env: CARGOFLAGS=--features std,serde
+      env: CARGOFLAGS="--features std,serde"
     - rust: nightly
       env: CARGOFLAGS=--all-features
 
     - rust: stable
       os: windows
-      env: CARGOFLAGS=--features serde
+      env: CARGOFLAGS="--features serde"
     - rust: stable
       os: windows
-      env: CARGOFLAGS=--features std
+      env: CARGOFLAGS="--features std"
     - rust: stable
       os: windows
-      env: CARGOFLAGS=--features std,serde
+      env: CARGOFLAGS="--features std,serde"
     - rust: nightly
       os: windows
       env: CARGOFLAGS=--all-features
