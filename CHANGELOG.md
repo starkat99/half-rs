@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.3.1] - 2019-10-04 <a name="1.3.1"></a>
+### Fixed
+- Corrected values of constants `EPSILON`, `MAX_10_EXP`, `MAX_EXP`, `MIN_10_EXP`, and `MIN_EXP`
+  in `consts` module, as well as setting `consts::NAN` to match value of `f32::NAN` convertd to
+  `f16`. By [@tspiteri].
+
 ## [1.3.0] - 2018-10-02 <a name="1.3.0"></a>
 ### Added
 - `slice::from_bits_mut` and `slice::to_bits_mut` for conversion between mutable `u16` and `f16`
@@ -81,7 +87,8 @@ converted to `f16` infinity instead of NaN. Fixes [#5], by [@tspiteri].
 [@Moongoodboy-K]: https://github.com/Moongoodboy-K
 [@johannesvollmer]: https://github.com/johannesvollmer
 
-[Unreleased]: https://github.com/starkat99/half-rs/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/starkat99/half-rs/compare/v1.3.1...HEAD
+[1.3.1]: https://github.com/starkat99/half-rs/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/starkat99/half-rs/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/starkat99/half-rs/compare/v1.1.2...v1.2.0
 [1.1.2]: https://github.com/starkat99/half-rs/compare/v1.1.1...v1.1.2
