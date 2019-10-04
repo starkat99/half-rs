@@ -41,6 +41,11 @@ use core::fmt::{Debug, Display, Error, Formatter, LowerExp, UpperExp};
 use core::num::{FpCategory, ParseFloatError};
 use core::str::FromStr;
 
+mod bfloat;
+pub use bfloat::{bf16, bconsts, bslice};
+#[cfg(feature = "std")]
+pub use bfloat::bvec;
+
 /// The 16-bit floating point type.
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, Default)]
