@@ -4,11 +4,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Added `bfloat16` type for alternative 16-bit floating point conversions. By [@tspiteri].
 
 ## [1.3.1] - 2019-10-04 <a name="1.3.1"></a>
 ### Fixed
 - Corrected values of constants `EPSILON`, `MAX_10_EXP`, `MAX_EXP`, `MIN_10_EXP`, and `MIN_EXP`
-  in `consts` module, as well as setting `consts::NAN` to match value of `f32::NAN` convertd to
+  in `consts` module, as well as setting `consts::NAN` to match value of `f32::NAN` converted to
   `f16`. By [@tspiteri].
 
 ## [1.3.0] - 2018-10-02 <a name="1.3.0"></a>
