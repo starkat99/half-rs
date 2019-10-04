@@ -1,3 +1,8 @@
+//! The bfloat16 floating point format is a truncated 16-bit version of `f32`.
+//!
+//! `bf16` has approximately the same dynamic range as `f32` by having a lower precision than `f16`.
+//! While `f16` has a precision of 11 bits, `bf16` has a precision of 8 bits.
+
 use core::cmp::Ordering;
 use core::fmt::{Debug, Display, Error, Formatter, LowerExp, UpperExp};
 use core::num::{FpCategory, ParseFloatError};
@@ -12,7 +17,7 @@ use core::str::FromStr;
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct bf16(u16);
 
-pub mod bconsts {
+pub mod consts {
     //! Useful `bf16` constants.
 
     use super::bf16;
@@ -147,9 +152,9 @@ impl bf16 {
     /// # Examples
     ///
     /// ```rust
-    /// use half::bf16;
+    /// use half::bfloat::bf16;
     ///
-    /// let nan = half::bconsts::NAN;
+    /// let nan = half::bfloat::consts::NAN;
     /// let f = bf16::from_f32(7.0_f32);
     ///
     /// assert!(nan.is_nan());
@@ -165,12 +170,12 @@ impl bf16 {
     /// # Examples
     ///
     /// ```rust
-    /// use half::bf16;
+    /// use half::bfloat::bf16;
     ///
     /// let f = bf16::from_f32(7.0f32);
-    /// let inf = half::bconsts::INFINITY;
-    /// let neg_inf = half::bconsts::NEG_INFINITY;
-    /// let nan = half::bconsts::NAN;
+    /// let inf = half::bfloat::consts::INFINITY;
+    /// let neg_inf = half::bfloat::consts::NEG_INFINITY;
+    /// let nan = half::bfloat::consts::NAN;
     ///
     /// assert!(!f.is_infinite());
     /// assert!(!nan.is_infinite());
@@ -188,12 +193,12 @@ impl bf16 {
     /// # Examples
     ///
     /// ```rust
-    /// use half::bf16;
+    /// use half::bfloat::bf16;
     ///
     /// let f = bf16::from_f32(7.0f32);
-    /// let inf = half::bconsts::INFINITY;
-    /// let neg_inf = half::bconsts::NEG_INFINITY;
-    /// let nan = half::bconsts::NAN;
+    /// let inf = half::bfloat::consts::INFINITY;
+    /// let neg_inf = half::bfloat::consts::NEG_INFINITY;
+    /// let nan = half::bfloat::consts::NAN;
     ///
     /// assert!(f.is_finite());
     ///
@@ -211,10 +216,10 @@ impl bf16 {
     /// # Examples
     ///
     /// ```rust
-    /// use half::bf16;
+    /// use half::bfloat::bf16;
     ///
-    /// let min = half::bconsts::MIN_POSITIVE;
-    /// let max = half::bconsts::MAX;
+    /// let min = half::bfloat::consts::MIN_POSITIVE;
+    /// let max = half::bfloat::consts::MAX;
     /// let lower_than_min = bf16::from_f32(1.0e-39_f32);
     /// let zero = bf16::from_f32(0.0_f32);
     ///
@@ -222,8 +227,8 @@ impl bf16 {
     /// assert!(max.is_normal());
     ///
     /// assert!(!zero.is_normal());
-    /// assert!(!half::bconsts::NAN.is_normal());
-    /// assert!(!half::bconsts::INFINITY.is_normal());
+    /// assert!(!half::bfloat::consts::NAN.is_normal());
+    /// assert!(!half::bfloat::consts::INFINITY.is_normal());
     /// // Values between 0 and `min` are subnormal.
     /// assert!(!lower_than_min.is_normal());
     /// ```
@@ -242,10 +247,10 @@ impl bf16 {
     ///
     /// ```rust
     /// use std::num::FpCategory;
-    /// use half::bf16;
+    /// use half::bfloat::bf16;
     ///
     /// let num = bf16::from_f32(12.4_f32);
-    /// let inf = half::bconsts::INFINITY;
+    /// let inf = half::bfloat::consts::INFINITY;
     ///
     /// assert_eq!(num.classify(), FpCategory::Normal);
     /// assert_eq!(inf.classify(), FpCategory::Infinite);
@@ -279,14 +284,14 @@ impl bf16 {
     /// # Examples
     ///
     /// ```rust
-    /// use half::bf16;
+    /// use half::bfloat::bf16;
     ///
     /// let f = bf16::from_f32(3.5_f32);
     ///
     /// assert_eq!(f.signum(), bf16::from_f32(1.0));
-    /// assert_eq!(half::bconsts::NEG_INFINITY.signum(), bf16::from_f32(-1.0));
+    /// assert_eq!(half::bfloat::consts::NEG_INFINITY.signum(), bf16::from_f32(-1.0));
     ///
-    /// assert!(half::bconsts::NAN.signum().is_nan());
+    /// assert!(half::bfloat::consts::NAN.signum().is_nan());
     /// ```
     pub fn signum(self) -> bf16 {
         if self.is_nan() {
@@ -304,9 +309,9 @@ impl bf16 {
     /// # Examples
     ///
     /// ```rust
-    /// use half::bf16;
+    /// use half::bfloat::bf16;
     ///
-    /// let nan = half::bconsts::NAN;
+    /// let nan = half::bfloat::consts::NAN;
     /// let f = bf16::from_f32(7.0_f32);
     /// let g = bf16::from_f32(-7.0_f32);
     ///
@@ -326,9 +331,9 @@ impl bf16 {
     /// # Examples
     ///
     /// ```rust
-    /// use half::bf16;
+    /// use half::bfloat::bf16;
     ///
-    /// let nan = half::bconsts::NAN;
+    /// let nan = half::bfloat::consts::NAN;
     /// let f = bf16::from_f32(7.0f32);
     /// let g = bf16::from_f32(-7.0f32);
     ///
@@ -639,7 +644,7 @@ mod convert {
 }
 
 /// Contains utility functions to convert between slices of `u16` bits and `bf16` numbers.
-pub mod bslice {
+pub mod slice {
     use super::bf16;
     use core::slice;
 
@@ -688,7 +693,7 @@ pub mod bslice {
 ///
 /// This module is only available with the `std` feature.
 #[cfg(feature = "std")]
-pub mod bvec {
+pub mod vec {
     use super::bf16;
     use core::mem;
 
@@ -754,13 +759,13 @@ mod test {
         let neg_inf = bf16::from_f32(core::f32::NEG_INFINITY);
         let nan = bf16::from_f32(core::f32::NAN);
 
-        assert_eq!(bconsts::ONE, one);
-        assert_eq!(bconsts::ZERO, zero);
-        assert_eq!(bconsts::NEG_ZERO, neg_zero);
-        assert_eq!(bconsts::INFINITY, inf);
-        assert_eq!(bconsts::NEG_INFINITY, neg_inf);
+        assert_eq!(consts::ONE, one);
+        assert_eq!(consts::ZERO, zero);
+        assert_eq!(consts::NEG_ZERO, neg_zero);
+        assert_eq!(consts::INFINITY, inf);
+        assert_eq!(consts::NEG_INFINITY, neg_inf);
         assert!(nan.is_nan());
-        assert!(bconsts::NAN.is_nan());
+        assert!(consts::NAN.is_nan());
 
         let e = bf16::from_f32(core::f32::consts::E);
         let pi = bf16::from_f32(core::f32::consts::PI);
@@ -779,22 +784,22 @@ mod test {
         let log2_e = bf16::from_f32(core::f32::consts::LOG2_E);
         let sqrt_2 = bf16::from_f32(core::f32::consts::SQRT_2);
 
-        assert_eq!(bconsts::E, e);
-        assert_eq!(bconsts::PI, pi);
-        assert_eq!(bconsts::FRAC_1_PI, frac_1_pi);
-        assert_eq!(bconsts::FRAC_1_SQRT_2, frac_1_sqrt_2);
-        assert_eq!(bconsts::FRAC_2_PI, frac_2_pi);
-        assert_eq!(bconsts::FRAC_2_SQRT_PI, frac_2_sqrt_pi);
-        assert_eq!(bconsts::FRAC_PI_2, frac_pi_2);
-        assert_eq!(bconsts::FRAC_PI_3, frac_pi_3);
-        assert_eq!(bconsts::FRAC_PI_4, frac_pi_4);
-        assert_eq!(bconsts::FRAC_PI_6, frac_pi_6);
-        assert_eq!(bconsts::FRAC_PI_8, frac_pi_8);
-        assert_eq!(bconsts::LN_10, ln_10);
-        assert_eq!(bconsts::LN_2, ln_2);
-        assert_eq!(bconsts::LOG10_E, log10_e);
-        assert_eq!(bconsts::LOG2_E, log2_e);
-        assert_eq!(bconsts::SQRT_2, sqrt_2);
+        assert_eq!(consts::E, e);
+        assert_eq!(consts::PI, pi);
+        assert_eq!(consts::FRAC_1_PI, frac_1_pi);
+        assert_eq!(consts::FRAC_1_SQRT_2, frac_1_sqrt_2);
+        assert_eq!(consts::FRAC_2_PI, frac_2_pi);
+        assert_eq!(consts::FRAC_2_SQRT_PI, frac_2_sqrt_pi);
+        assert_eq!(consts::FRAC_PI_2, frac_pi_2);
+        assert_eq!(consts::FRAC_PI_3, frac_pi_3);
+        assert_eq!(consts::FRAC_PI_4, frac_pi_4);
+        assert_eq!(consts::FRAC_PI_6, frac_pi_6);
+        assert_eq!(consts::FRAC_PI_8, frac_pi_8);
+        assert_eq!(consts::LN_10, ln_10);
+        assert_eq!(consts::LN_2, ln_2);
+        assert_eq!(consts::LOG10_E, log10_e);
+        assert_eq!(consts::LOG2_E, log2_e);
+        assert_eq!(consts::SQRT_2, sqrt_2);
     }
 
     #[test]
@@ -806,13 +811,13 @@ mod test {
         let neg_inf = bf16::from_f64(core::f64::NEG_INFINITY);
         let nan = bf16::from_f64(core::f64::NAN);
 
-        assert_eq!(bconsts::ONE, one);
-        assert_eq!(bconsts::ZERO, zero);
-        assert_eq!(bconsts::NEG_ZERO, neg_zero);
-        assert_eq!(bconsts::INFINITY, inf);
-        assert_eq!(bconsts::NEG_INFINITY, neg_inf);
+        assert_eq!(consts::ONE, one);
+        assert_eq!(consts::ZERO, zero);
+        assert_eq!(consts::NEG_ZERO, neg_zero);
+        assert_eq!(consts::INFINITY, inf);
+        assert_eq!(consts::NEG_INFINITY, neg_inf);
         assert!(nan.is_nan());
-        assert!(bconsts::NAN.is_nan());
+        assert!(consts::NAN.is_nan());
 
         let e = bf16::from_f64(core::f64::consts::E);
         let pi = bf16::from_f64(core::f64::consts::PI);
@@ -831,22 +836,22 @@ mod test {
         let log2_e = bf16::from_f64(core::f64::consts::LOG2_E);
         let sqrt_2 = bf16::from_f64(core::f64::consts::SQRT_2);
 
-        assert_eq!(bconsts::E, e);
-        assert_eq!(bconsts::PI, pi);
-        assert_eq!(bconsts::FRAC_1_PI, frac_1_pi);
-        assert_eq!(bconsts::FRAC_1_SQRT_2, frac_1_sqrt_2);
-        assert_eq!(bconsts::FRAC_2_PI, frac_2_pi);
-        assert_eq!(bconsts::FRAC_2_SQRT_PI, frac_2_sqrt_pi);
-        assert_eq!(bconsts::FRAC_PI_2, frac_pi_2);
-        assert_eq!(bconsts::FRAC_PI_3, frac_pi_3);
-        assert_eq!(bconsts::FRAC_PI_4, frac_pi_4);
-        assert_eq!(bconsts::FRAC_PI_6, frac_pi_6);
-        assert_eq!(bconsts::FRAC_PI_8, frac_pi_8);
-        assert_eq!(bconsts::LN_10, ln_10);
-        assert_eq!(bconsts::LN_2, ln_2);
-        assert_eq!(bconsts::LOG10_E, log10_e);
-        assert_eq!(bconsts::LOG2_E, log2_e);
-        assert_eq!(bconsts::SQRT_2, sqrt_2);
+        assert_eq!(consts::E, e);
+        assert_eq!(consts::PI, pi);
+        assert_eq!(consts::FRAC_1_PI, frac_1_pi);
+        assert_eq!(consts::FRAC_1_SQRT_2, frac_1_sqrt_2);
+        assert_eq!(consts::FRAC_2_PI, frac_2_pi);
+        assert_eq!(consts::FRAC_2_SQRT_PI, frac_2_sqrt_pi);
+        assert_eq!(consts::FRAC_PI_2, frac_pi_2);
+        assert_eq!(consts::FRAC_PI_3, frac_pi_3);
+        assert_eq!(consts::FRAC_PI_4, frac_pi_4);
+        assert_eq!(consts::FRAC_PI_6, frac_pi_6);
+        assert_eq!(consts::FRAC_PI_8, frac_pi_8);
+        assert_eq!(consts::LN_10, ln_10);
+        assert_eq!(consts::LN_2, ln_2);
+        assert_eq!(consts::LOG10_E, log10_e);
+        assert_eq!(consts::LOG2_E, log2_e);
+        assert_eq!(consts::SQRT_2, sqrt_2);
     }
 
     #[test]
@@ -927,7 +932,7 @@ mod test {
         let f = bf16::from_f32(7.1);
         let diff = (f.to_f32() - 7.1f32).abs();
         // diff must be <= 4 * EPSILON, as 7 has two more significant bits than 1
-        assert!(diff <= 4.0 * bconsts::EPSILON.to_f32());
+        assert!(diff <= 4.0 * consts::EPSILON.to_f32());
 
         let tiny32: f32 = unsafe { mem::transmute(0x0001_0000u32) };
         assert_eq!(bf16::from_bits(0x0001).to_f32(), tiny32);
@@ -946,7 +951,7 @@ mod test {
         let f = bf16::from_f64(7.1);
         let diff = (f.to_f64() - 7.1f64).abs();
         // diff must be <= 4 * EPSILON, as 7 has two more significant bits than 1
-        assert!(diff <= 4.0 * bconsts::EPSILON.to_f64());
+        assert!(diff <= 4.0 * consts::EPSILON.to_f64());
 
         let tiny64 = 2.0f64.powi(-133);
         assert_eq!(bf16::from_bits(0x0001).to_f64(), tiny64);
@@ -1011,7 +1016,7 @@ mod test {
 
     #[test]
     fn test_slice_conversions() {
-        use bconsts::*;
+        use bfloat::consts::*;
         let bits = &[
             E.to_bits(),
             PI.to_bits(),
@@ -1021,18 +1026,18 @@ mod test {
         let numbers = &[E, PI, EPSILON, FRAC_1_SQRT_2];
 
         // Convert from bits to numbers
-        let from_bits = bslice::from_bits(bits);
+        let from_bits = slice::from_bits(bits);
         assert_slice_contents_eq(from_bits, numbers);
 
         // Convert from numbers back to bits
-        let to_bits = bslice::to_bits(from_bits);
+        let to_bits = slice::to_bits(from_bits);
         assert_slice_contents_eq(to_bits, bits);
     }
 
     #[test]
     #[cfg(feature = "std")]
     fn test_vec_conversions() {
-        use bconsts::*;
+        use consts::*;
         let numbers = vec![E, PI, EPSILON, FRAC_1_SQRT_2];
         let bits = vec![
             E.to_bits(),
@@ -1043,11 +1048,11 @@ mod test {
         let bits_cloned = bits.clone();
 
         // Convert from bits to numbers
-        let from_bits = bvec::from_bits(bits);
+        let from_bits = vec::from_bits(bits);
         assert_slice_contents_eq(&from_bits, &numbers);
 
         // Convert from numbers back to bits
-        let to_bits = bvec::to_bits(from_bits);
+        let to_bits = vec::to_bits(from_bits);
         assert_slice_contents_eq(&to_bits, &bits_cloned);
     }
 
@@ -1065,14 +1070,14 @@ mod test {
 
     #[test]
     fn test_mutablility() {
-        use bconsts::*;
+        use bfloat::consts::*;
         let mut bits_array = [PI.to_bits()];
         let bits = &mut bits_array[..];
 
         {
             // would not compile without these braces
             // TODO: add automated test to check that it does not compile without braces
-            let numbers = bslice::from_bits_mut(bits);
+            let numbers = slice::from_bits_mut(bits);
             numbers[0] = E;
         }
 

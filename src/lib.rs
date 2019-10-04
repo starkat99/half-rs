@@ -23,8 +23,13 @@
 //! `std` library, such as the `vec` module that provides zero-copy `Vec` conversions.
 
 #![warn(
-    missing_docs, missing_copy_implementations, missing_debug_implementations, trivial_casts,
-    trivial_numeric_casts, unused_extern_crates, unused_import_braces
+    missing_docs,
+    missing_copy_implementations,
+    missing_debug_implementations,
+    trivial_casts,
+    trivial_numeric_casts,
+    unused_extern_crates,
+    unused_import_braces
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(feature = "use-intrinsics", feature(link_llvm_intrinsics))]
@@ -41,10 +46,7 @@ use core::fmt::{Debug, Display, Error, Formatter, LowerExp, UpperExp};
 use core::num::{FpCategory, ParseFloatError};
 use core::str::FromStr;
 
-mod bfloat;
-pub use bfloat::{bf16, bconsts, bslice};
-#[cfg(feature = "std")]
-pub use bfloat::bvec;
+pub mod bfloat;
 
 /// The 16-bit floating point type.
 #[allow(non_camel_case_types)]
@@ -616,8 +618,8 @@ mod convert {
 
 #[cfg(not(feature = "use-intrinsics"))]
 mod convert {
-    use core;
     use super::f32_f64_bits::*;
+    use core;
 
     pub fn f32_to_f16(value: f32) -> u16 {
         // Convert to raw bytes
@@ -951,8 +953,8 @@ pub mod vec {
 
 #[cfg(test)]
 mod test {
-    use super::*;
     use super::f32_f64_bits::*;
+    use super::*;
     use core;
     use core::cmp::Ordering;
 
@@ -971,7 +973,7 @@ mod test {
         let epsilon = f16::from_f32(one_plus_epsilon.to_f32() - 1.0);
         assert_eq!(consts::EPSILON, epsilon);
         // sanity check to show test is good
-        let one_plus_epsilon32= f32_from_bits(f32_to_bits(1.0) + 1);
+        let one_plus_epsilon32 = f32_from_bits(f32_to_bits(1.0) + 1);
         let epsilon32 = one_plus_epsilon32 - 1f32;
         assert_eq!(core::f32::EPSILON, epsilon32);
 
@@ -1313,20 +1315,21 @@ mod test {
     }
 
     #[test]
-    fn test_mutablility(){
+    fn test_mutablility() {
         use consts::*;
-        let mut bits_array = [ PI.to_bits() ];
+        let mut bits_array = [PI.to_bits()];
         let bits = &mut bits_array[..];
 
-        {   // would not compile without these braces
+        {
+            // would not compile without these braces
             // TODO: add automated test to check that it does not compile without braces
             let numbers = slice::from_bits_mut(bits);
             numbers[0] = E;
         }
 
-        assert_eq!(bits, &[ E.to_bits() ]);
+        assert_eq!(bits, &[E.to_bits()]);
 
         bits[0] = LN_2.to_bits();
-        assert_eq!(bits, &[ LN_2.to_bits() ]);
+        assert_eq!(bits, &[LN_2.to_bits()]);
     }
 }
