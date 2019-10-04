@@ -6,9 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - Added `bfloat16` type for alternative 16-bit floating point conversions. By [@tspiteri].
+- `f16::from_bits` and `f16::to_bits` are now `const` fns.
 
 ### Changed
-- Minimum rustc version bumped to 1.27.0.
+- Minimum rustc version bumped to 1.31.
 
 ## [1.3.1] - 2019-10-04 <a name="1.3.1"></a>
 ### Fixed

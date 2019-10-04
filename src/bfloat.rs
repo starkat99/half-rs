@@ -100,7 +100,7 @@ pub mod consts {
 impl bf16 {
     /// Constructs a bfloat16 value from the raw bits.
     #[inline]
-    pub fn from_bits(bits: u16) -> bf16 {
+    pub const fn from_bits(bits: u16) -> bf16 {
         bf16(bits)
     }
 
@@ -127,7 +127,7 @@ impl bf16 {
 
     /// Converts a `bf16` into the underlying bit representation.
     #[inline]
-    pub fn to_bits(self) -> u16 {
+    pub const fn to_bits(self) -> u16 {
         self.0
     }
 
@@ -743,6 +743,11 @@ pub mod vec {
     }
 }
 
+#[allow(
+    clippy::cognitive_complexity,
+    clippy::float_cmp,
+    clippy::neg_cmp_op_on_partial_ord
+)]
 #[cfg(test)]
 mod test {
     use super::*;

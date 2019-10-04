@@ -9,7 +9,7 @@ The `f16` type provides all the same operations as a normal Rust float type, but
 minimal floating point storage and no major hardware implements them, all math operations are done as an `f32` type.
 `f16` by default provides `no_std` support so can easily be used in embedded code where a smaller float is most useful.
 
-*Requries Rust 1.27 or greater.*
+*Requries Rust 1.31 or greater.*
 
 See the [crate documentation](https://docs.rs/half/) for more details.
 
