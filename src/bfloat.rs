@@ -476,30 +476,30 @@ impl PartialOrd for bf16 {
 impl FromStr for bf16 {
     type Err = ParseFloatError;
     fn from_str(src: &str) -> Result<bf16, ParseFloatError> {
-        f32::from_str(src).map(|x| bf16::from_f32(x))
+        f32::from_str(src).map(bf16::from_f32)
     }
 }
 
 impl Debug for bf16 {
-    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
         write!(f, "0x{:X}", self.0)
     }
 }
 
 impl Display for bf16 {
-    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
         write!(f, "{}", self.to_f32())
     }
 }
 
 impl LowerExp for bf16 {
-    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
         write!(f, "{:e}", self.to_f32())
     }
 }
 
 impl UpperExp for bf16 {
-    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
         write!(f, "{:E}", self.to_f32())
     }
 }
@@ -528,14 +528,14 @@ mod convert {
         let x = (val >> 32) as u32;
 
         // Check for signed zero
-        if x & 0x7FFFFFFFu32 == 0 {
+        if x & 0x7FFF_FFFFu32 == 0 {
             return (x >> 16) as u16;
         }
 
         // Extract IEEE754 components
-        let sign = x & 0x80000000u32;
-        let exp = x & 0x7FF00000u32;
-        let man = x & 0x000FFFFFu32;
+        let sign = x & 0x8000_0000u32;
+        let exp = x & 0x7FF0_0000u32;
+        let man = x & 0x000F_FFFFu32;
 
         // Subnormals will underflow, so return signed zero
         if exp == 0 {
@@ -543,7 +543,7 @@ mod convert {
         }
 
         // Check for all exponent bits being set, which is Infinity or NaN
-        if exp == 0x7FF00000u32 {
+        if exp == 0x7FF0_0000u32 {
             // A mantissa of zero is a signed Infinity. We also have to check the last 32 bits.
             if (man == 0) && (val as u32 == 0) {
                 return ((sign >> 16) | 0x7F80u32) as u16;
@@ -572,7 +572,7 @@ mod convert {
                 return half_sign as u16;
             }
             // Don't forget about hidden leading mantissa bit when assembling mantissa
-            let man = man | 0x00100000u32;
+            let man = man | 0x0010_0000u32;
             let mut half_man = man >> (14 - half_exp);
             // Check for rounding
             if (man >> (7 - half_exp)) & 0x1u32 != 0 {
@@ -586,7 +586,7 @@ mod convert {
         let half_exp = (half_exp as u32) << 7;
         let half_man = man >> 13;
         // Check for rounding
-        if man & 0x00001000u32 != 0 {
+        if man & 0x0000_1000u32 != 0 {
             // Round it
             ((half_sign | half_exp | half_man) + 1) as u16
         } else {
@@ -612,7 +612,7 @@ mod convert {
         if half_exp == 0x7F80u64 {
             // Check for signed infinity if mantissa is zero
             if half_man == 0 {
-                return f64::from_bits((half_sign << 48) | 0x7FF0000000000000u64);
+                return f64::from_bits((half_sign << 48) | 0x7FF0_0000_0000_0000u64);
             } else {
                 // NaN, only 1st mantissa bit is set
                 return core::f64::NAN;
@@ -995,7 +995,7 @@ mod test {
 
     #[test]
     fn test_slice_conversions() {
-        use bfloat::consts::*;
+        use super::consts::*;
         let bits = &[
             E.to_bits(),
             PI.to_bits(),
@@ -1049,7 +1049,7 @@ mod test {
 
     #[test]
     fn test_mutablility() {
-        use bfloat::consts::*;
+        use super::consts::*;
         let mut bits_array = [PI.to_bits()];
         let bits = &mut bits_array[..];
 
