@@ -1,17 +1,22 @@
-//! The bfloat16 floating point format is a truncated 16-bit version of `f32`.
+//! Alternative 16-bit floating point type `bf16`.
 //!
-//! `bf16` has approximately the same dynamic range as `f32` by having a lower precision than `f16`.
-//! While `f16` has a precision of 11 bits, `bf16` has a precision of 8 bits.
+//! The `bfloat16` floating point format is a truncated 16-bit version of the IEEE 754 standard
+//! `binary32`, a.k.a `f32`. [`bf16`] has approximately the same dynamic range as `f32` by having
+//! a lower precision than [`f16`]. While [`f16`] has a precision of 11 bits, [`bf16`] has a
+//! precision of only 8 bits.
+//!
+//! Like [`f16`], [`bf16`] does not offer arithmetic operations as it is intended for compact
+//! storage rather than calculations.
+//!
+//! [`bf16`]: struct.bf16.html
+//! [`f16`]: ../struct.f16.html
 
 use core::cmp::Ordering;
 use core::fmt::{Debug, Display, Error, Formatter, LowerExp, UpperExp};
 use core::num::{FpCategory, ParseFloatError};
 use core::str::FromStr;
 
-/// The bfloat16 floating point format is a truncated 16-bit version of `f32`.
-///
-/// `bf16` has approximately the same dynamic range as `f32` by having a lower precision than `f16`.
-/// While `f16` has a precision of 11 bits, `bf16` has a precision of 8 bits.
+/// A 16-bit floating point type implementing the `bfloat16` format.
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]

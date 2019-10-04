@@ -1,13 +1,18 @@
-//! A crate that provides support for the half-precision floating point type.
+//! A crate that provides support for half-precision floating point types.
 //!
-//! This crate provides the `f16` type, which is an implementation of the IEEE 754-2008 `binary16`
+//! This crate provides the [`f16`] type, which is an implementation of the IEEE 754-2008 standard `binary16`
 //! floating point type. This 'half' precision floating point type is intended for efficient storage
 //! where the full range and precision of a larger floating point value is not required. This is
 //! especially useful for image storage formats.
 //!
-//! Because `f16` is primarily for efficient storage, floating point operations are not implemented.
-//! Operations should be performed with `f32` or higher-precision types and converted to/from `f16`
-//! as necessary.
+//! This crate also provides a [`bf16`] type in the [`bfloat`] module, an alternative 16-bit floating
+//! point format. The `bfloat16` format is a truncated IEEE 754 standard `binary32` float that preserves the
+//! exponent to allow the same range as `f32` but with only 8 bits of precision (instead of 11 bits
+//! for [`f16`]). See the [`bfloat`] module for details.
+//!
+//! Because [`f16`] and [`bf16`] are primarily for efficient storage, floating point operations such as
+//! addition, multiplication, etc. are not implemented. Operations should be performed with `f32`
+//! or higher-precision types and converted to/from [`f16`] or [`bf16`] as necessary.
 //!
 //! Some hardware architectures provide support for 16-bit floating point conversions. Enable the
 //! `use-intrinsics` feature to use LLVM intrinsics for hardware conversions. This crate does no
@@ -15,12 +20,15 @@
 //! nightly Rust due to a compiler feature gate.
 //!
 //! Support for `serde` crate `Serialize` and `Deserialize` traits is provided when the `serde`
-//! feature is enabled. This adds a dependency on `serde` crate so is an optional feature that works
-//! on Rust 1.15 or newer.
+//! feature is enabled. This adds a dependency on `serde` crate so is an optional cargo feature.
 //!
 //! The crate uses `#[no_std]` by default, so can be used in embedded environments without using the
 //! Rust `std` library. A `std` feature is available, which enables additional utilities using the
 //! `std` library, such as the `vec` module that provides zero-copy `Vec` conversions.
+//!
+//! [`f16`]: struct.f16.html
+//! [`bf16`]: bfloat/struct.bf16.html
+//! [`bfloat`]: bfloat/index.html
 
 #![warn(
     missing_docs,
@@ -53,14 +61,14 @@ use core::str::FromStr;
 
 pub mod bfloat;
 
-/// The 16-bit floating point type.
+/// A 16-bit floating point type implementing the IEEE 754-2008 standard `binary16` format.
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct f16(u16);
 
 pub mod consts {
-    //! Useful `f16` constants.
+    //! Useful [`f16`] constants.
 
     use super::f16;
 
