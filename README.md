@@ -9,14 +9,14 @@ The `f16` type provides all the same operations as a normal Rust float type, but
 minimal floating point storage and no major hardware implements them, all math operations are done as an `f32` type.
 `f16` by default provides `no_std` support so can easily be used in embedded code where a smaller float is most useful.
 
-*Requries Rust 1.10 or greater.*
+*Requries Rust 1.27 or greater.*
 
 See the [crate documentation](https://docs.rs/half/) for more details.
 
 ### Optional Features
 
 - **`serde`** - Implement `Serialize` and `Deserialize` traits for `f16`. This adds a dependency on the `serde`
-crate. *Requires Rust >= 1.15.*
+crate.
 
 - **`use-intrinsics`** - Use hardware intrinsics for `f16` conversions if available on the compiler host target. By
 default, without this feature, conversions are done only in software, which will be the fallback if the host target does
