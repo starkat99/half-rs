@@ -506,11 +506,10 @@ impl UpperExp for bf16 {
 
 mod convert {
     use core;
-    use core::mem;
 
     pub fn f32_to_bf16(value: f32) -> u16 {
         // Convert to raw bytes
-        let x: u32 = unsafe { mem::transmute(value) };
+        let x = value.to_bits();
 
         // check for NaN
         if x & 0x7FFF_FFFFu32 > 0x7F80_0000u32 {
@@ -525,7 +524,7 @@ mod convert {
     pub fn f64_to_bf16(value: f64) -> u16 {
         // Convert to raw bytes, truncating the last 32-bits of mantissa; that precision will always
         // be lost on half-precision.
-        let val: u64 = unsafe { mem::transmute(value) };
+        let val = value.to_bits();
         let x = (val >> 32) as u32;
 
         // Check for signed zero
@@ -596,13 +595,13 @@ mod convert {
     }
 
     pub fn bf16_to_f32(i: u16) -> f32 {
-        unsafe { mem::transmute((i as u32) << 16) }
+        f32::from_bits((i as u32) << 16)
     }
 
     pub fn bf16_to_f64(i: u16) -> f64 {
         // Check for signed zero
         if i & 0x7FFFu16 == 0 {
-            return unsafe { mem::transmute((i as u64) << 48) };
+            return f64::from_bits((i as u64) << 48);
         }
 
         let half_sign = (i & 0x8000u16) as u64;
@@ -613,7 +612,7 @@ mod convert {
         if half_exp == 0x7F80u64 {
             // Check for signed infinity if mantissa is zero
             if half_man == 0 {
-                return unsafe { mem::transmute((half_sign << 48) | 0x7FF0000000000000u64) };
+                return f64::from_bits((half_sign << 48) | 0x7FF0000000000000u64);
             } else {
                 // NaN, only 1st mantissa bit is set
                 return core::f64::NAN;
@@ -633,13 +632,13 @@ mod convert {
             // Rebias and adjust exponent
             let exp = ((1023 - 127 - e) as u64) << 52;
             let man = (half_man << (46 + e)) & 0xF_FFFF_FFFF_FFFFu64;
-            return unsafe { mem::transmute(sign | exp | man) };
+            return f64::from_bits(sign | exp | man);
         }
 
         // Rebias exponent for a normalized normal
         let exp = ((unbiased_exp + 1023) as u64) << 52;
         let man = (half_man & 0x007Fu64) << 45;
-        unsafe { mem::transmute(sign | exp | man) }
+        f64::from_bits(sign | exp | man)
     }
 }
 
@@ -856,17 +855,10 @@ mod test {
 
     #[test]
     fn test_nan_conversion() {
-        use core::mem;
-        let nan64: f64;
-        let neg_nan64: f64;
-        let nan32: f32;
-        let neg_nan32: f32;
-        unsafe {
-            nan64 = mem::transmute(0x7ff0_0000_0000_0001u64);
-            neg_nan64 = mem::transmute(0xfff0_0000_0000_0001u64);
-            nan32 = mem::transmute(0x7f80_0001u32);
-            neg_nan32 = mem::transmute(0xff80_0001u32);
-        }
+        let nan64 = f64::from_bits(0x7ff0_0000_0000_0001u64);
+        let neg_nan64 = f64::from_bits(0xfff0_0000_0000_0001u64);
+        let nan32 = f32::from_bits(0x7f80_0001u32);
+        let neg_nan32 = f32::from_bits(0xff80_0001u32);
         let nan32_from_64 = nan64 as f32;
         let neg_nan32_from_64 = neg_nan64 as f32;
         let nan16_from_64 = bf16::from_f64(nan64);
@@ -888,28 +880,16 @@ mod test {
         let sign64 = 1u64 << 63;
         let sign32 = 1u32 << 31;
         let sign16 = 1u16 << 15;
-        let nan64_u: u64;
-        let neg_nan64_u: u64;
-        let nan32_u: u32;
-        let neg_nan32_u: u32;
-        let nan32_from_64_u: u32;
-        let neg_nan32_from_64_u: u32;
-        let nan16_from_64_u: u16;
-        let neg_nan16_from_64_u: u16;
-        let nan16_from_32_u: u16;
-        let neg_nan16_from_32_u: u16;
-        unsafe {
-            nan64_u = mem::transmute(nan64);
-            neg_nan64_u = mem::transmute(neg_nan64);
-            nan32_u = mem::transmute(nan32);
-            neg_nan32_u = mem::transmute(neg_nan32);
-            nan32_from_64_u = mem::transmute(nan32_from_64);
-            neg_nan32_from_64_u = mem::transmute(neg_nan32_from_64);
-            nan16_from_64_u = mem::transmute(nan16_from_64);
-            neg_nan16_from_64_u = mem::transmute(neg_nan16_from_64);
-            nan16_from_32_u = mem::transmute(nan16_from_32);
-            neg_nan16_from_32_u = mem::transmute(neg_nan16_from_32);
-        }
+        let nan64_u = nan64.to_bits();
+        let neg_nan64_u = neg_nan64.to_bits();
+        let nan32_u = nan32.to_bits();
+        let neg_nan32_u = neg_nan32.to_bits();
+        let nan32_from_64_u = nan32_from_64.to_bits();
+        let neg_nan32_from_64_u = neg_nan32_from_64.to_bits();
+        let nan16_from_64_u = nan16_from_64.to_bits();
+        let neg_nan16_from_64_u = neg_nan16_from_64.to_bits();
+        let nan16_from_32_u = nan16_from_32.to_bits();
+        let neg_nan16_from_32_u = neg_nan16_from_32.to_bits();
         assert_eq!(nan64_u & sign64, 0);
         assert_eq!(neg_nan64_u & sign64, sign64);
         assert_eq!(nan32_u & sign32, 0);
@@ -924,7 +904,6 @@ mod test {
 
     #[test]
     fn test_bf16_to_f32() {
-        use core::mem;
         let f = bf16::from_f32(7.0);
         assert_eq!(f.to_f32(), 7.0f32);
 
@@ -934,7 +913,7 @@ mod test {
         // diff must be <= 4 * EPSILON, as 7 has two more significant bits than 1
         assert!(diff <= 4.0 * consts::EPSILON.to_f32());
 
-        let tiny32: f32 = unsafe { mem::transmute(0x0001_0000u32) };
+        let tiny32 = f32::from_bits(0x0001_0000u32);
         assert_eq!(bf16::from_bits(0x0001).to_f32(), tiny32);
         assert_eq!(bf16::from_bits(0x0005).to_f32(), 5.0 * tiny32);
 

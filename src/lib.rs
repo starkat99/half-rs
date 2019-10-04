@@ -554,31 +554,6 @@ impl UpperExp for f16 {
     }
 }
 
-#[cfg(any(test, not(feature = "use-intrinsics")))]
-mod f32_f64_bits {
-    use core::mem;
-
-    #[inline]
-    pub fn f32_from_bits(bits: u32) -> f32 {
-        unsafe { mem::transmute(bits) }
-    }
-
-    #[inline]
-    pub fn f32_to_bits(val: f32) -> u32 {
-        unsafe { mem::transmute(val) }
-    }
-
-    #[inline]
-    pub fn f64_from_bits(bits: u64) -> f64 {
-        unsafe { mem::transmute(bits) }
-    }
-
-    #[inline]
-    pub fn f64_to_bits(val: f64) -> u64 {
-        unsafe { mem::transmute(val) }
-    }
-}
-
 #[cfg(feature = "use-intrinsics")]
 mod convert {
     extern "C" {
@@ -618,12 +593,11 @@ mod convert {
 
 #[cfg(not(feature = "use-intrinsics"))]
 mod convert {
-    use super::f32_f64_bits::*;
     use core;
 
     pub fn f32_to_f16(value: f32) -> u16 {
         // Convert to raw bytes
-        let x = f32_to_bits(value);
+        let x = value.to_bits();
 
         // Check for signed zero
         if x & 0x7FFFFFFFu32 == 0 {
@@ -694,7 +668,7 @@ mod convert {
     pub fn f64_to_f16(value: f64) -> u16 {
         // Convert to raw bytes, truncating the last 32-bits of mantissa; that precision will always
         // be lost on half-precision.
-        let val = f64_to_bits(value);
+        let val = value.to_bits();
         let x = (val >> 32) as u32;
 
         // Check for signed zero
@@ -766,7 +740,7 @@ mod convert {
     pub fn f16_to_f32(i: u16) -> f32 {
         // Check for signed zero
         if i & 0x7FFFu16 == 0 {
-            return f32_from_bits((i as u32) << 16);
+            return f32::from_bits((i as u32) << 16);
         }
 
         let half_sign = (i & 0x8000u16) as u32;
@@ -777,7 +751,7 @@ mod convert {
         if half_exp == 0x7C00u32 {
             // Check for signed infinity if mantissa is zero
             if half_man == 0 {
-                return f32_from_bits((half_sign << 16) | 0x7F800000u32);
+                return f32::from_bits((half_sign << 16) | 0x7F800000u32);
             } else {
                 // NaN, only 1st mantissa bit is set
                 return core::f32::NAN;
@@ -797,19 +771,19 @@ mod convert {
             // Rebias and adjust exponent
             let exp = (127 - 15 - e) << 23;
             let man = (half_man << (14 + e)) & 0x7F_FF_FFu32;
-            return f32_from_bits(sign | exp | man);
+            return f32::from_bits(sign | exp | man);
         }
 
         // Rebias exponent for a normalized normal
         let exp = ((unbiased_exp + 127) as u32) << 23;
         let man = (half_man & 0x03FFu32) << 13;
-        f32_from_bits(sign | exp | man)
+        f32::from_bits(sign | exp | man)
     }
 
     pub fn f16_to_f64(i: u16) -> f64 {
         // Check for signed zero
         if i & 0x7FFFu16 == 0 {
-            return f64_from_bits((i as u64) << 48);
+            return f64::from_bits((i as u64) << 48);
         }
 
         let half_sign = (i & 0x8000u16) as u64;
@@ -820,7 +794,7 @@ mod convert {
         if half_exp == 0x7C00u64 {
             // Check for signed infinity if mantissa is zero
             if half_man == 0 {
-                return f64_from_bits((half_sign << 48) | 0x7FF0000000000000u64);
+                return f64::from_bits((half_sign << 48) | 0x7FF0000000000000u64);
             } else {
                 // NaN, only 1st mantissa bit is set
                 return core::f64::NAN;
@@ -840,13 +814,13 @@ mod convert {
             // Rebias and adjust exponent
             let exp = ((1023 - 15 - e) as u64) << 52;
             let man = (half_man << (43 + e)) & 0xF_FFFF_FFFF_FFFFu64;
-            return f64_from_bits(sign | exp | man);
+            return f64::from_bits(sign | exp | man);
         }
 
         // Rebias exponent for a normalized normal
         let exp = ((unbiased_exp + 1023) as u64) << 52;
         let man = (half_man & 0x03FFu64) << 42;
-        f64_from_bits(sign | exp | man)
+        f64::from_bits(sign | exp | man)
     }
 }
 
@@ -953,7 +927,6 @@ pub mod vec {
 
 #[cfg(test)]
 mod test {
-    use super::f32_f64_bits::*;
     use super::*;
     use core;
     use core::cmp::Ordering;
@@ -973,7 +946,7 @@ mod test {
         let epsilon = f16::from_f32(one_plus_epsilon.to_f32() - 1.0);
         assert_eq!(consts::EPSILON, epsilon);
         // sanity check to show test is good
-        let one_plus_epsilon32 = f32_from_bits(f32_to_bits(1.0) + 1);
+        let one_plus_epsilon32 = f32::from_bits(1.0f32.to_bits() + 1);
         let epsilon32 = one_plus_epsilon32 - 1f32;
         assert_eq!(core::f32::EPSILON, epsilon32);
 
@@ -985,8 +958,8 @@ mod test {
         assert_eq!(consts::MIN, min);
         assert_eq!(consts::MIN_POSITIVE, min_pos);
         // sanity check to show test is good
-        let max32 = f32_from_bits(f32_to_bits(core::f32::INFINITY) - 1);
-        let min32 = f32_from_bits(f32_to_bits(core::f32::NEG_INFINITY) - 1);
+        let max32 = f32::from_bits(core::f32::INFINITY.to_bits() - 1);
+        let min32 = f32::from_bits(core::f32::NEG_INFINITY.to_bits() - 1);
         let min_pos32 = 2f32.powi(core::f32::MIN_EXP - 1);
         assert_eq!(core::f32::MAX, max32);
         assert_eq!(core::f32::MIN, min32);
@@ -1118,10 +1091,10 @@ mod test {
 
     #[test]
     fn test_nan_conversion() {
-        let nan64 = f64_from_bits(0x7ff0_0000_0000_0001u64);
-        let neg_nan64 = f64_from_bits(0xfff0_0000_0000_0001u64);
-        let nan32 = f32_from_bits(0x7f80_0001u32);
-        let neg_nan32 = f32_from_bits(0xff80_0001u32);
+        let nan64 = f64::from_bits(0x7ff0_0000_0000_0001u64);
+        let neg_nan64 = f64::from_bits(0xfff0_0000_0000_0001u64);
+        let nan32 = f32::from_bits(0x7f80_0001u32);
+        let neg_nan32 = f32::from_bits(0xff80_0001u32);
         let nan32_from_64 = nan64 as f32;
         let neg_nan32_from_64 = neg_nan64 as f32;
         let nan16_from_64 = f16::from_f64(nan64);
@@ -1143,12 +1116,12 @@ mod test {
         let sign64 = 1u64 << 63;
         let sign32 = 1u32 << 31;
         let sign16 = 1u16 << 15;
-        let nan64_u = f64_to_bits(nan64);
-        let neg_nan64_u = f64_to_bits(neg_nan64);
-        let nan32_u = f32_to_bits(nan32);
-        let neg_nan32_u = f32_to_bits(neg_nan32);
-        let nan32_from_64_u = f32_to_bits(nan32_from_64);
-        let neg_nan32_from_64_u = f32_to_bits(neg_nan32_from_64);
+        let nan64_u = nan64.to_bits();
+        let neg_nan64_u = neg_nan64.to_bits();
+        let nan32_u = nan32.to_bits();
+        let neg_nan32_u = neg_nan32.to_bits();
+        let nan32_from_64_u = nan32_from_64.to_bits();
+        let neg_nan32_from_64_u = neg_nan32_from_64.to_bits();
         let nan16_from_64_u = nan16_from_64.to_bits();
         let neg_nan16_from_64_u = neg_nan16_from_64.to_bits();
         let nan16_from_32_u = nan16_from_32.to_bits();

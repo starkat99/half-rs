@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Added `bfloat16` type for alternative 16-bit floating point conversions. By [@tspiteri].
 
+### Changed
+- Minimum rustc version bumped to 1.20.0.
+
 ## [1.3.1] - 2019-10-04 <a name="1.3.1"></a>
 ### Fixed
 - Corrected values of constants `EPSILON`, `MAX_10_EXP`, `MAX_EXP`, `MIN_10_EXP`, and `MIN_EXP`
