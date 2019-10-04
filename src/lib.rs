@@ -55,7 +55,7 @@ pub mod consts {
     /// 16-bit equivalent of `std::f32::DIGITS`
     pub const DIGITS: u32 = 3;
     /// 16-bit floating point epsilon. `9.7656e-4`
-    pub const EPSILON: f16 = f16(0x1700u16);
+    pub const EPSILON: f16 = f16(0x1400u16);
     /// 16-bit positive infinity.
     pub const INFINITY: f16 = f16(0x7C00u16);
     /// 16-bit equivalent of `std::f32::MANTISSA_DIGITS`
@@ -63,19 +63,19 @@ pub mod consts {
     /// Largest finite `f16` value. `65504`
     pub const MAX: f16 = f16(0x7BFF);
     /// 16-bit equivalent of `std::f32::MAX_10_EXP`
-    pub const MAX_10_EXP: i32 = 9;
+    pub const MAX_10_EXP: i32 = 4;
     /// 16-bit equivalent of `std::f32::MAX_EXP`
-    pub const MAX_EXP: i32 = 15;
-    /// Smallest finite `f16` value.
+    pub const MAX_EXP: i32 = 16;
+    /// Smallest finite `f16` value. `-65504`
     pub const MIN: f16 = f16(0xFBFF);
     /// 16-bit equivalent of `std::f32::MIN_10_EXP`
-    pub const MIN_10_EXP: i32 = -9;
+    pub const MIN_10_EXP: i32 = -4;
     /// 16-bit equivalent of `std::f32::MIN_EXP`
-    pub const MIN_EXP: i32 = -14;
+    pub const MIN_EXP: i32 = -13;
     /// Smallest positive, normalized `f16` value. Approx. `6.10352e−5`
     pub const MIN_POSITIVE: f16 = f16(0x0400u16);
     /// 16-bit NaN.
-    pub const NAN: f16 = f16(0xFE00u16);
+    pub const NAN: f16 = f16(0x7E00u16);
     /// 16-bit negative infinity.
     pub const NEG_INFINITY: f16 = f16(0xFC00u16);
     /// 16-bit equivalent of `std::f32::RADIX`
@@ -547,6 +547,31 @@ impl UpperExp for f16 {
     }
 }
 
+#[cfg(any(test, not(feature = "use-intrinsics")))]
+mod f32_f64_bits {
+    use core::mem;
+
+    #[inline]
+    pub fn f32_from_bits(bits: u32) -> f32 {
+        unsafe { mem::transmute(bits) }
+    }
+
+    #[inline]
+    pub fn f32_to_bits(val: f32) -> u32 {
+        unsafe { mem::transmute(val) }
+    }
+
+    #[inline]
+    pub fn f64_from_bits(bits: u64) -> f64 {
+        unsafe { mem::transmute(bits) }
+    }
+
+    #[inline]
+    pub fn f64_to_bits(val: f64) -> u64 {
+        unsafe { mem::transmute(val) }
+    }
+}
+
 #[cfg(feature = "use-intrinsics")]
 mod convert {
     extern "C" {
@@ -587,11 +612,11 @@ mod convert {
 #[cfg(not(feature = "use-intrinsics"))]
 mod convert {
     use core;
-    use core::mem;
+    use super::f32_f64_bits::*;
 
     pub fn f32_to_f16(value: f32) -> u16 {
         // Convert to raw bytes
-        let x: u32 = unsafe { mem::transmute(value) };
+        let x = f32_to_bits(value);
 
         // Check for signed zero
         if x & 0x7FFFFFFFu32 == 0 {
@@ -662,7 +687,7 @@ mod convert {
     pub fn f64_to_f16(value: f64) -> u16 {
         // Convert to raw bytes, truncating the last 32-bits of mantissa; that precision will always
         // be lost on half-precision.
-        let val: u64 = unsafe { mem::transmute(value) };
+        let val = f64_to_bits(value);
         let x = (val >> 32) as u32;
 
         // Check for signed zero
@@ -734,7 +759,7 @@ mod convert {
     pub fn f16_to_f32(i: u16) -> f32 {
         // Check for signed zero
         if i & 0x7FFFu16 == 0 {
-            return unsafe { mem::transmute((i as u32) << 16) };
+            return f32_from_bits((i as u32) << 16);
         }
 
         let half_sign = (i & 0x8000u16) as u32;
@@ -745,7 +770,7 @@ mod convert {
         if half_exp == 0x7C00u32 {
             // Check for signed infinity if mantissa is zero
             if half_man == 0 {
-                return unsafe { mem::transmute((half_sign << 16) | 0x7F800000u32) };
+                return f32_from_bits((half_sign << 16) | 0x7F800000u32);
             } else {
                 // NaN, only 1st mantissa bit is set
                 return core::f32::NAN;
@@ -765,19 +790,19 @@ mod convert {
             // Rebias and adjust exponent
             let exp = (127 - 15 - e) << 23;
             let man = (half_man << (14 + e)) & 0x7F_FF_FFu32;
-            return unsafe { mem::transmute(sign | exp | man) };
+            return f32_from_bits(sign | exp | man);
         }
 
         // Rebias exponent for a normalized normal
         let exp = ((unbiased_exp + 127) as u32) << 23;
         let man = (half_man & 0x03FFu32) << 13;
-        unsafe { mem::transmute(sign | exp | man) }
+        f32_from_bits(sign | exp | man)
     }
 
     pub fn f16_to_f64(i: u16) -> f64 {
         // Check for signed zero
         if i & 0x7FFFu16 == 0 {
-            return unsafe { mem::transmute((i as u64) << 48) };
+            return f64_from_bits((i as u64) << 48);
         }
 
         let half_sign = (i & 0x8000u16) as u64;
@@ -788,7 +813,7 @@ mod convert {
         if half_exp == 0x7C00u64 {
             // Check for signed infinity if mantissa is zero
             if half_man == 0 {
-                return unsafe { mem::transmute((half_sign << 48) | 0x7FF0000000000000u64) };
+                return f64_from_bits((half_sign << 48) | 0x7FF0000000000000u64);
             } else {
                 // NaN, only 1st mantissa bit is set
                 return core::f64::NAN;
@@ -808,13 +833,13 @@ mod convert {
             // Rebias and adjust exponent
             let exp = ((1023 - 15 - e) as u64) << 52;
             let man = (half_man << (43 + e)) & 0xF_FFFF_FFFF_FFFFu64;
-            return unsafe { mem::transmute(sign | exp | man) };
+            return f64_from_bits(sign | exp | man);
         }
 
         // Rebias exponent for a normalized normal
         let exp = ((unbiased_exp + 1023) as u64) << 52;
         let man = (half_man & 0x03FFu64) << 42;
-        unsafe { mem::transmute(sign | exp | man) }
+        f64_from_bits(sign | exp | man)
     }
 }
 
@@ -922,8 +947,59 @@ pub mod vec {
 #[cfg(test)]
 mod test {
     use super::*;
+    use super::f32_f64_bits::*;
     use core;
     use core::cmp::Ordering;
+
+    #[test]
+    fn test_f16_consts() {
+        // DIGITS
+        let digits = ((consts::MANTISSA_DIGITS as f32 - 1.0) * 2f32.log10()).floor() as u32;
+        assert_eq!(consts::DIGITS, digits);
+        // sanity check to show test is good
+        let digits32 = ((core::f32::MANTISSA_DIGITS as f32 - 1.0) * 2f32.log10()).floor() as u32;
+        assert_eq!(core::f32::DIGITS, digits32);
+
+        // EPSILON
+        let one = f16::from_f32(1.0);
+        let one_plus_epsilon = f16::from_bits(one.to_bits() + 1);
+        let epsilon = f16::from_f32(one_plus_epsilon.to_f32() - 1.0);
+        assert_eq!(consts::EPSILON, epsilon);
+        // sanity check to show test is good
+        let one_plus_epsilon32= f32_from_bits(f32_to_bits(1.0) + 1);
+        let epsilon32 = one_plus_epsilon32 - 1f32;
+        assert_eq!(core::f32::EPSILON, epsilon32);
+
+        // MAX, MIN and MIN_POSITIVE
+        let max = f16::from_bits(consts::INFINITY.to_bits() - 1);
+        let min = f16::from_bits(consts::NEG_INFINITY.to_bits() - 1);
+        let min_pos = f16::from_f32(2f32.powi(consts::MIN_EXP - 1));
+        assert_eq!(consts::MAX, max);
+        assert_eq!(consts::MIN, min);
+        assert_eq!(consts::MIN_POSITIVE, min_pos);
+        // sanity check to show test is good
+        let max32 = f32_from_bits(f32_to_bits(core::f32::INFINITY) - 1);
+        let min32 = f32_from_bits(f32_to_bits(core::f32::NEG_INFINITY) - 1);
+        let min_pos32 = 2f32.powi(core::f32::MIN_EXP - 1);
+        assert_eq!(core::f32::MAX, max32);
+        assert_eq!(core::f32::MIN, min32);
+        assert_eq!(core::f32::MIN_POSITIVE, min_pos32);
+
+        // MIN_10_EXP and MAX_10_EXP
+        let ten_to_min = 10f32.powi(consts::MIN_10_EXP);
+        assert!(ten_to_min / 10.0 < consts::MIN_POSITIVE.to_f32());
+        assert!(ten_to_min > consts::MIN_POSITIVE.to_f32());
+        let ten_to_max = 10f32.powi(consts::MAX_10_EXP);
+        assert!(ten_to_max < consts::MAX.to_f32());
+        assert!(ten_to_max * 10.0 > consts::MAX.to_f32());
+        // sanity check to show test is good
+        let ten_to_min32 = 10f64.powi(core::f32::MIN_10_EXP);
+        assert!(ten_to_min32 / 10.0 < f64::from(core::f32::MIN_POSITIVE));
+        assert!(ten_to_min32 > f64::from(core::f32::MIN_POSITIVE));
+        let ten_to_max32 = 10f64.powi(core::f32::MAX_10_EXP);
+        assert!(ten_to_max32 < f64::from(core::f32::MAX));
+        assert!(ten_to_max32 * 10.0 > f64::from(core::f32::MAX));
+    }
 
     #[test]
     fn test_f16_consts_from_f32() {
@@ -936,7 +1012,9 @@ mod test {
 
         assert_eq!(consts::ONE, one);
         assert_eq!(consts::ZERO, zero);
+        assert!(zero.is_sign_positive());
         assert_eq!(consts::NEG_ZERO, neg_zero);
+        assert!(neg_zero.is_sign_negative());
         assert_eq!(consts::INFINITY, inf);
         assert_eq!(consts::NEG_INFINITY, neg_inf);
         assert!(nan.is_nan());
@@ -988,7 +1066,9 @@ mod test {
 
         assert_eq!(consts::ONE, one);
         assert_eq!(consts::ZERO, zero);
+        assert!(zero.is_sign_positive());
         assert_eq!(consts::NEG_ZERO, neg_zero);
+        assert!(neg_zero.is_sign_negative());
         assert_eq!(consts::INFINITY, inf);
         assert_eq!(consts::NEG_INFINITY, neg_inf);
         assert!(nan.is_nan());
@@ -1031,17 +1111,10 @@ mod test {
 
     #[test]
     fn test_nan_conversion() {
-        use core::mem;
-        let nan64: f64;
-        let neg_nan64: f64;
-        let nan32: f32;
-        let neg_nan32: f32;
-        unsafe {
-            nan64 = mem::transmute(0x7ff0_0000_0000_0001u64);
-            neg_nan64 = mem::transmute(0xfff0_0000_0000_0001u64);
-            nan32 = mem::transmute(0x7f80_0001u32);
-            neg_nan32 = mem::transmute(0xff80_0001u32);
-        }
+        let nan64 = f64_from_bits(0x7ff0_0000_0000_0001u64);
+        let neg_nan64 = f64_from_bits(0xfff0_0000_0000_0001u64);
+        let nan32 = f32_from_bits(0x7f80_0001u32);
+        let neg_nan32 = f32_from_bits(0xff80_0001u32);
         let nan32_from_64 = nan64 as f32;
         let neg_nan32_from_64 = neg_nan64 as f32;
         let nan16_from_64 = f16::from_f64(nan64);
@@ -1063,28 +1136,16 @@ mod test {
         let sign64 = 1u64 << 63;
         let sign32 = 1u32 << 31;
         let sign16 = 1u16 << 15;
-        let nan64_u: u64;
-        let neg_nan64_u: u64;
-        let nan32_u: u32;
-        let neg_nan32_u: u32;
-        let nan32_from_64_u: u32;
-        let neg_nan32_from_64_u: u32;
-        let nan16_from_64_u: u16;
-        let neg_nan16_from_64_u: u16;
-        let nan16_from_32_u: u16;
-        let neg_nan16_from_32_u: u16;
-        unsafe {
-            nan64_u = mem::transmute(nan64);
-            neg_nan64_u = mem::transmute(neg_nan64);
-            nan32_u = mem::transmute(nan32);
-            neg_nan32_u = mem::transmute(neg_nan32);
-            nan32_from_64_u = mem::transmute(nan32_from_64);
-            neg_nan32_from_64_u = mem::transmute(neg_nan32_from_64);
-            nan16_from_64_u = mem::transmute(nan16_from_64);
-            neg_nan16_from_64_u = mem::transmute(neg_nan16_from_64);
-            nan16_from_32_u = mem::transmute(nan16_from_32);
-            neg_nan16_from_32_u = mem::transmute(neg_nan16_from_32);
-        }
+        let nan64_u = f64_to_bits(nan64);
+        let neg_nan64_u = f64_to_bits(neg_nan64);
+        let nan32_u = f32_to_bits(nan32);
+        let neg_nan32_u = f32_to_bits(neg_nan32);
+        let nan32_from_64_u = f32_to_bits(nan32_from_64);
+        let neg_nan32_from_64_u = f32_to_bits(neg_nan32_from_64);
+        let nan16_from_64_u = nan16_from_64.to_bits();
+        let neg_nan16_from_64_u = neg_nan16_from_64.to_bits();
+        let nan16_from_32_u = nan16_from_32.to_bits();
+        let neg_nan16_from_32_u = neg_nan16_from_32.to_bits();
         assert_eq!(nan64_u & sign64, 0);
         assert_eq!(neg_nan64_u & sign64, sign64);
         assert_eq!(nan32_u & sign32, 0);
@@ -1105,7 +1166,8 @@ mod test {
         // 7.1 is NOT exactly representable in 16-bit, it's rounded
         let f = f16::from_f32(7.1);
         let diff = (f.to_f32() - 7.1f32).abs();
-        assert!(diff <= consts::EPSILON.to_f32());
+        // diff must be <= 4 * EPSILON, as 7 has two more significant bits than 1
+        assert!(diff <= 4.0 * consts::EPSILON.to_f32());
 
         assert_eq!(f16::from_bits(0x0000_0001).to_f32(), 2.0f32.powi(-24));
         assert_eq!(f16::from_bits(0x0000_0005).to_f32(), 5.0 * 2.0f32.powi(-24));
@@ -1125,7 +1187,8 @@ mod test {
         // 7.1 is NOT exactly representable in 16-bit, it's rounded
         let f = f16::from_f64(7.1);
         let diff = (f.to_f64() - 7.1f64).abs();
-        assert!(diff <= consts::EPSILON.to_f64());
+        // diff must be <= 4 * EPSILON, as 7 has two more significant bits than 1
+        assert!(diff <= 4.0 * consts::EPSILON.to_f64());
 
         assert_eq!(f16::from_bits(0x0000_0001).to_f64(), 2.0f64.powi(-24));
         assert_eq!(f16::from_bits(0x0000_0005).to_f64(), 5.0 * 2.0f64.powi(-24));
