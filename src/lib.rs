@@ -574,147 +574,85 @@ impl UpperExp for f16 {
 
 #[allow(dead_code)]
 mod convert {
-    #[inline(always)]
-    pub fn f32_to_f16(f: f32) -> u16 {
-        // Use CPU feature detection if using std
-        #[cfg(all(
-            feature = "use-intrinsics",
-            feature = "std",
-            any(target_arch = "x86", target_arch = "x86_64"),
-            not(target_feature = "f16c")
-        ))]
-        {
-            if is_x86_feature_detected!("f16c") {
+    macro_rules! convert_fn {
+        (fn $name:ident($var:ident : $vartype:ty) -> $restype:ty {
+            if feature("f16c") { $f16c:expr }
+            else { $fallback:expr }}) => {
+            #[inline(always)]
+            pub fn $name($var: $vartype) -> $restype {
+                // Use CPU feature detection if using std
+                #[cfg(all(
+                    feature = "use-intrinsics",
+                    feature = "std",
+                    any(target_arch = "x86", target_arch = "x86_64"),
+                    not(target_feature = "f16c")
+                ))]
+                {
+                    if is_x86_feature_detected!("f16c") {
+                        $f16c
+                    } else {
+                        $fallback
+                    }
+                }
+                // Use intrinsics directly when a compile target or using no_std
+                #[cfg(all(
+                    feature = "use-intrinsics",
+                    any(target_arch = "x86", target_arch = "x86_64"),
+                    target_feature = "f16c"
+                ))]
+                {
+                    $f16c
+                }
+                // Fallback to software
+                #[cfg(any(
+                    not(feature = "use-intrinsics"),
+                    not(any(target_arch = "x86", target_arch = "x86_64")),
+                    all(not(feature = "std"), not(target_feature = "f16c"))
+                ))]
+                {
+                    $fallback
+                }
+            }
+        };
+    }
+
+    convert_fn! {
+        fn f32_to_f16(f: f32) -> u16 {
+            if feature("f16c") {
                 unsafe { f32_to_f16_x86_f16c(f) }
             } else {
                 f32_to_f16_fallback(f)
             }
         }
-        // Use intrinsics directly when a compile target or using no_std
-        #[cfg(all(
-            feature = "use-intrinsics",
-            any(target_arch = "x86", target_arch = "x86_64"),
-            target_feature = "f16c"
-        ))]
-        unsafe {
-            f32_to_f16_x86_f16c(f)
-        }
-        // Fallback to software
-        #[cfg(any(
-            not(feature = "use-intrinsics"),
-            not(any(target_arch = "x86", target_arch = "x86_64")),
-            all(not(feature = "std"), not(target_feature = "f16c"))
-        ))]
-        {
-            f32_to_f16_fallback(f)
-        }
     }
 
-    #[inline(always)]
-    pub fn f64_to_f16(f: f64) -> u16 {
-        // Use CPU feature detection if using std
-        #[cfg(all(
-            feature = "use-intrinsics",
-            feature = "std",
-            any(target_arch = "x86", target_arch = "x86_64"),
-            not(target_feature = "f16c")
-        ))]
-        {
-            if is_x86_feature_detected!("f16c") {
+    convert_fn! {
+        fn f64_to_f16(f: f64) -> u16 {
+            if feature("f16c") {
                 unsafe { f64_to_f16_x86_f16c(f) }
             } else {
                 f64_to_f16_fallback(f)
             }
         }
-        // Use intrinsics directly when a compile target or using no_std
-        #[cfg(all(
-            feature = "use-intrinsics",
-            any(target_arch = "x86", target_arch = "x86_64"),
-            target_feature = "f16c"
-        ))]
-        unsafe {
-            f64_to_f16_x86_f16c(f)
-        }
-        // Fallback to software
-        #[cfg(any(
-            not(feature = "use-intrinsics"),
-            not(any(target_arch = "x86", target_arch = "x86_64")),
-            all(not(feature = "std"), not(target_feature = "f16c"))
-        ))]
-        {
-            f64_to_f16_fallback(f)
-        }
     }
 
-    #[inline(always)]
-    pub fn f16_to_f32(i: u16) -> f32 {
-        // Use CPU feature detection if using std
-        #[cfg(all(
-            feature = "use-intrinsics",
-            feature = "std",
-            any(target_arch = "x86", target_arch = "x86_64"),
-            not(target_feature = "f16c")
-        ))]
-        {
-            if is_x86_feature_detected!("f16c") {
+    convert_fn! {
+        fn f16_to_f32(i: u16) -> f32 {
+            if feature("f16c") {
                 unsafe { f16_to_f32_x86_f16c(i) }
             } else {
                 f16_to_f32_fallback(i)
             }
         }
-        // Use intrinsics directly when a compile target or using no_std
-        #[cfg(all(
-            feature = "use-intrinsics",
-            any(target_arch = "x86", target_arch = "x86_64"),
-            target_feature = "f16c"
-        ))]
-        unsafe {
-            f16_to_f32_x86_f16c(i)
-        }
-        // Fallback to software
-        #[cfg(any(
-            not(feature = "use-intrinsics"),
-            not(any(target_arch = "x86", target_arch = "x86_64")),
-            all(not(feature = "std"), not(target_feature = "f16c"))
-        ))]
-        {
-            f16_to_f32_fallback(i)
-        }
     }
 
-    #[inline(always)]
-    pub fn f16_to_f64(i: u16) -> f64 {
-        // Use CPU feature detection if using std
-        #[cfg(all(
-            feature = "use-intrinsics",
-            feature = "std",
-            any(target_arch = "x86", target_arch = "x86_64"),
-            not(target_feature = "f16c")
-        ))]
-        {
-            if is_x86_feature_detected!("f16c") {
+    convert_fn! {
+        fn f16_to_f64(i: u16) -> f64 {
+            if feature("f16c") {
                 unsafe { f16_to_f64_x86_f16c(i) }
             } else {
                 f16_to_f64_fallback(i)
             }
-        }
-        // Use intrinsics directly when a compile target or using no_std
-        #[cfg(all(
-            feature = "use-intrinsics",
-            any(target_arch = "x86", target_arch = "x86_64"),
-            target_feature = "f16c"
-        ))]
-        unsafe {
-            f16_to_f64_x86_f16c(i)
-        }
-        // Fallback to software
-        #[cfg(any(
-            not(feature = "use-intrinsics"),
-            not(any(target_arch = "x86", target_arch = "x86_64")),
-            all(not(feature = "std"), not(target_feature = "f16c"))
-        ))]
-        {
-            f16_to_f64_fallback(i)
         }
     }
 
