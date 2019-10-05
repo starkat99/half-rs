@@ -608,33 +608,34 @@ mod convert {
 mod convert {
     use core;
 
+    // In the below functions, round to nearest, with ties to even.
+    // Let us call the most significant bit that will be shifted out the round_bit.
+    //
+    // Round up if either
+    //  a) Removed part > tie.
+    //     (mantissa & round_bit) != 0 && (mantissa & (round_bit - 1)) != 0
+    //  b) Removed part == tie, and retained part is odd.
+    //     (mantissa & round_bit) != 0 && (mantissa & (2 * round_bit)) != 0
+    // (If removed part == tie and retained part is even, do not round up.)
+    // These two conditions can be combined into one:
+    //     (mantissa & round_bit) != 0 && (mantissa & ((round_bit - 1) | (2 * round_bit))) != 0
+    // which can be simplified into
+    //     (mantissa & round_bit) != 0 && (mantissa & (3 * round_bit - 1)) != 0
+
     pub fn f32_to_f16(value: f32) -> u16 {
         // Convert to raw bytes
         let x = value.to_bits();
-
-        // Check for signed zero
-        if x & 0x7FFF_FFFFu32 == 0 {
-            return (x >> 16) as u16;
-        }
 
         // Extract IEEE754 components
         let sign = x & 0x8000_0000u32;
         let exp = x & 0x7F80_0000u32;
         let man = x & 0x007F_FFFFu32;
 
-        // Subnormals will underflow, so return signed zero
-        if exp == 0 {
-            return (sign >> 16) as u16;
-        }
-
         // Check for all exponent bits being set, which is Infinity or NaN
         if exp == 0x7F80_0000u32 {
-            // A mantissa of zero is a signed Infinity
-            if man == 0 {
-                return ((sign >> 16) | 0x7C00u32) as u16;
-            }
-            // Otherwise, this is NaN
-            return ((sign >> 16) | 0x7E00u32) as u16;
+            // Set mantissa MSB for NaN (and also keep shifted mantissa bits)
+            let nan_bit = if man == 0 { 0 } else { 0x0200u32 };
+            return ((sign >> 16) | 0x7C00u32 | nan_bit | (man >> 13)) as u16;
         }
 
         // The number is normalized, start assembling half precision version
@@ -658,8 +659,9 @@ mod convert {
             // Don't forget about hidden leading mantissa bit when assembling mantissa
             let man = man | 0x0080_0000u32;
             let mut half_man = man >> (14 - half_exp);
-            // Check for rounding
-            if (man >> (13 - half_exp)) & 0x1u32 != 0 {
+            // Check for rounding (see comment above functions)
+            let round_bit = 1 << (13 - half_exp);
+            if (man & round_bit) != 0 && (man & (3 * round_bit - 1)) != 0 {
                 half_man += 1;
             }
             // No exponent for subnormals
@@ -669,8 +671,9 @@ mod convert {
         // Rebias the exponent
         let half_exp = (half_exp as u32) << 10;
         let half_man = man >> 13;
-        // Check for rounding
-        if man & 0x0000_1000u32 != 0 {
+        // Check for rounding (see comment above functions)
+        let round_bit = 0x0000_1000u32;
+        if (man & round_bit) != 0 && (man & (3 * round_bit - 1)) != 0 {
             // Round it
             ((half_sign | half_exp | half_man) + 1) as u16
         } else {
@@ -684,29 +687,17 @@ mod convert {
         let val = value.to_bits();
         let x = (val >> 32) as u32;
 
-        // Check for signed zero
-        if x & 0x7FFF_FFFFu32 == 0 {
-            return (x >> 16) as u16;
-        }
-
         // Extract IEEE754 components
         let sign = x & 0x8000_0000u32;
         let exp = x & 0x7FF0_0000u32;
         let man = x & 0x000F_FFFFu32;
 
-        // Subnormals will underflow, so return signed zero
-        if exp == 0 {
-            return (sign >> 16) as u16;
-        }
-
         // Check for all exponent bits being set, which is Infinity or NaN
         if exp == 0x7FF0_0000u32 {
-            // A mantissa of zero is a signed Infinity. We also have to check the last 32 bits.
-            if (man == 0) && (val as u32 == 0) {
-                return ((sign >> 16) | 0x7C00u32) as u16;
-            }
-            // Otherwise, this is NaN
-            return ((sign >> 16) | 0x7E00u32) as u16;
+            // Set mantissa MSB for NaN (and also keep shifted mantissa bits).
+            // We also have to check the last 32 bits.
+            let nan_bit = if man == 0 && (val as u32 == 0) { 0 } else { 0x0200u32};
+            return ((sign >> 16) | 0x7C00u32 | nan_bit | (man >> 10)) as u16;
         }
 
         // The number is normalized, start assembling half precision version
@@ -730,8 +721,9 @@ mod convert {
             // Don't forget about hidden leading mantissa bit when assembling mantissa
             let man = man | 0x0010_0000u32;
             let mut half_man = man >> (11 - half_exp);
-            // Check for rounding
-            if (man >> (10 - half_exp)) & 0x1u32 != 0 {
+            // Check for rounding (see comment above functions)
+            let round_bit = 1 << (10 - half_exp);
+            if (man & round_bit) != 0 && (man & (3 * round_bit - 1)) != 0 {
                 half_man += 1;
             }
             // No exponent for subnormals
@@ -741,8 +733,9 @@ mod convert {
         // Rebias the exponent
         let half_exp = (half_exp as u32) << 10;
         let half_man = man >> 10;
-        // Check for rounding
-        if man & 0x0000_0200u32 != 0 {
+        // Check for rounding (see comment above functions)
+        let round_bit = 0x0000_0200u32;
+        if (man & round_bit) != 0 && (man & (3 * round_bit - 1)) != 0 {
             // Round it
             ((half_sign | half_exp | half_man) + 1) as u16
         } else {
@@ -1322,5 +1315,85 @@ mod test {
 
         bits[0] = LN_2.to_bits();
         assert_eq!(bits, &[LN_2.to_bits()]);
+    }
+
+    #[test]
+    fn round_to_even_f32() {
+        // smallest positive subnormal = 0b0.0000_0000_01 * 2^-14 = 2^-24
+        let min_sub = f16::from_bits(1);
+        let min_sub_f = (-24f32).exp2();
+        assert_eq!(f16::from_f32(min_sub_f).to_bits(), min_sub.to_bits());
+        assert_eq!(f32::from(min_sub).to_bits(), min_sub_f.to_bits());
+
+        // 0.0000000000_011111 rounded to 0.0000000000 (< tie, no rounding)
+        // 0.0000000000_100000 rounded to 0.0000000000 (tie and even, remains at even)
+        // 0.0000000000_100001 rounded to 0.0000000001 (> tie, rounds up)
+        assert_eq!(f16::from_f32(min_sub_f * 0.49).to_bits(), min_sub.to_bits() * 0);
+        assert_eq!(f16::from_f32(min_sub_f * 0.50).to_bits(), min_sub.to_bits() * 0);
+        assert_eq!(f16::from_f32(min_sub_f * 0.51).to_bits(), min_sub.to_bits() * 1);
+
+        // 0.0000000001_011111 rounded to 0.0000000001 (< tie, no rounding)
+        // 0.0000000001_100000 rounded to 0.0000000010 (tie and odd, rounds up to even)
+        // 0.0000000001_100001 rounded to 0.0000000010 (> tie, rounds up)
+        assert_eq!(f16::from_f32(min_sub_f * 1.49).to_bits(), min_sub.to_bits() * 1);
+        assert_eq!(f16::from_f32(min_sub_f * 1.50).to_bits(), min_sub.to_bits() * 2);
+        assert_eq!(f16::from_f32(min_sub_f * 1.51).to_bits(), min_sub.to_bits() * 2);
+
+        // 0.0000000010_011111 rounded to 0.0000000010 (< tie, no rounding)
+        // 0.0000000010_100000 rounded to 0.0000000010 (tie and even, remains at even)
+        // 0.0000000010_100001 rounded to 0.0000000011 (> tie, rounds up)
+        assert_eq!(f16::from_f32(min_sub_f * 2.49).to_bits(), min_sub.to_bits() * 2);
+        assert_eq!(f16::from_f32(min_sub_f * 2.50).to_bits(), min_sub.to_bits() * 2);
+        assert_eq!(f16::from_f32(min_sub_f * 2.51).to_bits(), min_sub.to_bits() * 3);
+
+        assert_eq!(f16::from_f32(2000.49f32).to_bits(), f16::from_f32(2000.0).to_bits());
+        assert_eq!(f16::from_f32(2000.50f32).to_bits(), f16::from_f32(2000.0).to_bits());
+        assert_eq!(f16::from_f32(2000.51f32).to_bits(), f16::from_f32(2001.0).to_bits());
+        assert_eq!(f16::from_f32(2001.49f32).to_bits(), f16::from_f32(2001.0).to_bits());
+        assert_eq!(f16::from_f32(2001.50f32).to_bits(), f16::from_f32(2002.0).to_bits());
+        assert_eq!(f16::from_f32(2001.51f32).to_bits(), f16::from_f32(2002.0).to_bits());
+        assert_eq!(f16::from_f32(2002.49f32).to_bits(), f16::from_f32(2002.0).to_bits());
+        assert_eq!(f16::from_f32(2002.50f32).to_bits(), f16::from_f32(2002.0).to_bits());
+        assert_eq!(f16::from_f32(2002.51f32).to_bits(), f16::from_f32(2003.0).to_bits());
+    }
+
+    #[test]
+    fn round_to_even_f64() {
+        // smallest positive subnormal = 0b0.0000_0000_01 * 2^-14 = 2^-24
+        let min_sub = f16::from_bits(1);
+        let min_sub_f = (-24f64).exp2();
+        assert_eq!(f16::from_f64(min_sub_f).to_bits(), min_sub.to_bits());
+        assert_eq!(f64::from(min_sub).to_bits(), min_sub_f.to_bits());
+
+        // 0.0000000000_011111 rounded to 0.0000000000 (< tie, no rounding)
+        // 0.0000000000_100000 rounded to 0.0000000000 (tie and even, remains at even)
+        // 0.0000000000_100001 rounded to 0.0000000001 (> tie, rounds up)
+        assert_eq!(f16::from_f64(min_sub_f * 0.49).to_bits(), min_sub.to_bits() * 0);
+        assert_eq!(f16::from_f64(min_sub_f * 0.50).to_bits(), min_sub.to_bits() * 0);
+        assert_eq!(f16::from_f64(min_sub_f * 0.51).to_bits(), min_sub.to_bits() * 1);
+
+        // 0.0000000001_011111 rounded to 0.0000000001 (< tie, no rounding)
+        // 0.0000000001_100000 rounded to 0.0000000010 (tie and odd, rounds up to even)
+        // 0.0000000001_100001 rounded to 0.0000000010 (> tie, rounds up)
+        assert_eq!(f16::from_f64(min_sub_f * 1.49).to_bits(), min_sub.to_bits() * 1);
+        assert_eq!(f16::from_f64(min_sub_f * 1.50).to_bits(), min_sub.to_bits() * 2);
+        assert_eq!(f16::from_f64(min_sub_f * 1.51).to_bits(), min_sub.to_bits() * 2);
+
+        // 0.0000000010_011111 rounded to 0.0000000010 (< tie, no rounding)
+        // 0.0000000010_100000 rounded to 0.0000000010 (tie and even, remains at even)
+        // 0.0000000010_100001 rounded to 0.0000000011 (> tie, rounds up)
+        assert_eq!(f16::from_f64(min_sub_f * 2.49).to_bits(), min_sub.to_bits() * 2);
+        assert_eq!(f16::from_f64(min_sub_f * 2.50).to_bits(), min_sub.to_bits() * 2);
+        assert_eq!(f16::from_f64(min_sub_f * 2.51).to_bits(), min_sub.to_bits() * 3);
+
+        assert_eq!(f16::from_f64(2000.49f64).to_bits(), f16::from_f64(2000.0).to_bits());
+        assert_eq!(f16::from_f64(2000.50f64).to_bits(), f16::from_f64(2000.0).to_bits());
+        assert_eq!(f16::from_f64(2000.51f64).to_bits(), f16::from_f64(2001.0).to_bits());
+        assert_eq!(f16::from_f64(2001.49f64).to_bits(), f16::from_f64(2001.0).to_bits());
+        assert_eq!(f16::from_f64(2001.50f64).to_bits(), f16::from_f64(2002.0).to_bits());
+        assert_eq!(f16::from_f64(2001.51f64).to_bits(), f16::from_f64(2002.0).to_bits());
+        assert_eq!(f16::from_f64(2002.49f64).to_bits(), f16::from_f64(2002.0).to_bits());
+        assert_eq!(f16::from_f64(2002.50f64).to_bits(), f16::from_f64(2002.0).to_bits());
+        assert_eq!(f16::from_f64(2002.51f64).to_bits(), f16::from_f64(2003.0).to_bits());
     }
 }
