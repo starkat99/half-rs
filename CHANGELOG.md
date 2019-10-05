@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added `bfloat16` type for alternative 16-bit floating point conversions. By [@tspiteri].
 - `f16::from_bits` and `f16::to_bits` are now `const` fns.
 
+### Fixed
+- Software conversion (when not using `use-intrinsics` feature) now matches hardware rounding
+  by rounding to nearest, ties to even. Fixes [#24], by [@tspiteri].
+
 ### Changed
 - Minimum rustc version bumped to 1.31.
 
@@ -87,6 +91,7 @@ converted to `f16` infinity instead of NaN. Fixes [#5], by [@tspiteri].
 [#12]: https://github.com/starkat99/half-rs/issues/12
 [#14]: https://github.com/starkat99/half-rs/issues/14
 [#16]: https://github.com/starkat99/half-rs/issues/16
+[#24]: https://github.com/starkat99/half-rs/issues/24
 
 [@tspiteri]: https://github.com/tspiteri
 [@PSeitz]: https://github.com/PSeitz
