@@ -606,8 +606,6 @@ mod convert {
 
 #[cfg(not(feature = "use-intrinsics"))]
 mod convert {
-    use core;
-
     // In the below functions, round to nearest, with ties to even.
     // Let us call the most significant bit that will be shifted out the round_bit.
     //
@@ -763,8 +761,8 @@ mod convert {
             if half_man == 0 {
                 return f32::from_bits((half_sign << 16) | 0x7F80_0000u32);
             } else {
-                // NaN, only 1st mantissa bit is set
-                return core::f32::NAN;
+                // NaN, keep current mantissa but also set most significiant mantissa bit
+                return f32::from_bits((half_sign << 16) | 0x7FC0_0000u32 | (half_man << 13));
             }
         }
 
@@ -806,8 +804,10 @@ mod convert {
             if half_man == 0 {
                 return f64::from_bits((half_sign << 48) | 0x7FF0_0000_0000_0000u64);
             } else {
-                // NaN, only 1st mantissa bit is set
-                return core::f64::NAN;
+                // NaN, keep current mantissa but also set most significiant mantissa bit
+                return f64::from_bits(
+                    (half_sign << 48) | 0x7FF8_0000_0000_0000u64 | (half_man << 42),
+                );
             }
         }
 

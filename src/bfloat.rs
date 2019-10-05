@@ -510,16 +510,14 @@ impl UpperExp for bf16 {
 }
 
 mod convert {
-    use core;
-
     pub fn f32_to_bf16(value: f32) -> u16 {
         // Convert to raw bytes
         let x = value.to_bits();
 
         // check for NaN
         if x & 0x7FFF_FFFFu32 > 0x7F80_0000u32 {
-            let sign = x & 0x8000_0000u32;
-            return ((sign >> 16) | 0x7FC0u32) as u16;
+            // Keep high part of current mantissa but also set most significiant mantissa bit
+            return ((x >> 16) | 0x0040u32) as u16;
         }
 
         // round and shift
@@ -598,7 +596,12 @@ mod convert {
     }
 
     pub fn bf16_to_f32(i: u16) -> f32 {
-        f32::from_bits((i as u32) << 16)
+        // If NaN, keep current mantissa but also set most significiant mantissa bit
+        if i & 0x7FFFu16 > 0x7F80u16 {
+            f32::from_bits((i as u32 | 0x0040u32) << 16)
+        } else {
+            f32::from_bits((i as u32) << 16)
+        }
     }
 
     pub fn bf16_to_f64(i: u16) -> f64 {
@@ -617,8 +620,10 @@ mod convert {
             if half_man == 0 {
                 return f64::from_bits((half_sign << 48) | 0x7FF0_0000_0000_0000u64);
             } else {
-                // NaN, only 1st mantissa bit is set
-                return core::f64::NAN;
+                // NaN, keep current mantissa but also set most significiant mantissa bit
+                return f64::from_bits(
+                    (half_sign << 48) | 0x7FF8_0000_0000_0000u64 | (half_man << 45),
+                );
             }
         }
 
