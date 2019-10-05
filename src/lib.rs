@@ -696,7 +696,11 @@ mod convert {
         if exp == 0x7FF0_0000u32 {
             // Set mantissa MSB for NaN (and also keep shifted mantissa bits).
             // We also have to check the last 32 bits.
-            let nan_bit = if man == 0 && (val as u32 == 0) { 0 } else { 0x0200u32};
+            let nan_bit = if man == 0 && (val as u32 == 0) {
+                0
+            } else {
+                0x0200u32
+            };
             return ((sign >> 16) | 0x7C00u32 | nan_bit | (man >> 10)) as u16;
         }
 
@@ -1318,6 +1322,7 @@ mod test {
     }
 
     #[test]
+    #[allow(clippy::erasing_op, clippy::identity_op)]
     fn round_to_even_f32() {
         // smallest positive subnormal = 0b0.0000_0000_01 * 2^-14 = 2^-24
         let min_sub = f16::from_bits(1);
@@ -1328,36 +1333,91 @@ mod test {
         // 0.0000000000_011111 rounded to 0.0000000000 (< tie, no rounding)
         // 0.0000000000_100000 rounded to 0.0000000000 (tie and even, remains at even)
         // 0.0000000000_100001 rounded to 0.0000000001 (> tie, rounds up)
-        assert_eq!(f16::from_f32(min_sub_f * 0.49).to_bits(), min_sub.to_bits() * 0);
-        assert_eq!(f16::from_f32(min_sub_f * 0.50).to_bits(), min_sub.to_bits() * 0);
-        assert_eq!(f16::from_f32(min_sub_f * 0.51).to_bits(), min_sub.to_bits() * 1);
+        assert_eq!(
+            f16::from_f32(min_sub_f * 0.49).to_bits(),
+            min_sub.to_bits() * 0
+        );
+        assert_eq!(
+            f16::from_f32(min_sub_f * 0.50).to_bits(),
+            min_sub.to_bits() * 0
+        );
+        assert_eq!(
+            f16::from_f32(min_sub_f * 0.51).to_bits(),
+            min_sub.to_bits() * 1
+        );
 
         // 0.0000000001_011111 rounded to 0.0000000001 (< tie, no rounding)
         // 0.0000000001_100000 rounded to 0.0000000010 (tie and odd, rounds up to even)
         // 0.0000000001_100001 rounded to 0.0000000010 (> tie, rounds up)
-        assert_eq!(f16::from_f32(min_sub_f * 1.49).to_bits(), min_sub.to_bits() * 1);
-        assert_eq!(f16::from_f32(min_sub_f * 1.50).to_bits(), min_sub.to_bits() * 2);
-        assert_eq!(f16::from_f32(min_sub_f * 1.51).to_bits(), min_sub.to_bits() * 2);
+        assert_eq!(
+            f16::from_f32(min_sub_f * 1.49).to_bits(),
+            min_sub.to_bits() * 1
+        );
+        assert_eq!(
+            f16::from_f32(min_sub_f * 1.50).to_bits(),
+            min_sub.to_bits() * 2
+        );
+        assert_eq!(
+            f16::from_f32(min_sub_f * 1.51).to_bits(),
+            min_sub.to_bits() * 2
+        );
 
         // 0.0000000010_011111 rounded to 0.0000000010 (< tie, no rounding)
         // 0.0000000010_100000 rounded to 0.0000000010 (tie and even, remains at even)
         // 0.0000000010_100001 rounded to 0.0000000011 (> tie, rounds up)
-        assert_eq!(f16::from_f32(min_sub_f * 2.49).to_bits(), min_sub.to_bits() * 2);
-        assert_eq!(f16::from_f32(min_sub_f * 2.50).to_bits(), min_sub.to_bits() * 2);
-        assert_eq!(f16::from_f32(min_sub_f * 2.51).to_bits(), min_sub.to_bits() * 3);
+        assert_eq!(
+            f16::from_f32(min_sub_f * 2.49).to_bits(),
+            min_sub.to_bits() * 2
+        );
+        assert_eq!(
+            f16::from_f32(min_sub_f * 2.50).to_bits(),
+            min_sub.to_bits() * 2
+        );
+        assert_eq!(
+            f16::from_f32(min_sub_f * 2.51).to_bits(),
+            min_sub.to_bits() * 3
+        );
 
-        assert_eq!(f16::from_f32(2000.49f32).to_bits(), f16::from_f32(2000.0).to_bits());
-        assert_eq!(f16::from_f32(2000.50f32).to_bits(), f16::from_f32(2000.0).to_bits());
-        assert_eq!(f16::from_f32(2000.51f32).to_bits(), f16::from_f32(2001.0).to_bits());
-        assert_eq!(f16::from_f32(2001.49f32).to_bits(), f16::from_f32(2001.0).to_bits());
-        assert_eq!(f16::from_f32(2001.50f32).to_bits(), f16::from_f32(2002.0).to_bits());
-        assert_eq!(f16::from_f32(2001.51f32).to_bits(), f16::from_f32(2002.0).to_bits());
-        assert_eq!(f16::from_f32(2002.49f32).to_bits(), f16::from_f32(2002.0).to_bits());
-        assert_eq!(f16::from_f32(2002.50f32).to_bits(), f16::from_f32(2002.0).to_bits());
-        assert_eq!(f16::from_f32(2002.51f32).to_bits(), f16::from_f32(2003.0).to_bits());
+        assert_eq!(
+            f16::from_f32(2000.49f32).to_bits(),
+            f16::from_f32(2000.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f32(2000.50f32).to_bits(),
+            f16::from_f32(2000.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f32(2000.51f32).to_bits(),
+            f16::from_f32(2001.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f32(2001.49f32).to_bits(),
+            f16::from_f32(2001.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f32(2001.50f32).to_bits(),
+            f16::from_f32(2002.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f32(2001.51f32).to_bits(),
+            f16::from_f32(2002.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f32(2002.49f32).to_bits(),
+            f16::from_f32(2002.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f32(2002.50f32).to_bits(),
+            f16::from_f32(2002.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f32(2002.51f32).to_bits(),
+            f16::from_f32(2003.0).to_bits()
+        );
     }
 
     #[test]
+    #[allow(clippy::erasing_op, clippy::identity_op)]
     fn round_to_even_f64() {
         // smallest positive subnormal = 0b0.0000_0000_01 * 2^-14 = 2^-24
         let min_sub = f16::from_bits(1);
@@ -1368,32 +1428,86 @@ mod test {
         // 0.0000000000_011111 rounded to 0.0000000000 (< tie, no rounding)
         // 0.0000000000_100000 rounded to 0.0000000000 (tie and even, remains at even)
         // 0.0000000000_100001 rounded to 0.0000000001 (> tie, rounds up)
-        assert_eq!(f16::from_f64(min_sub_f * 0.49).to_bits(), min_sub.to_bits() * 0);
-        assert_eq!(f16::from_f64(min_sub_f * 0.50).to_bits(), min_sub.to_bits() * 0);
-        assert_eq!(f16::from_f64(min_sub_f * 0.51).to_bits(), min_sub.to_bits() * 1);
+        assert_eq!(
+            f16::from_f64(min_sub_f * 0.49).to_bits(),
+            min_sub.to_bits() * 0
+        );
+        assert_eq!(
+            f16::from_f64(min_sub_f * 0.50).to_bits(),
+            min_sub.to_bits() * 0
+        );
+        assert_eq!(
+            f16::from_f64(min_sub_f * 0.51).to_bits(),
+            min_sub.to_bits() * 1
+        );
 
         // 0.0000000001_011111 rounded to 0.0000000001 (< tie, no rounding)
         // 0.0000000001_100000 rounded to 0.0000000010 (tie and odd, rounds up to even)
         // 0.0000000001_100001 rounded to 0.0000000010 (> tie, rounds up)
-        assert_eq!(f16::from_f64(min_sub_f * 1.49).to_bits(), min_sub.to_bits() * 1);
-        assert_eq!(f16::from_f64(min_sub_f * 1.50).to_bits(), min_sub.to_bits() * 2);
-        assert_eq!(f16::from_f64(min_sub_f * 1.51).to_bits(), min_sub.to_bits() * 2);
+        assert_eq!(
+            f16::from_f64(min_sub_f * 1.49).to_bits(),
+            min_sub.to_bits() * 1
+        );
+        assert_eq!(
+            f16::from_f64(min_sub_f * 1.50).to_bits(),
+            min_sub.to_bits() * 2
+        );
+        assert_eq!(
+            f16::from_f64(min_sub_f * 1.51).to_bits(),
+            min_sub.to_bits() * 2
+        );
 
         // 0.0000000010_011111 rounded to 0.0000000010 (< tie, no rounding)
         // 0.0000000010_100000 rounded to 0.0000000010 (tie and even, remains at even)
         // 0.0000000010_100001 rounded to 0.0000000011 (> tie, rounds up)
-        assert_eq!(f16::from_f64(min_sub_f * 2.49).to_bits(), min_sub.to_bits() * 2);
-        assert_eq!(f16::from_f64(min_sub_f * 2.50).to_bits(), min_sub.to_bits() * 2);
-        assert_eq!(f16::from_f64(min_sub_f * 2.51).to_bits(), min_sub.to_bits() * 3);
+        assert_eq!(
+            f16::from_f64(min_sub_f * 2.49).to_bits(),
+            min_sub.to_bits() * 2
+        );
+        assert_eq!(
+            f16::from_f64(min_sub_f * 2.50).to_bits(),
+            min_sub.to_bits() * 2
+        );
+        assert_eq!(
+            f16::from_f64(min_sub_f * 2.51).to_bits(),
+            min_sub.to_bits() * 3
+        );
 
-        assert_eq!(f16::from_f64(2000.49f64).to_bits(), f16::from_f64(2000.0).to_bits());
-        assert_eq!(f16::from_f64(2000.50f64).to_bits(), f16::from_f64(2000.0).to_bits());
-        assert_eq!(f16::from_f64(2000.51f64).to_bits(), f16::from_f64(2001.0).to_bits());
-        assert_eq!(f16::from_f64(2001.49f64).to_bits(), f16::from_f64(2001.0).to_bits());
-        assert_eq!(f16::from_f64(2001.50f64).to_bits(), f16::from_f64(2002.0).to_bits());
-        assert_eq!(f16::from_f64(2001.51f64).to_bits(), f16::from_f64(2002.0).to_bits());
-        assert_eq!(f16::from_f64(2002.49f64).to_bits(), f16::from_f64(2002.0).to_bits());
-        assert_eq!(f16::from_f64(2002.50f64).to_bits(), f16::from_f64(2002.0).to_bits());
-        assert_eq!(f16::from_f64(2002.51f64).to_bits(), f16::from_f64(2003.0).to_bits());
+        assert_eq!(
+            f16::from_f64(2000.49f64).to_bits(),
+            f16::from_f64(2000.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f64(2000.50f64).to_bits(),
+            f16::from_f64(2000.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f64(2000.51f64).to_bits(),
+            f16::from_f64(2001.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f64(2001.49f64).to_bits(),
+            f16::from_f64(2001.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f64(2001.50f64).to_bits(),
+            f16::from_f64(2002.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f64(2001.51f64).to_bits(),
+            f16::from_f64(2002.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f64(2002.49f64).to_bits(),
+            f16::from_f64(2002.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f64(2002.50f64).to_bits(),
+            f16::from_f64(2002.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f64(2002.51f64).to_bits(),
+            f16::from_f64(2003.0).to_bits()
+        );
     }
 }
