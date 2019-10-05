@@ -523,7 +523,12 @@ mod convert {
         }
 
         // round and shift
-        ((x + 0x0000_8000u32) >> 16) as u16
+	let round_bit = 0x0000_8000u32;
+	if (x & round_bit) != 0 && (x & (3 * round_bit - 1)) != 0 {
+            (x >> 16) as u16 + 1
+	} else {
+	    (x >> 16) as u16
+	}
     }
 
     pub fn f64_to_bf16(value: f64) -> u16 {
@@ -532,29 +537,17 @@ mod convert {
         let val = value.to_bits();
         let x = (val >> 32) as u32;
 
-        // Check for signed zero
-        if x & 0x7FFF_FFFFu32 == 0 {
-            return (x >> 16) as u16;
-        }
-
         // Extract IEEE754 components
         let sign = x & 0x8000_0000u32;
         let exp = x & 0x7FF0_0000u32;
         let man = x & 0x000F_FFFFu32;
 
-        // Subnormals will underflow, so return signed zero
-        if exp == 0 {
-            return (sign >> 16) as u16;
-        }
-
         // Check for all exponent bits being set, which is Infinity or NaN
         if exp == 0x7FF0_0000u32 {
-            // A mantissa of zero is a signed Infinity. We also have to check the last 32 bits.
-            if (man == 0) && (val as u32 == 0) {
-                return ((sign >> 16) | 0x7F80u32) as u16;
-            }
-            // Otherwise, this is NaN
-            return ((sign >> 16) | 0x7FC0u32) as u16;
+            // Set mantissa MSB for NaN (and also keep shifted mantissa bits).
+            // We also have to check the last 32 bits.
+            let nan_bit = if man == 0 && (val as u32 == 0) { 0 } else { 0x0040u32};
+            return ((sign >> 16) | 0x7F80u32 | nan_bit | (man >> 13)) as u16;
         }
 
         // The number is normalized, start assembling half precision version
@@ -570,7 +563,6 @@ mod convert {
 
         // Check for underflow
         if half_exp <= 0 {
-            // TODO: 21 is only in higher part
             // Check mantissa for what we can do
             if 7 - half_exp > 21 {
                 // No rounding possibility, so this is a full underflow, return signed zero
@@ -580,7 +572,8 @@ mod convert {
             let man = man | 0x0010_0000u32;
             let mut half_man = man >> (14 - half_exp);
             // Check for rounding
-            if (man >> (7 - half_exp)) & 0x1u32 != 0 {
+	    let round_bit = 1 << (13 - half_exp);
+            if (man & round_bit) != 0 && (man & (3 * round_bit - 1)) != 0 {
                 half_man += 1;
             }
             // No exponent for subnormals
@@ -591,7 +584,8 @@ mod convert {
         let half_exp = (half_exp as u32) << 7;
         let half_man = man >> 13;
         // Check for rounding
-        if man & 0x0000_1000u32 != 0 {
+	let round_bit = 0x0000_1000u32;
+        if (man & round_bit) != 0 && (man & (3 * round_bit - 1)) != 0 {
             // Round it
             ((half_sign | half_exp | half_man) + 1) as u16
         } else {
@@ -1074,5 +1068,85 @@ mod test {
 
         bits[0] = LN_2.to_bits();
         assert_eq!(bits, &[LN_2.to_bits()]);
+    }
+
+    #[test]
+    fn round_to_even_f32() {
+        // smallest positive subnormal = 0b0.0000_001 * 2^-126 = 2^-133
+        let min_sub = bf16::from_bits(1);
+        let min_sub_f = (-133f32).exp2();
+        assert_eq!(bf16::from_f32(min_sub_f).to_bits(), min_sub.to_bits());
+        assert_eq!(f32::from(min_sub).to_bits(), min_sub_f.to_bits());
+
+        // 0.0000000_011111 rounded to 0.0000000 (< tie, no rounding)
+        // 0.0000000_100000 rounded to 0.0000000 (tie and even, remains at even)
+        // 0.0000000_100001 rounded to 0.0000001 (> tie, rounds up)
+        assert_eq!(bf16::from_f32(min_sub_f * 0.49).to_bits(), min_sub.to_bits() * 0);
+        assert_eq!(bf16::from_f32(min_sub_f * 0.50).to_bits(), min_sub.to_bits() * 0);
+        assert_eq!(bf16::from_f32(min_sub_f * 0.51).to_bits(), min_sub.to_bits() * 1);
+
+        // 0.0000001_011111 rounded to 0.0000001 (< tie, no rounding)
+        // 0.0000001_100000 rounded to 0.0000010 (tie and odd, rounds up to even)
+        // 0.0000001_100001 rounded to 0.0000010 (> tie, rounds up)
+        assert_eq!(bf16::from_f32(min_sub_f * 1.49).to_bits(), min_sub.to_bits() * 1);
+        assert_eq!(bf16::from_f32(min_sub_f * 1.50).to_bits(), min_sub.to_bits() * 2);
+        assert_eq!(bf16::from_f32(min_sub_f * 1.51).to_bits(), min_sub.to_bits() * 2);
+
+        // 0.0000010_011111 rounded to 0.0000010 (< tie, no rounding)
+        // 0.0000010_100000 rounded to 0.0000010 (tie and even, remains at even)
+        // 0.0000010_100001 rounded to 0.0000011 (> tie, rounds up)
+        assert_eq!(bf16::from_f32(min_sub_f * 2.49).to_bits(), min_sub.to_bits() * 2);
+        assert_eq!(bf16::from_f32(min_sub_f * 2.50).to_bits(), min_sub.to_bits() * 2);
+        assert_eq!(bf16::from_f32(min_sub_f * 2.51).to_bits(), min_sub.to_bits() * 3);
+
+        assert_eq!(bf16::from_f32(250.49f32).to_bits(), bf16::from_f32(250.0).to_bits());
+        assert_eq!(bf16::from_f32(250.50f32).to_bits(), bf16::from_f32(250.0).to_bits());
+        assert_eq!(bf16::from_f32(250.51f32).to_bits(), bf16::from_f32(251.0).to_bits());
+        assert_eq!(bf16::from_f32(251.49f32).to_bits(), bf16::from_f32(251.0).to_bits());
+        assert_eq!(bf16::from_f32(251.50f32).to_bits(), bf16::from_f32(252.0).to_bits());
+        assert_eq!(bf16::from_f32(251.51f32).to_bits(), bf16::from_f32(252.0).to_bits());
+        assert_eq!(bf16::from_f32(252.49f32).to_bits(), bf16::from_f32(252.0).to_bits());
+        assert_eq!(bf16::from_f32(252.50f32).to_bits(), bf16::from_f32(252.0).to_bits());
+        assert_eq!(bf16::from_f32(252.51f32).to_bits(), bf16::from_f32(253.0).to_bits());
+    }
+
+    #[test]
+    fn round_to_even_f64() {
+        // smallest positive subnormal = 0b0.0000_001 * 2^-126 = 2^-133
+        let min_sub = bf16::from_bits(1);
+        let min_sub_f = (-133f64).exp2();
+        assert_eq!(bf16::from_f64(min_sub_f).to_bits(), min_sub.to_bits());
+        assert_eq!(f64::from(min_sub).to_bits(), min_sub_f.to_bits());
+
+        // 0.0000000_011111 rounded to 0.0000000 (< tie, no rounding)
+        // 0.0000000_100000 rounded to 0.0000000 (tie and even, remains at even)
+        // 0.0000000_100001 rounded to 0.0000001 (> tie, rounds up)
+        assert_eq!(bf16::from_f64(min_sub_f * 0.49).to_bits(), min_sub.to_bits() * 0);
+        assert_eq!(bf16::from_f64(min_sub_f * 0.50).to_bits(), min_sub.to_bits() * 0);
+        assert_eq!(bf16::from_f64(min_sub_f * 0.51).to_bits(), min_sub.to_bits() * 1);
+
+        // 0.0000001_011111 rounded to 0.0000001 (< tie, no rounding)
+        // 0.0000001_100000 rounded to 0.0000010 (tie and odd, rounds up to even)
+        // 0.0000001_100001 rounded to 0.0000010 (> tie, rounds up)
+        assert_eq!(bf16::from_f64(min_sub_f * 1.49).to_bits(), min_sub.to_bits() * 1);
+        assert_eq!(bf16::from_f64(min_sub_f * 1.50).to_bits(), min_sub.to_bits() * 2);
+        assert_eq!(bf16::from_f64(min_sub_f * 1.51).to_bits(), min_sub.to_bits() * 2);
+
+        // 0.0000010_011111 rounded to 0.0000010 (< tie, no rounding)
+        // 0.0000010_100000 rounded to 0.0000010 (tie and even, remains at even)
+        // 0.0000010_100001 rounded to 0.0000011 (> tie, rounds up)
+        assert_eq!(bf16::from_f64(min_sub_f * 2.49).to_bits(), min_sub.to_bits() * 2);
+        assert_eq!(bf16::from_f64(min_sub_f * 2.50).to_bits(), min_sub.to_bits() * 2);
+        assert_eq!(bf16::from_f64(min_sub_f * 2.51).to_bits(), min_sub.to_bits() * 3);
+
+        assert_eq!(bf16::from_f64(250.49f64).to_bits(), bf16::from_f64(250.0).to_bits());
+        assert_eq!(bf16::from_f64(250.50f64).to_bits(), bf16::from_f64(250.0).to_bits());
+        assert_eq!(bf16::from_f64(250.51f64).to_bits(), bf16::from_f64(251.0).to_bits());
+        assert_eq!(bf16::from_f64(251.49f64).to_bits(), bf16::from_f64(251.0).to_bits());
+        assert_eq!(bf16::from_f64(251.50f64).to_bits(), bf16::from_f64(252.0).to_bits());
+        assert_eq!(bf16::from_f64(251.51f64).to_bits(), bf16::from_f64(252.0).to_bits());
+        assert_eq!(bf16::from_f64(252.49f64).to_bits(), bf16::from_f64(252.0).to_bits());
+        assert_eq!(bf16::from_f64(252.50f64).to_bits(), bf16::from_f64(252.0).to_bits());
+        assert_eq!(bf16::from_f64(252.51f64).to_bits(), bf16::from_f64(253.0).to_bits());
     }
 }
