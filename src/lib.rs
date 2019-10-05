@@ -34,7 +34,6 @@
     missing_docs,
     missing_copy_implementations,
     missing_debug_implementations,
-    trivial_casts,
     trivial_numeric_casts,
     unused_extern_crates,
     unused_import_braces,
@@ -45,7 +44,13 @@
 )]
 #![allow(clippy::verbose_bit_mask, clippy::cast_lossless)]
 #![cfg_attr(not(feature = "std"), no_std)]
-#![cfg_attr(feature = "use-intrinsics", feature(link_llvm_intrinsics))]
+#![cfg_attr(
+    all(
+        feature = "use-intrinsics",
+        any(target_arch = "x86", target_arch = "x86_64")
+    ),
+    feature(stdsimd, f16c_target_feature)
+)]
 
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
@@ -565,45 +570,90 @@ impl UpperExp for f16 {
     }
 }
 
-#[cfg(feature = "use-intrinsics")]
+#[allow(dead_code)]
 mod convert {
-    extern "C" {
-        #[link_name = "llvm.convert.to.fp16.f32"]
-        fn convert_to_fp16_f32(f: f32) -> u16;
-
-        #[link_name = "llvm.convert.to.fp16.f64"]
-        fn convert_to_fp16_f64(f: f64) -> u16;
-
-        #[link_name = "llvm.convert.from.fp16.f32"]
-        fn convert_from_fp16_f32(i: u16) -> f32;
-
-        #[link_name = "llvm.convert.from.fp16.f64"]
-        fn convert_from_fp16_f64(i: u16) -> f64;
+    macro_rules! convert_fn {
+        (fn $name:ident($var:ident : $vartype:ty) -> $restype:ty {
+            if feature("f16c") { $f16c:expr }
+            else { $fallback:expr }}) => {
+            #[inline(always)]
+            pub fn $name($var: $vartype) -> $restype {
+                // Use CPU feature detection if using std
+                #[cfg(all(
+                    feature = "use-intrinsics",
+                    feature = "std",
+                    any(target_arch = "x86", target_arch = "x86_64"),
+                    not(target_feature = "f16c")
+                ))]
+                {
+                    if is_x86_feature_detected!("f16c") {
+                        $f16c
+                    } else {
+                        $fallback
+                    }
+                }
+                // Use intrinsics directly when a compile target or using no_std
+                #[cfg(all(
+                    feature = "use-intrinsics",
+                    any(target_arch = "x86", target_arch = "x86_64"),
+                    target_feature = "f16c"
+                ))]
+                {
+                    $f16c
+                }
+                // Fallback to software
+                #[cfg(any(
+                    not(feature = "use-intrinsics"),
+                    not(any(target_arch = "x86", target_arch = "x86_64")),
+                    all(not(feature = "std"), not(target_feature = "f16c"))
+                ))]
+                {
+                    $fallback
+                }
+            }
+        };
     }
 
-    #[inline(always)]
-    pub fn f32_to_f16(f: f32) -> u16 {
-        unsafe { convert_to_fp16_f32(f) }
+    convert_fn! {
+        fn f32_to_f16(f: f32) -> u16 {
+            if feature("f16c") {
+                unsafe { f32_to_f16_x86_f16c(f) }
+            } else {
+                f32_to_f16_fallback(f)
+            }
+        }
     }
 
-    #[inline(always)]
-    pub fn f64_to_f16(f: f64) -> u16 {
-        unsafe { convert_to_fp16_f64(f) }
+    convert_fn! {
+        fn f64_to_f16(f: f64) -> u16 {
+            if feature("f16c") {
+                unsafe { f32_to_f16_x86_f16c(f as f32) }
+            } else {
+                f64_to_f16_fallback(f)
+            }
+        }
     }
 
-    #[inline(always)]
-    pub fn f16_to_f32(i: u16) -> f32 {
-        unsafe { convert_from_fp16_f32(i) }
+    convert_fn! {
+        fn f16_to_f32(i: u16) -> f32 {
+            if feature("f16c") {
+                unsafe { f16_to_f32_x86_f16c(i) }
+            } else {
+                f16_to_f32_fallback(i)
+            }
+        }
     }
 
-    #[inline(always)]
-    pub fn f16_to_f64(i: u16) -> f64 {
-        unsafe { convert_from_fp16_f64(i) }
+    convert_fn! {
+        fn f16_to_f64(i: u16) -> f64 {
+            if feature("f16c") {
+                unsafe { f16_to_f32_x86_f16c(i) as f64 }
+            } else {
+                f16_to_f64_fallback(i)
+            }
+        }
     }
-}
 
-#[cfg(not(feature = "use-intrinsics"))]
-mod convert {
     // In the below functions, round to nearest, with ties to even.
     // Let us call the most significant bit that will be shifted out the round_bit.
     //
@@ -618,7 +668,7 @@ mod convert {
     // which can be simplified into
     //     (mantissa & round_bit) != 0 && (mantissa & (3 * round_bit - 1)) != 0
 
-    pub fn f32_to_f16(value: f32) -> u16 {
+    fn f32_to_f16_fallback(value: f32) -> u16 {
         // Convert to raw bytes
         let x = value.to_bits();
 
@@ -677,7 +727,7 @@ mod convert {
         }
     }
 
-    pub fn f64_to_f16(value: f64) -> u16 {
+    fn f64_to_f16_fallback(value: f64) -> u16 {
         // Convert to raw bytes, truncating the last 32-bits of mantissa; that precision will always
         // be lost on half-precision.
         let val = value.to_bits();
@@ -743,7 +793,7 @@ mod convert {
         }
     }
 
-    pub fn f16_to_f32(i: u16) -> f32 {
+    fn f16_to_f32_fallback(i: u16) -> f32 {
         // Check for signed zero
         if i & 0x7FFFu16 == 0 {
             return f32::from_bits((i as u32) << 16);
@@ -786,7 +836,7 @@ mod convert {
         f32::from_bits(sign | exp | man)
     }
 
-    pub fn f16_to_f64(i: u16) -> f64 {
+    fn f16_to_f64_fallback(i: u16) -> f64 {
         // Check for signed zero
         if i & 0x7FFFu16 == 0 {
             return f64::from_bits((i as u64) << 48);
@@ -829,6 +879,42 @@ mod convert {
         let exp = ((unbiased_exp + 1023) as u64) << 52;
         let man = (half_man & 0x03FFu64) << 42;
         f64::from_bits(sign | exp | man)
+    }
+
+    #[cfg(all(
+        feature = "use-intrinsics",
+        any(target_arch = "x86", target_arch = "x86_64")
+    ))]
+    #[target_feature(enable = "f16c")]
+    #[inline]
+    unsafe fn f16_to_f32_x86_f16c(i: u16) -> f32 {
+        #[cfg(target_arch = "x86")]
+        use core::arch::x86::{__m128, __m128i, _mm_cvtph_ps};
+        #[cfg(target_arch = "x86_64")]
+        use core::arch::x86_64::{__m128, __m128i, _mm_cvtph_ps};
+
+        let mut vec = core::mem::MaybeUninit::<__m128i>::zeroed();
+        vec.as_mut_ptr().cast::<u16>().write(i);
+        let retval = _mm_cvtph_ps(vec.assume_init());
+        *(&retval as *const __m128).cast()
+    }
+
+    #[cfg(all(
+        feature = "use-intrinsics",
+        any(target_arch = "x86", target_arch = "x86_64")
+    ))]
+    #[target_feature(enable = "f16c")]
+    #[inline]
+    unsafe fn f32_to_f16_x86_f16c(f: f32) -> u16 {
+        #[cfg(target_arch = "x86")]
+        use core::arch::x86::{__m128, __m128i, _mm_cvtps_ph, _MM_FROUND_TO_NEAREST_INT};
+        #[cfg(target_arch = "x86_64")]
+        use core::arch::x86_64::{__m128, __m128i, _mm_cvtps_ph, _MM_FROUND_TO_NEAREST_INT};
+
+        let mut vec = core::mem::MaybeUninit::<__m128>::zeroed();
+        vec.as_mut_ptr().cast::<f32>().write(f);
+        let retval = _mm_cvtps_ph(vec.assume_init(), _MM_FROUND_TO_NEAREST_INT);
+        *(&retval as *const __m128i).cast()
     }
 }
 
