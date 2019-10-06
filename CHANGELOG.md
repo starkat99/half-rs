@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   by [@tspiteri].
 
 ### Changed
-- Minimum rustc version bumped to 1.31.
+- Minimum rustc version bumped to 1.32.
 
 ## [1.3.1] - 2019-10-04 <a name="1.3.1"></a>
 ### Fixed

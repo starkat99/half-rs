@@ -9,7 +9,7 @@ The `f16` and `bf16` types provides all the basic operations as a normal Rust fl
 minimal floating point storage and no major hardware implements them, all math operations should be done as an `f32` type.
 This crate by default provides `no_std` support so can easily be used in embedded code where a smaller float format is most useful.
 
-*Requries Rust 1.31 or greater.* If you need support for older versions of Rust, use versions 1.3 and earlier of this crate.
+*Requries Rust 1.32 or greater.* If you need support for older versions of Rust, use versions 1.3 and earlier of this crate.
 
 See the [crate documentation](https://docs.rs/half/) for more details.
 
