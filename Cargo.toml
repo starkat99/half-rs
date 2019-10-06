@@ -27,3 +27,10 @@ features = ["derive"]
 
 [package.metadata.docs.rs]
 features = ["std", "serde"]
+
+[dev-dependencies]
+criterion = "0.3"
+
+[[bench]]
+name = "convert"
+harness = false
