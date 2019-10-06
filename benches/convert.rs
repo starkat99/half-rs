@@ -1,8 +1,4 @@
-#[macro_use]
-extern crate criterion;
-extern crate half;
-
-use criterion::{Bencher, Criterion};
+use criterion::{criterion_group, criterion_main, Bencher, Criterion};
 use half::{
     bfloat::{self, bf16},
     consts, f16,
@@ -12,7 +8,7 @@ use std::{f32, f64};
 fn bench_f32_to_f16(c: &mut Criterion) {
     c.bench_function_over_inputs(
         "f16::from_f32",
-        |b: &mut Bencher, i: &f32| b.iter(|| f16::from_f32(*i)),
+        |b: &mut Bencher<'_>, i: &f32| b.iter(|| f16::from_f32(*i)),
         vec![
             0.,
             -0.,
@@ -33,7 +29,7 @@ fn bench_f32_to_f16(c: &mut Criterion) {
 fn bench_f64_to_f16(c: &mut Criterion) {
     c.bench_function_over_inputs(
         "f16::from_f64",
-        |b: &mut Bencher, i: &f64| b.iter(|| f16::from_f64(*i)),
+        |b: &mut Bencher<'_>, i: &f64| b.iter(|| f16::from_f64(*i)),
         vec![
             0.,
             -0.,
@@ -54,7 +50,7 @@ fn bench_f64_to_f16(c: &mut Criterion) {
 fn bench_f16_to_f32(c: &mut Criterion) {
     c.bench_function_over_inputs(
         "f16::to_f32",
-        |b: &mut Bencher, i: &f16| b.iter(|| i.to_f32()),
+        |b: &mut Bencher<'_>, i: &f16| b.iter(|| i.to_f32()),
         vec![
             f16::from_f32(0.),
             f16::from_f32(-0.),
@@ -75,7 +71,7 @@ fn bench_f16_to_f32(c: &mut Criterion) {
 fn bench_f16_to_f64(c: &mut Criterion) {
     c.bench_function_over_inputs(
         "f16::to_f64",
-        |b: &mut Bencher, i: &f16| b.iter(|| i.to_f64()),
+        |b: &mut Bencher<'_>, i: &f16| b.iter(|| i.to_f64()),
         vec![
             f16::from_f32(0.),
             f16::from_f32(-0.),
@@ -96,7 +92,7 @@ fn bench_f16_to_f64(c: &mut Criterion) {
 fn bench_f32_to_bf16(c: &mut Criterion) {
     c.bench_function_over_inputs(
         "bf16::from_f32",
-        |b: &mut Bencher, i: &f32| b.iter(|| bf16::from_f32(*i)),
+        |b: &mut Bencher<'_>, i: &f32| b.iter(|| bf16::from_f32(*i)),
         vec![
             0.,
             -0.,
@@ -117,7 +113,7 @@ fn bench_f32_to_bf16(c: &mut Criterion) {
 fn bench_f64_to_bf16(c: &mut Criterion) {
     c.bench_function_over_inputs(
         "bf16::from_f64",
-        |b: &mut Bencher, i: &f64| b.iter(|| bf16::from_f64(*i)),
+        |b: &mut Bencher<'_>, i: &f64| b.iter(|| bf16::from_f64(*i)),
         vec![
             0.,
             -0.,
@@ -138,7 +134,7 @@ fn bench_f64_to_bf16(c: &mut Criterion) {
 fn bench_bf16_to_f32(c: &mut Criterion) {
     c.bench_function_over_inputs(
         "bf16::to_f32",
-        |b: &mut Bencher, i: &bf16| b.iter(|| i.to_f32()),
+        |b: &mut Bencher<'_>, i: &bf16| b.iter(|| i.to_f32()),
         vec![
             bf16::from_f32(0.),
             bf16::from_f32(-0.),
@@ -159,7 +155,7 @@ fn bench_bf16_to_f32(c: &mut Criterion) {
 fn bench_bf16_to_f64(c: &mut Criterion) {
     c.bench_function_over_inputs(
         "bf16::to_f64",
-        |b: &mut Bencher, i: &bf16| b.iter(|| i.to_f64()),
+        |b: &mut Bencher<'_>, i: &bf16| b.iter(|| i.to_f64()),
         vec![
             bf16::from_f32(0.),
             bf16::from_f32(-0.),

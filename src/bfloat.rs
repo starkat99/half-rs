@@ -11,10 +11,15 @@
 //! [`bf16`]: struct.bf16.html
 //! [`f16`]: ../struct.f16.html
 
-use core::cmp::Ordering;
-use core::fmt::{Debug, Display, Error, Formatter, LowerExp, UpperExp};
-use core::num::{FpCategory, ParseFloatError};
-use core::str::FromStr;
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
+use core::{
+    cmp::Ordering,
+    fmt::{Debug, Display, Error, Formatter, LowerExp, UpperExp},
+    num::{FpCategory, ParseFloatError},
+    str::FromStr,
+};
 
 /// A 16-bit floating point type implementing the `bfloat16` format.
 #[allow(non_camel_case_types)]
@@ -761,6 +766,7 @@ mod test {
     use super::*;
     use core;
     use core::cmp::Ordering;
+    use quickcheck_macros::quickcheck;
 
     #[test]
     fn test_bf16_consts_from_f32() {

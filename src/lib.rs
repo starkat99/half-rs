@@ -48,24 +48,14 @@
 #![cfg_attr(feature = "use-intrinsics", feature(link_llvm_intrinsics))]
 
 #[cfg(feature = "serde")]
-#[macro_use]
-extern crate serde;
+use serde::{Deserialize, Serialize};
 
-#[cfg(test)]
-extern crate quickcheck;
-#[cfg(test)]
-#[macro_use]
-extern crate quickcheck_macros;
-#[cfg(test)]
-extern crate rand;
-
-#[cfg(feature = "std")]
-extern crate core;
-
-use core::cmp::Ordering;
-use core::fmt::{Debug, Display, Error, Formatter, LowerExp, UpperExp};
-use core::num::{FpCategory, ParseFloatError};
-use core::str::FromStr;
+use core::{
+    cmp::Ordering,
+    fmt::{Debug, Display, Error, Formatter, LowerExp, UpperExp},
+    num::{FpCategory, ParseFloatError},
+    str::FromStr,
+};
 
 pub mod bfloat;
 
@@ -953,6 +943,7 @@ mod test {
     use super::*;
     use core;
     use core::cmp::Ordering;
+    use quickcheck_macros::quickcheck;
 
     #[test]
     fn test_f16_consts() {
