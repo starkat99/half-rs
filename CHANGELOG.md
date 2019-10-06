@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Software conversion (when not using `use-intrinsics` feature) now matches hardware rounding
   by rounding to nearest, ties to even. Fixes [#24], by [@tspiteri].
+- NaN value conversions now behave like `f32` to `f64` conversions, retaining sign. Fixes [#23],
+  by [@tspiteri].
 
 ### Changed
 - Minimum rustc version bumped to 1.31.
@@ -91,6 +93,7 @@ converted to `f16` infinity instead of NaN. Fixes [#5], by [@tspiteri].
 [#12]: https://github.com/starkat99/half-rs/issues/12
 [#14]: https://github.com/starkat99/half-rs/issues/14
 [#16]: https://github.com/starkat99/half-rs/issues/16
+[#23]: https://github.com/starkat99/half-rs/issues/23
 [#24]: https://github.com/starkat99/half-rs/issues/24
 
 [@tspiteri]: https://github.com/tspiteri
