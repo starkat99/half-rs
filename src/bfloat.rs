@@ -510,16 +510,14 @@ impl UpperExp for bf16 {
 }
 
 mod convert {
-    use core;
-
     pub fn f32_to_bf16(value: f32) -> u16 {
         // Convert to raw bytes
         let x = value.to_bits();
 
         // check for NaN
         if x & 0x7FFF_FFFFu32 > 0x7F80_0000u32 {
-            let sign = x & 0x8000_0000u32;
-            return ((sign >> 16) | 0x7FC0u32) as u16;
+            // Keep high part of current mantissa but also set most significiant mantissa bit
+            return ((x >> 16) | 0x0040u32) as u16;
         }
 
         // round and shift
@@ -598,7 +596,12 @@ mod convert {
     }
 
     pub fn bf16_to_f32(i: u16) -> f32 {
-        f32::from_bits((i as u32) << 16)
+        // If NaN, keep current mantissa but also set most significiant mantissa bit
+        if i & 0x7FFFu16 > 0x7F80u16 {
+            f32::from_bits((i as u32 | 0x0040u32) << 16)
+        } else {
+            f32::from_bits((i as u32) << 16)
+        }
     }
 
     pub fn bf16_to_f64(i: u16) -> f64 {
@@ -617,8 +620,10 @@ mod convert {
             if half_man == 0 {
                 return f64::from_bits((half_sign << 48) | 0x7FF0_0000_0000_0000u64);
             } else {
-                // NaN, only 1st mantissa bit is set
-                return core::f64::NAN;
+                // NaN, keep current mantissa but also set most significiant mantissa bit
+                return f64::from_bits(
+                    (half_sign << 48) | 0x7FF8_0000_0000_0000u64 | (half_man << 45),
+                );
             }
         }
 
@@ -862,11 +867,11 @@ mod test {
     }
 
     #[test]
-    fn test_nan_conversion() {
-        let nan64 = f64::from_bits(0x7ff0_0000_0000_0001u64);
-        let neg_nan64 = f64::from_bits(0xfff0_0000_0000_0001u64);
-        let nan32 = f32::from_bits(0x7f80_0001u32);
-        let neg_nan32 = f32::from_bits(0xff80_0001u32);
+    fn test_nan_conversion_to_smaller() {
+        let nan64 = f64::from_bits(0x7FF0_0000_0000_0001u64);
+        let neg_nan64 = f64::from_bits(0xFFF0_0000_0000_0001u64);
+        let nan32 = f32::from_bits(0x7F80_0001u32);
+        let neg_nan32 = f32::from_bits(0xFF80_0001u32);
         let nan32_from_64 = nan64 as f32;
         let neg_nan32_from_64 = neg_nan64 as f32;
         let nan16_from_64 = bf16::from_f64(nan64);
@@ -874,40 +879,41 @@ mod test {
         let nan16_from_32 = bf16::from_f32(nan32);
         let neg_nan16_from_32 = bf16::from_f32(neg_nan32);
 
-        assert!(nan64.is_nan());
-        assert!(neg_nan64.is_nan());
-        assert!(nan32.is_nan());
-        assert!(neg_nan32.is_nan());
-        assert!(nan32_from_64.is_nan());
-        assert!(neg_nan32_from_64.is_nan());
-        assert!(nan16_from_64.is_nan());
-        assert!(neg_nan16_from_64.is_nan());
-        assert!(nan16_from_32.is_nan());
-        assert!(neg_nan16_from_32.is_nan());
+        assert!(nan64.is_nan() && nan64.is_sign_positive());
+        assert!(neg_nan64.is_nan() && neg_nan64.is_sign_negative());
+        assert!(nan32.is_nan() && nan32.is_sign_positive());
+        assert!(neg_nan32.is_nan() && neg_nan32.is_sign_negative());
+        assert!(nan32_from_64.is_nan() && nan32_from_64.is_sign_positive());
+        assert!(neg_nan32_from_64.is_nan() && neg_nan32_from_64.is_sign_negative());
+        assert!(nan16_from_64.is_nan() && nan16_from_64.is_sign_positive());
+        assert!(neg_nan16_from_64.is_nan() && neg_nan16_from_64.is_sign_negative());
+        assert!(nan16_from_32.is_nan() && nan16_from_32.is_sign_positive());
+        assert!(neg_nan16_from_32.is_nan() && neg_nan16_from_32.is_sign_negative());
+    }
 
-        let sign64 = 1u64 << 63;
-        let sign32 = 1u32 << 31;
-        let sign16 = 1u16 << 15;
-        let nan64_u = nan64.to_bits();
-        let neg_nan64_u = neg_nan64.to_bits();
-        let nan32_u = nan32.to_bits();
-        let neg_nan32_u = neg_nan32.to_bits();
-        let nan32_from_64_u = nan32_from_64.to_bits();
-        let neg_nan32_from_64_u = neg_nan32_from_64.to_bits();
-        let nan16_from_64_u = nan16_from_64.to_bits();
-        let neg_nan16_from_64_u = neg_nan16_from_64.to_bits();
-        let nan16_from_32_u = nan16_from_32.to_bits();
-        let neg_nan16_from_32_u = neg_nan16_from_32.to_bits();
-        assert_eq!(nan64_u & sign64, 0);
-        assert_eq!(neg_nan64_u & sign64, sign64);
-        assert_eq!(nan32_u & sign32, 0);
-        assert_eq!(neg_nan32_u & sign32, sign32);
-        assert_eq!(nan32_from_64_u & sign32, 0);
-        assert_eq!(neg_nan32_from_64_u & sign32, sign32);
-        assert_eq!(nan16_from_64_u & sign16, 0);
-        assert_eq!(neg_nan16_from_64_u & sign16, sign16);
-        assert_eq!(nan16_from_32_u & sign16, 0);
-        assert_eq!(neg_nan16_from_32_u & sign16, sign16);
+    #[test]
+    fn test_nan_conversion_to_larger() {
+        let nan16 = bf16::from_bits(0x7F81u16);
+        let neg_nan16 = bf16::from_bits(0xFF81u16);
+        let nan32 = f32::from_bits(0x7F80_0001u32);
+        let neg_nan32 = f32::from_bits(0xFF80_0001u32);
+        let nan32_from_16 = f32::from(nan16);
+        let neg_nan32_from_16 = f32::from(neg_nan16);
+        let nan64_from_16 = f64::from(nan16);
+        let neg_nan64_from_16 = f64::from(neg_nan16);
+        let nan64_from_32 = f64::from(nan32);
+        let neg_nan64_from_32 = f64::from(neg_nan32);
+
+        assert!(nan16.is_nan() && nan16.is_sign_positive());
+        assert!(neg_nan16.is_nan() && neg_nan16.is_sign_negative());
+        assert!(nan32.is_nan() && nan32.is_sign_positive());
+        assert!(neg_nan32.is_nan() && neg_nan32.is_sign_negative());
+        assert!(nan32_from_16.is_nan() && nan32_from_16.is_sign_positive());
+        assert!(neg_nan32_from_16.is_nan() && neg_nan32_from_16.is_sign_negative());
+        assert!(nan64_from_16.is_nan() && nan64_from_16.is_sign_positive());
+        assert!(neg_nan64_from_16.is_nan() && neg_nan64_from_16.is_sign_negative());
+        assert!(nan64_from_32.is_nan() && nan64_from_32.is_sign_positive());
+        assert!(neg_nan64_from_32.is_nan() && neg_nan64_from_32.is_sign_negative());
     }
 
     #[test]
