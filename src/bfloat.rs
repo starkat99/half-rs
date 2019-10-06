@@ -1269,4 +1269,31 @@ mod test {
             bf16::from_f64(253.0).to_bits()
         );
     }
+
+    impl quickcheck::Arbitrary for bf16 {
+        fn arbitrary<G: quickcheck::Gen>(g: &mut G) -> Self {
+            use rand::Rng;
+            bf16(g.gen())
+        }
+    }
+
+    #[quickcheck]
+    fn qc_roundtrip_bf16_f32_is_identity(f: bf16) -> bool {
+        let roundtrip = bf16::from_f32(f.to_f32());
+        if f.is_nan() {
+            roundtrip.is_nan() && f.is_sign_negative() == roundtrip.is_sign_negative()
+        } else {
+            f.0 == roundtrip.0
+        }
+    }
+
+    #[quickcheck]
+    fn qc_roundtrip_bf16_f64_is_identity(f: bf16) -> bool {
+        let roundtrip = bf16::from_f64(f.to_f64());
+        if f.is_nan() {
+            roundtrip.is_nan() && f.is_sign_negative() == roundtrip.is_sign_negative()
+        } else {
+            f.0 == roundtrip.0
+        }
+    }
 }

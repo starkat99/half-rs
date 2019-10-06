@@ -51,6 +51,14 @@
 #[macro_use]
 extern crate serde;
 
+#[cfg(test)]
+extern crate quickcheck;
+#[cfg(test)]
+#[macro_use]
+extern crate quickcheck_macros;
+#[cfg(test)]
+extern crate rand;
+
 #[cfg(feature = "std")]
 extern crate core;
 
@@ -1510,5 +1518,32 @@ mod test {
             f16::from_f64(2002.51f64).to_bits(),
             f16::from_f64(2003.0).to_bits()
         );
+    }
+
+    impl quickcheck::Arbitrary for f16 {
+        fn arbitrary<G: quickcheck::Gen>(g: &mut G) -> Self {
+            use rand::Rng;
+            f16(g.gen())
+        }
+    }
+
+    #[quickcheck]
+    fn qc_roundtrip_f16_f32_is_identity(f: f16) -> bool {
+        let roundtrip = f16::from_f32(f.to_f32());
+        if f.is_nan() {
+            roundtrip.is_nan() && f.is_sign_negative() == roundtrip.is_sign_negative()
+        } else {
+            f.0 == roundtrip.0
+        }
+    }
+
+    #[quickcheck]
+    fn qc_roundtrip_f16_f64_is_identity(f: f16) -> bool {
+        let roundtrip = f16::from_f64(f.to_f64());
+        if f.is_nan() {
+            roundtrip.is_nan() && f.is_sign_negative() == roundtrip.is_sign_negative()
+        } else {
+            f.0 == roundtrip.0
+        }
     }
 }
