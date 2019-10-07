@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Added `bfloat16` type for alternative 16-bit floating point conversions. By [@tspiteri].
 - `f16::from_bits` and `f16::to_bits` are now `const` fns.
+- `slice::HalfBitsSliceExt` and `slice::HalfBitsSliceExt` extension traits have been added for
+  performing efficient reinterpret casts and conversions of slices to and from `[f16]` and
+  `[bf16]`.  These traits will use hardware SIMD conversion instructions when available and the
+  `use-intrinsics` cargo feature is enabled.
+- `vec::HalfBitsVecExt` and `vec::HalfFloatVecExt` extension traits have been added for
+   performing efficient reinterpret casts to and from `Vec<f16>` and `Vec<bf16>`. These traits
+   are only available with the `std` cargo feature.
+- `prelude` has been added, for easy importing of most common functionality. Currently the
+  prelude imports `f16`, `bfloat::bf16`, and the new slice and vec extension traits.
 
 ### Fixed
 - Software conversion (when not using `use-intrinsics` feature) now matches hardware rounding
@@ -16,6 +25,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - Minimum rustc version bumped to 1.32.
+
+### Deprecated
+- `slice::from_bits` has been deprecated; use `slice::HalfBitsSliceExt::reinterpret_cast` instead.
+- `slice::from_bits_mut` has been deprecated; use `slice::HalfBitsSliceExt::reinterpret_cast_mut` instead.
+- `slice::to_bits` has been deprecated; use `slice::HalfFloatSliceExt::reinterpret_cast` instead.
+- `slice::to_bits_mut` has been deprecated; use `slice::HalfFloatSliceExt::reinterpret_cast_mut` instead.
+- `vec::from_bits` has been deprecated; use `vec::HalfBitsVecExt::reinterpret_into` instead.
+- `vec::to_bits` has been deprecated; use `vec::HalfFloatVecExt::reinterpret_into` instead.
 
 ## [1.3.1] - 2019-10-04 <a name="1.3.1"></a>
 ### Fixed

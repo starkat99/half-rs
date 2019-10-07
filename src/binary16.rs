@@ -1,0 +1,1054 @@
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
+use core::{
+    cmp::Ordering,
+    fmt::{Debug, Display, Error, Formatter, LowerExp, UpperExp},
+    num::{FpCategory, ParseFloatError},
+    str::FromStr,
+};
+
+pub(crate) mod convert;
+
+/// A 16-bit floating point type implementing the IEEE 754-2008 standard `binary16` format.
+///
+/// Useful constants are located in the [`consts`] module.
+///
+/// [`consts`]: consts/index.html
+#[allow(non_camel_case_types)]
+#[derive(Clone, Copy, Default)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct f16(u16);
+
+pub mod consts {
+    //! Useful [`f16`] constants.
+
+    use super::f16;
+
+    /// 16-bit equivalent of `std::f32::DIGITS`
+    pub const DIGITS: u32 = 3;
+    /// 16-bit floating point epsilon. `9.7656e-4`
+    pub const EPSILON: f16 = f16(0x1400u16);
+    /// 16-bit positive infinity.
+    pub const INFINITY: f16 = f16(0x7C00u16);
+    /// 16-bit equivalent of `std::f32::MANTISSA_DIGITS`
+    pub const MANTISSA_DIGITS: u32 = 11;
+    /// Largest finite `f16` value. `65504`
+    pub const MAX: f16 = f16(0x7BFF);
+    /// 16-bit equivalent of `std::f32::MAX_10_EXP`
+    pub const MAX_10_EXP: i32 = 4;
+    /// 16-bit equivalent of `std::f32::MAX_EXP`
+    pub const MAX_EXP: i32 = 16;
+    /// Smallest finite `f16` value. `-65504`
+    pub const MIN: f16 = f16(0xFBFF);
+    /// 16-bit equivalent of `std::f32::MIN_10_EXP`
+    pub const MIN_10_EXP: i32 = -4;
+    /// 16-bit equivalent of `std::f32::MIN_EXP`
+    pub const MIN_EXP: i32 = -13;
+    /// Smallest positive, normalized `f16` value. Approx. `6.10352e−5`
+    pub const MIN_POSITIVE: f16 = f16(0x0400u16);
+    /// 16-bit NaN.
+    pub const NAN: f16 = f16(0x7E00u16);
+    /// 16-bit negative infinity.
+    pub const NEG_INFINITY: f16 = f16(0xFC00u16);
+    /// 16-bit equivalent of `std::f32::RADIX`
+    pub const RADIX: u32 = 2;
+
+    /// 16-bit minimum positive subnormal value. Approx. `5.96046e−8`
+    pub const MIN_POSITIVE_SUBNORMAL: f16 = f16(0x0001u16);
+    /// 16-bit maximum subnormal value. Approx. `6.09756e−5`
+    pub const MAX_SUBNORMAL: f16 = f16(0x03FFu16);
+
+    /// 16-bit floating point `1.0`
+    pub const ONE: f16 = f16(0x3C00u16);
+    /// 16-bit floating point `0.0`
+    pub const ZERO: f16 = f16(0x0000u16);
+    /// 16-bit floating point `-0.0`
+    pub const NEG_ZERO: f16 = f16(0x8000u16);
+
+    /// Euler's number.
+    pub const E: f16 = f16(0x4170u16);
+    /// Archimedes' constant.
+    pub const PI: f16 = f16(0x4248u16);
+    /// 1.0/pi
+    pub const FRAC_1_PI: f16 = f16(0x3518u16);
+    /// 1.0/sqrt(2.0)
+    pub const FRAC_1_SQRT_2: f16 = f16(0x39A8u16);
+    /// 2.0/pi
+    pub const FRAC_2_PI: f16 = f16(0x3918u16);
+    /// 2.0/sqrt(pi)
+    pub const FRAC_2_SQRT_PI: f16 = f16(0x3C83u16);
+    /// pi/2.0
+    pub const FRAC_PI_2: f16 = f16(0x3E48u16);
+    /// pi/3.0
+    pub const FRAC_PI_3: f16 = f16(0x3C30u16);
+    /// pi/4.0
+    pub const FRAC_PI_4: f16 = f16(0x3A48u16);
+    /// pi/6.0
+    pub const FRAC_PI_6: f16 = f16(0x3830u16);
+    /// pi/8.0
+    pub const FRAC_PI_8: f16 = f16(0x3648u16);
+    /// ln(10.0)
+    pub const LN_10: f16 = f16(0x409Bu16);
+    /// ln(2.0)
+    pub const LN_2: f16 = f16(0x398Cu16);
+    /// log10(e)
+    pub const LOG10_E: f16 = f16(0x36F3u16);
+    /// log2(e)
+    pub const LOG2_E: f16 = f16(0x3DC5u16);
+    /// sqrt(2)
+    pub const SQRT_2: f16 = f16(0x3DA8u16);
+}
+
+impl f16 {
+    /// Constructs a 16-bit floating point value from the raw bits.
+    #[inline]
+    pub const fn from_bits(bits: u16) -> f16 {
+        f16(bits)
+    }
+
+    /// Constructs a 16-bit floating point value from a 32-bit floating point value.
+    ///
+    /// If the 32-bit value is to large to fit in 16-bits, +/- infinity will result. NaN values are
+    /// preserved. 32-bit subnormal values are too tiny to be represented in 16-bits and result in
+    /// +/- 0. Exponents that underflow the minimum 16-bit exponent will result in 16-bit subnormals
+    /// or +/- 0. All other values are truncated and rounded to the nearest representable 16-bit
+    /// value.
+    #[inline]
+    pub fn from_f32(value: f32) -> f16 {
+        f16(convert::f32_to_f16(value))
+    }
+
+    /// Constructs a 16-bit floating point value from a 64-bit floating point value.
+    ///
+    /// If the 64-bit value is to large to fit in 16-bits, +/- infinity will result. NaN values are
+    /// preserved. 64-bit subnormal values are too tiny to be represented in 16-bits and result in
+    /// +/- 0. Exponents that underflow the minimum 16-bit exponent will result in 16-bit subnormals
+    /// or +/- 0. All other values are truncated and rounded to the nearest representable 16-bit
+    /// value.
+    #[inline]
+    pub fn from_f64(value: f64) -> f16 {
+        f16(convert::f64_to_f16(value))
+    }
+
+    /// Converts an `f16` into the underlying bit representation.
+    #[inline]
+    pub const fn to_bits(self) -> u16 {
+        self.0
+    }
+
+    /// Converts an `f16` into the underlying bit representation.
+    #[deprecated(since = "1.2.0", note = "renamed to to_bits")]
+    #[inline]
+    pub fn as_bits(self) -> u16 {
+        self.to_bits()
+    }
+
+    /// Converts an `f16` value in a `f32` value.
+    ///
+    /// This conversion is lossless as all 16-bit floating point values can be represented exactly
+    /// in 32-bit floating point.
+    #[inline]
+    pub fn to_f32(self) -> f32 {
+        convert::f16_to_f32(self.0)
+    }
+
+    /// Converts an `f16` value in a `f64` value.
+    ///
+    /// This conversion is lossless as all 16-bit floating point values can be represented exactly
+    /// in 64-bit floating point.
+    #[inline]
+    pub fn to_f64(self) -> f64 {
+        convert::f16_to_f64(self.0)
+    }
+
+    /// Returns `true` if this value is `NaN` and `false` otherwise.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use half::f16;
+    ///
+    /// let nan = half::consts::NAN;
+    /// let f = f16::from_f32(7.0_f32);
+    ///
+    /// assert!(nan.is_nan());
+    /// assert!(!f.is_nan());
+    /// ```
+    #[inline]
+    pub fn is_nan(self) -> bool {
+        self.0 & 0x7FFFu16 > 0x7C00u16
+    }
+
+    /// Returns `true` if this value is positive infinity or negative infinity and `false`
+    /// otherwise.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use half::f16;
+    ///
+    /// let f = f16::from_f32(7.0f32);
+    /// let inf = half::consts::INFINITY;
+    /// let neg_inf = half::consts::NEG_INFINITY;
+    /// let nan = half::consts::NAN;
+    ///
+    /// assert!(!f.is_infinite());
+    /// assert!(!nan.is_infinite());
+    ///
+    /// assert!(inf.is_infinite());
+    /// assert!(neg_inf.is_infinite());
+    /// ```
+    #[inline]
+    pub fn is_infinite(self) -> bool {
+        self.0 & 0x7FFFu16 == 0x7C00u16
+    }
+
+    /// Returns `true` if this number is neither infinite nor `NaN`.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use half::f16;
+    ///
+    /// let f = f16::from_f32(7.0f32);
+    /// let inf = half::consts::INFINITY;
+    /// let neg_inf = half::consts::NEG_INFINITY;
+    /// let nan = half::consts::NAN;
+    ///
+    /// assert!(f.is_finite());
+    ///
+    /// assert!(!nan.is_finite());
+    /// assert!(!inf.is_finite());
+    /// assert!(!neg_inf.is_finite());
+    /// ```
+    #[inline]
+    pub fn is_finite(self) -> bool {
+        self.0 & 0x7C00u16 != 0x7C00u16
+    }
+
+    /// Returns `true` if the number is neither zero, infinite, subnormal, or `NaN`.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use half::f16;
+    ///
+    /// let min = half::consts::MIN_POSITIVE;
+    /// let max = half::consts::MAX;
+    /// let lower_than_min = f16::from_f32(1.0e-10_f32);
+    /// let zero = f16::from_f32(0.0_f32);
+    ///
+    /// assert!(min.is_normal());
+    /// assert!(max.is_normal());
+    ///
+    /// assert!(!zero.is_normal());
+    /// assert!(!half::consts::NAN.is_normal());
+    /// assert!(!half::consts::INFINITY.is_normal());
+    /// // Values between `0` and `min` are Subnormal.
+    /// assert!(!lower_than_min.is_normal());
+    /// ```
+    #[inline]
+    pub fn is_normal(self) -> bool {
+        let exp = self.0 & 0x7C00u16;
+        exp != 0x7C00u16 && exp != 0
+    }
+
+    /// Returns the floating point category of the number.
+    ///
+    /// If only one property is going to be tested, it is generally faster to use the specific
+    /// predicate instead.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use std::num::FpCategory;
+    /// use half::f16;
+    ///
+    /// let num = f16::from_f32(12.4_f32);
+    /// let inf = half::consts::INFINITY;
+    ///
+    /// assert_eq!(num.classify(), FpCategory::Normal);
+    /// assert_eq!(inf.classify(), FpCategory::Infinite);
+    /// ```
+    pub fn classify(self) -> FpCategory {
+        let exp = self.0 & 0x7C00u16;
+        let man = self.0 & 0x03FFu16;
+        if exp == 0 {
+            if man == 0 {
+                FpCategory::Zero
+            } else {
+                FpCategory::Subnormal
+            }
+        } else if exp == 0x7C00u16 {
+            if man == 0 {
+                FpCategory::Infinite
+            } else {
+                FpCategory::Nan
+            }
+        } else {
+            FpCategory::Normal
+        }
+    }
+
+    /// Returns a number that represents the sign of `self`.
+    ///
+    /// * `1.0` if the number is positive, `+0.0` or `INFINITY`
+    /// * `-1.0` if the number is negative, `-0.0` or `NEG_INFINITY`
+    /// * `NAN` if the number is `NAN`
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use half::f16;
+    ///
+    /// let f = f16::from_f32(3.5_f32);
+    ///
+    /// assert_eq!(f.signum(), f16::from_f32(1.0));
+    /// assert_eq!(half::consts::NEG_INFINITY.signum(), f16::from_f32(-1.0));
+    ///
+    /// assert!(half::consts::NAN.signum().is_nan());
+    /// ```
+    pub fn signum(self) -> f16 {
+        if self.is_nan() {
+            self
+        } else if self.0 & 0x8000u16 != 0 {
+            f16::from_f32(-1.0)
+        } else {
+            f16::from_f32(1.0)
+        }
+    }
+
+    /// Returns `true` if and only if `self` has a positive sign, including `+0.0`, `NaNs` with
+    /// positive sign bit and positive infinity.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use half::f16;
+    ///
+    /// let nan = half::consts::NAN;
+    /// let f = f16::from_f32(7.0_f32);
+    /// let g = f16::from_f32(-7.0_f32);
+    ///
+    /// assert!(f.is_sign_positive());
+    /// assert!(!g.is_sign_positive());
+    /// // `NaN` can be either positive or negative
+    /// assert!(nan.is_sign_positive() != nan.is_sign_negative());
+    /// ```
+    #[inline]
+    pub fn is_sign_positive(self) -> bool {
+        self.0 & 0x8000u16 == 0
+    }
+
+    /// Returns `true` if and only if `self` has a negative sign, including `-0.0`, `NaNs` with
+    /// negative sign bit and negative infinity.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use half::f16;
+    ///
+    /// let nan = half::consts::NAN;
+    /// let f = f16::from_f32(7.0f32);
+    /// let g = f16::from_f32(-7.0f32);
+    ///
+    /// assert!(!f.is_sign_negative());
+    /// assert!(g.is_sign_negative());
+    /// // `NaN` can be either positive or negative
+    /// assert!(nan.is_sign_positive() != nan.is_sign_negative());
+    /// ```
+    #[inline]
+    pub fn is_sign_negative(self) -> bool {
+        self.0 & 0x8000u16 != 0
+    }
+}
+
+impl From<f16> for f32 {
+    fn from(x: f16) -> f32 {
+        x.to_f32()
+    }
+}
+
+impl From<f16> for f64 {
+    fn from(x: f16) -> f64 {
+        x.to_f64()
+    }
+}
+
+impl From<i8> for f16 {
+    fn from(x: i8) -> f16 {
+        // Convert to f32, then to f16
+        f16::from_f32(f32::from(x))
+    }
+}
+
+impl From<u8> for f16 {
+    fn from(x: u8) -> f16 {
+        // Convert to f32, then to f16
+        f16::from_f32(f32::from(x))
+    }
+}
+
+impl PartialEq for f16 {
+    fn eq(&self, other: &f16) -> bool {
+        if self.is_nan() || other.is_nan() {
+            false
+        } else {
+            (self.0 == other.0) || ((self.0 | other.0) & 0x7FFFu16 == 0)
+        }
+    }
+}
+
+impl PartialOrd for f16 {
+    fn partial_cmp(&self, other: &f16) -> Option<Ordering> {
+        if self.is_nan() || other.is_nan() {
+            None
+        } else {
+            let neg = self.0 & 0x8000u16 != 0;
+            let other_neg = other.0 & 0x8000u16 != 0;
+            match (neg, other_neg) {
+                (false, false) => Some(self.0.cmp(&other.0)),
+                (false, true) => {
+                    if (self.0 | other.0) & 0x7FFFu16 == 0 {
+                        Some(Ordering::Equal)
+                    } else {
+                        Some(Ordering::Greater)
+                    }
+                }
+                (true, false) => {
+                    if (self.0 | other.0) & 0x7FFFu16 == 0 {
+                        Some(Ordering::Equal)
+                    } else {
+                        Some(Ordering::Less)
+                    }
+                }
+                (true, true) => Some(other.0.cmp(&self.0)),
+            }
+        }
+    }
+
+    fn lt(&self, other: &f16) -> bool {
+        if self.is_nan() || other.is_nan() {
+            false
+        } else {
+            let neg = self.0 & 0x8000u16 != 0;
+            let other_neg = other.0 & 0x8000u16 != 0;
+            match (neg, other_neg) {
+                (false, false) => self.0 < other.0,
+                (false, true) => false,
+                (true, false) => (self.0 | other.0) & 0x7FFFu16 != 0,
+                (true, true) => self.0 > other.0,
+            }
+        }
+    }
+
+    fn le(&self, other: &f16) -> bool {
+        if self.is_nan() || other.is_nan() {
+            false
+        } else {
+            let neg = self.0 & 0x8000u16 != 0;
+            let other_neg = other.0 & 0x8000u16 != 0;
+            match (neg, other_neg) {
+                (false, false) => self.0 <= other.0,
+                (false, true) => (self.0 | other.0) & 0x7FFFu16 == 0,
+                (true, false) => true,
+                (true, true) => self.0 >= other.0,
+            }
+        }
+    }
+
+    fn gt(&self, other: &f16) -> bool {
+        if self.is_nan() || other.is_nan() {
+            false
+        } else {
+            let neg = self.0 & 0x8000u16 != 0;
+            let other_neg = other.0 & 0x8000u16 != 0;
+            match (neg, other_neg) {
+                (false, false) => self.0 > other.0,
+                (false, true) => (self.0 | other.0) & 0x7FFFu16 != 0,
+                (true, false) => false,
+                (true, true) => self.0 < other.0,
+            }
+        }
+    }
+
+    fn ge(&self, other: &f16) -> bool {
+        if self.is_nan() || other.is_nan() {
+            false
+        } else {
+            let neg = self.0 & 0x8000u16 != 0;
+            let other_neg = other.0 & 0x8000u16 != 0;
+            match (neg, other_neg) {
+                (false, false) => self.0 >= other.0,
+                (false, true) => true,
+                (true, false) => (self.0 | other.0) & 0x7FFFu16 == 0,
+                (true, true) => self.0 <= other.0,
+            }
+        }
+    }
+}
+
+impl FromStr for f16 {
+    type Err = ParseFloatError;
+    fn from_str(src: &str) -> Result<f16, ParseFloatError> {
+        f32::from_str(src).map(f16::from_f32)
+    }
+}
+
+impl Debug for f16 {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
+        write!(f, "0x{:X}", self.0)
+    }
+}
+
+impl Display for f16 {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
+        write!(f, "{}", self.to_f32())
+    }
+}
+
+impl LowerExp for f16 {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
+        write!(f, "{:e}", self.to_f32())
+    }
+}
+
+impl UpperExp for f16 {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
+        write!(f, "{:E}", self.to_f32())
+    }
+}
+
+#[allow(
+    clippy::cognitive_complexity,
+    clippy::float_cmp,
+    clippy::neg_cmp_op_on_partial_ord
+)]
+#[cfg(test)]
+mod test {
+    use super::*;
+    use core;
+    use core::cmp::Ordering;
+    use quickcheck_macros::quickcheck;
+
+    #[test]
+    fn test_f16_consts() {
+        // DIGITS
+        let digits = ((consts::MANTISSA_DIGITS as f32 - 1.0) * 2f32.log10()).floor() as u32;
+        assert_eq!(consts::DIGITS, digits);
+        // sanity check to show test is good
+        let digits32 = ((core::f32::MANTISSA_DIGITS as f32 - 1.0) * 2f32.log10()).floor() as u32;
+        assert_eq!(core::f32::DIGITS, digits32);
+
+        // EPSILON
+        let one = f16::from_f32(1.0);
+        let one_plus_epsilon = f16::from_bits(one.to_bits() + 1);
+        let epsilon = f16::from_f32(one_plus_epsilon.to_f32() - 1.0);
+        assert_eq!(consts::EPSILON, epsilon);
+        // sanity check to show test is good
+        let one_plus_epsilon32 = f32::from_bits(1.0f32.to_bits() + 1);
+        let epsilon32 = one_plus_epsilon32 - 1f32;
+        assert_eq!(core::f32::EPSILON, epsilon32);
+
+        // MAX, MIN and MIN_POSITIVE
+        let max = f16::from_bits(consts::INFINITY.to_bits() - 1);
+        let min = f16::from_bits(consts::NEG_INFINITY.to_bits() - 1);
+        let min_pos = f16::from_f32(2f32.powi(consts::MIN_EXP - 1));
+        assert_eq!(consts::MAX, max);
+        assert_eq!(consts::MIN, min);
+        assert_eq!(consts::MIN_POSITIVE, min_pos);
+        // sanity check to show test is good
+        let max32 = f32::from_bits(core::f32::INFINITY.to_bits() - 1);
+        let min32 = f32::from_bits(core::f32::NEG_INFINITY.to_bits() - 1);
+        let min_pos32 = 2f32.powi(core::f32::MIN_EXP - 1);
+        assert_eq!(core::f32::MAX, max32);
+        assert_eq!(core::f32::MIN, min32);
+        assert_eq!(core::f32::MIN_POSITIVE, min_pos32);
+
+        // MIN_10_EXP and MAX_10_EXP
+        let ten_to_min = 10f32.powi(consts::MIN_10_EXP);
+        assert!(ten_to_min / 10.0 < consts::MIN_POSITIVE.to_f32());
+        assert!(ten_to_min > consts::MIN_POSITIVE.to_f32());
+        let ten_to_max = 10f32.powi(consts::MAX_10_EXP);
+        assert!(ten_to_max < consts::MAX.to_f32());
+        assert!(ten_to_max * 10.0 > consts::MAX.to_f32());
+        // sanity check to show test is good
+        let ten_to_min32 = 10f64.powi(core::f32::MIN_10_EXP);
+        assert!(ten_to_min32 / 10.0 < f64::from(core::f32::MIN_POSITIVE));
+        assert!(ten_to_min32 > f64::from(core::f32::MIN_POSITIVE));
+        let ten_to_max32 = 10f64.powi(core::f32::MAX_10_EXP);
+        assert!(ten_to_max32 < f64::from(core::f32::MAX));
+        assert!(ten_to_max32 * 10.0 > f64::from(core::f32::MAX));
+    }
+
+    #[test]
+    fn test_f16_consts_from_f32() {
+        let one = f16::from_f32(1.0);
+        let zero = f16::from_f32(0.0);
+        let neg_zero = f16::from_f32(-0.0);
+        let inf = f16::from_f32(core::f32::INFINITY);
+        let neg_inf = f16::from_f32(core::f32::NEG_INFINITY);
+        let nan = f16::from_f32(core::f32::NAN);
+
+        assert_eq!(consts::ONE, one);
+        assert_eq!(consts::ZERO, zero);
+        assert!(zero.is_sign_positive());
+        assert_eq!(consts::NEG_ZERO, neg_zero);
+        assert!(neg_zero.is_sign_negative());
+        assert_eq!(consts::INFINITY, inf);
+        assert_eq!(consts::NEG_INFINITY, neg_inf);
+        assert!(nan.is_nan());
+        assert!(consts::NAN.is_nan());
+
+        let e = f16::from_f32(core::f32::consts::E);
+        let pi = f16::from_f32(core::f32::consts::PI);
+        let frac_1_pi = f16::from_f32(core::f32::consts::FRAC_1_PI);
+        let frac_1_sqrt_2 = f16::from_f32(core::f32::consts::FRAC_1_SQRT_2);
+        let frac_2_pi = f16::from_f32(core::f32::consts::FRAC_2_PI);
+        let frac_2_sqrt_pi = f16::from_f32(core::f32::consts::FRAC_2_SQRT_PI);
+        let frac_pi_2 = f16::from_f32(core::f32::consts::FRAC_PI_2);
+        let frac_pi_3 = f16::from_f32(core::f32::consts::FRAC_PI_3);
+        let frac_pi_4 = f16::from_f32(core::f32::consts::FRAC_PI_4);
+        let frac_pi_6 = f16::from_f32(core::f32::consts::FRAC_PI_6);
+        let frac_pi_8 = f16::from_f32(core::f32::consts::FRAC_PI_8);
+        let ln_10 = f16::from_f32(core::f32::consts::LN_10);
+        let ln_2 = f16::from_f32(core::f32::consts::LN_2);
+        let log10_e = f16::from_f32(core::f32::consts::LOG10_E);
+        let log2_e = f16::from_f32(core::f32::consts::LOG2_E);
+        let sqrt_2 = f16::from_f32(core::f32::consts::SQRT_2);
+
+        assert_eq!(consts::E, e);
+        assert_eq!(consts::PI, pi);
+        assert_eq!(consts::FRAC_1_PI, frac_1_pi);
+        assert_eq!(consts::FRAC_1_SQRT_2, frac_1_sqrt_2);
+        assert_eq!(consts::FRAC_2_PI, frac_2_pi);
+        assert_eq!(consts::FRAC_2_SQRT_PI, frac_2_sqrt_pi);
+        assert_eq!(consts::FRAC_PI_2, frac_pi_2);
+        assert_eq!(consts::FRAC_PI_3, frac_pi_3);
+        assert_eq!(consts::FRAC_PI_4, frac_pi_4);
+        assert_eq!(consts::FRAC_PI_6, frac_pi_6);
+        assert_eq!(consts::FRAC_PI_8, frac_pi_8);
+        assert_eq!(consts::LN_10, ln_10);
+        assert_eq!(consts::LN_2, ln_2);
+        assert_eq!(consts::LOG10_E, log10_e);
+        assert_eq!(consts::LOG2_E, log2_e);
+        assert_eq!(consts::SQRT_2, sqrt_2);
+    }
+
+    #[test]
+    fn test_f16_consts_from_f64() {
+        let one = f16::from_f64(1.0);
+        let zero = f16::from_f64(0.0);
+        let neg_zero = f16::from_f64(-0.0);
+        let inf = f16::from_f64(core::f64::INFINITY);
+        let neg_inf = f16::from_f64(core::f64::NEG_INFINITY);
+        let nan = f16::from_f64(core::f64::NAN);
+
+        assert_eq!(consts::ONE, one);
+        assert_eq!(consts::ZERO, zero);
+        assert!(zero.is_sign_positive());
+        assert_eq!(consts::NEG_ZERO, neg_zero);
+        assert!(neg_zero.is_sign_negative());
+        assert_eq!(consts::INFINITY, inf);
+        assert_eq!(consts::NEG_INFINITY, neg_inf);
+        assert!(nan.is_nan());
+        assert!(consts::NAN.is_nan());
+
+        let e = f16::from_f64(core::f64::consts::E);
+        let pi = f16::from_f64(core::f64::consts::PI);
+        let frac_1_pi = f16::from_f64(core::f64::consts::FRAC_1_PI);
+        let frac_1_sqrt_2 = f16::from_f64(core::f64::consts::FRAC_1_SQRT_2);
+        let frac_2_pi = f16::from_f64(core::f64::consts::FRAC_2_PI);
+        let frac_2_sqrt_pi = f16::from_f64(core::f64::consts::FRAC_2_SQRT_PI);
+        let frac_pi_2 = f16::from_f64(core::f64::consts::FRAC_PI_2);
+        let frac_pi_3 = f16::from_f64(core::f64::consts::FRAC_PI_3);
+        let frac_pi_4 = f16::from_f64(core::f64::consts::FRAC_PI_4);
+        let frac_pi_6 = f16::from_f64(core::f64::consts::FRAC_PI_6);
+        let frac_pi_8 = f16::from_f64(core::f64::consts::FRAC_PI_8);
+        let ln_10 = f16::from_f64(core::f64::consts::LN_10);
+        let ln_2 = f16::from_f64(core::f64::consts::LN_2);
+        let log10_e = f16::from_f64(core::f64::consts::LOG10_E);
+        let log2_e = f16::from_f64(core::f64::consts::LOG2_E);
+        let sqrt_2 = f16::from_f64(core::f64::consts::SQRT_2);
+
+        assert_eq!(consts::E, e);
+        assert_eq!(consts::PI, pi);
+        assert_eq!(consts::FRAC_1_PI, frac_1_pi);
+        assert_eq!(consts::FRAC_1_SQRT_2, frac_1_sqrt_2);
+        assert_eq!(consts::FRAC_2_PI, frac_2_pi);
+        assert_eq!(consts::FRAC_2_SQRT_PI, frac_2_sqrt_pi);
+        assert_eq!(consts::FRAC_PI_2, frac_pi_2);
+        assert_eq!(consts::FRAC_PI_3, frac_pi_3);
+        assert_eq!(consts::FRAC_PI_4, frac_pi_4);
+        assert_eq!(consts::FRAC_PI_6, frac_pi_6);
+        assert_eq!(consts::FRAC_PI_8, frac_pi_8);
+        assert_eq!(consts::LN_10, ln_10);
+        assert_eq!(consts::LN_2, ln_2);
+        assert_eq!(consts::LOG10_E, log10_e);
+        assert_eq!(consts::LOG2_E, log2_e);
+        assert_eq!(consts::SQRT_2, sqrt_2);
+    }
+
+    #[test]
+    fn test_nan_conversion_to_smaller() {
+        let nan64 = f64::from_bits(0x7FF0_0000_0000_0001u64);
+        let neg_nan64 = f64::from_bits(0xFFF0_0000_0000_0001u64);
+        let nan32 = f32::from_bits(0x7F80_0001u32);
+        let neg_nan32 = f32::from_bits(0xFF80_0001u32);
+        let nan32_from_64 = nan64 as f32;
+        let neg_nan32_from_64 = neg_nan64 as f32;
+        let nan16_from_64 = f16::from_f64(nan64);
+        let neg_nan16_from_64 = f16::from_f64(neg_nan64);
+        let nan16_from_32 = f16::from_f32(nan32);
+        let neg_nan16_from_32 = f16::from_f32(neg_nan32);
+
+        assert!(nan64.is_nan() && nan64.is_sign_positive());
+        assert!(neg_nan64.is_nan() && neg_nan64.is_sign_negative());
+        assert!(nan32.is_nan() && nan32.is_sign_positive());
+        assert!(neg_nan32.is_nan() && neg_nan32.is_sign_negative());
+        assert!(nan32_from_64.is_nan() && nan32_from_64.is_sign_positive());
+        assert!(neg_nan32_from_64.is_nan() && neg_nan32_from_64.is_sign_negative());
+        assert!(nan16_from_64.is_nan() && nan16_from_64.is_sign_positive());
+        assert!(neg_nan16_from_64.is_nan() && neg_nan16_from_64.is_sign_negative());
+        assert!(nan16_from_32.is_nan() && nan16_from_32.is_sign_positive());
+        assert!(neg_nan16_from_32.is_nan() && neg_nan16_from_32.is_sign_negative());
+    }
+
+    #[test]
+    fn test_nan_conversion_to_larger() {
+        let nan16 = f16::from_bits(0x7C01u16);
+        let neg_nan16 = f16::from_bits(0xFC01u16);
+        let nan32 = f32::from_bits(0x7F80_0001u32);
+        let neg_nan32 = f32::from_bits(0xFF80_0001u32);
+        let nan32_from_16 = f32::from(nan16);
+        let neg_nan32_from_16 = f32::from(neg_nan16);
+        let nan64_from_16 = f64::from(nan16);
+        let neg_nan64_from_16 = f64::from(neg_nan16);
+        let nan64_from_32 = f64::from(nan32);
+        let neg_nan64_from_32 = f64::from(neg_nan32);
+
+        assert!(nan16.is_nan() && nan16.is_sign_positive());
+        assert!(neg_nan16.is_nan() && neg_nan16.is_sign_negative());
+        assert!(nan32.is_nan() && nan32.is_sign_positive());
+        assert!(neg_nan32.is_nan() && neg_nan32.is_sign_negative());
+        assert!(nan32_from_16.is_nan() && nan32_from_16.is_sign_positive());
+        assert!(neg_nan32_from_16.is_nan() && neg_nan32_from_16.is_sign_negative());
+        assert!(nan64_from_16.is_nan() && nan64_from_16.is_sign_positive());
+        assert!(neg_nan64_from_16.is_nan() && neg_nan64_from_16.is_sign_negative());
+        assert!(nan64_from_32.is_nan() && nan64_from_32.is_sign_positive());
+        assert!(neg_nan64_from_32.is_nan() && neg_nan64_from_32.is_sign_negative());
+    }
+
+    #[test]
+    fn test_f16_to_f32() {
+        let f = f16::from_f32(7.0);
+        assert_eq!(f.to_f32(), 7.0f32);
+
+        // 7.1 is NOT exactly representable in 16-bit, it's rounded
+        let f = f16::from_f32(7.1);
+        let diff = (f.to_f32() - 7.1f32).abs();
+        // diff must be <= 4 * EPSILON, as 7 has two more significant bits than 1
+        assert!(diff <= 4.0 * consts::EPSILON.to_f32());
+
+        assert_eq!(f16::from_bits(0x0000_0001).to_f32(), 2.0f32.powi(-24));
+        assert_eq!(f16::from_bits(0x0000_0005).to_f32(), 5.0 * 2.0f32.powi(-24));
+
+        assert_eq!(f16::from_bits(0x0000_0001), f16::from_f32(2.0f32.powi(-24)));
+        assert_eq!(
+            f16::from_bits(0x0000_0005),
+            f16::from_f32(5.0 * 2.0f32.powi(-24))
+        );
+    }
+
+    #[test]
+    fn test_f16_to_f64() {
+        let f = f16::from_f64(7.0);
+        assert_eq!(f.to_f64(), 7.0f64);
+
+        // 7.1 is NOT exactly representable in 16-bit, it's rounded
+        let f = f16::from_f64(7.1);
+        let diff = (f.to_f64() - 7.1f64).abs();
+        // diff must be <= 4 * EPSILON, as 7 has two more significant bits than 1
+        assert!(diff <= 4.0 * consts::EPSILON.to_f64());
+
+        assert_eq!(f16::from_bits(0x0000_0001).to_f64(), 2.0f64.powi(-24));
+        assert_eq!(f16::from_bits(0x0000_0005).to_f64(), 5.0 * 2.0f64.powi(-24));
+
+        assert_eq!(f16::from_bits(0x0000_0001), f16::from_f64(2.0f64.powi(-24)));
+        assert_eq!(
+            f16::from_bits(0x0000_0005),
+            f16::from_f64(5.0 * 2.0f64.powi(-24))
+        );
+    }
+
+    #[test]
+    fn test_comparisons() {
+        let zero = f16::from_f64(0.0);
+        let one = f16::from_f64(1.0);
+        let neg_zero = f16::from_f64(-0.0);
+        let neg_one = f16::from_f64(-1.0);
+
+        assert_eq!(zero.partial_cmp(&neg_zero), Some(Ordering::Equal));
+        assert_eq!(neg_zero.partial_cmp(&zero), Some(Ordering::Equal));
+        assert!(zero == neg_zero);
+        assert!(neg_zero == zero);
+        assert!(!(zero != neg_zero));
+        assert!(!(neg_zero != zero));
+        assert!(!(zero < neg_zero));
+        assert!(!(neg_zero < zero));
+        assert!(zero <= neg_zero);
+        assert!(neg_zero <= zero);
+        assert!(!(zero > neg_zero));
+        assert!(!(neg_zero > zero));
+        assert!(zero >= neg_zero);
+        assert!(neg_zero >= zero);
+
+        assert_eq!(one.partial_cmp(&neg_zero), Some(Ordering::Greater));
+        assert_eq!(neg_zero.partial_cmp(&one), Some(Ordering::Less));
+        assert!(!(one == neg_zero));
+        assert!(!(neg_zero == one));
+        assert!(one != neg_zero);
+        assert!(neg_zero != one);
+        assert!(!(one < neg_zero));
+        assert!(neg_zero < one);
+        assert!(!(one <= neg_zero));
+        assert!(neg_zero <= one);
+        assert!(one > neg_zero);
+        assert!(!(neg_zero > one));
+        assert!(one >= neg_zero);
+        assert!(!(neg_zero >= one));
+
+        assert_eq!(one.partial_cmp(&neg_one), Some(Ordering::Greater));
+        assert_eq!(neg_one.partial_cmp(&one), Some(Ordering::Less));
+        assert!(!(one == neg_one));
+        assert!(!(neg_one == one));
+        assert!(one != neg_one);
+        assert!(neg_one != one);
+        assert!(!(one < neg_one));
+        assert!(neg_one < one);
+        assert!(!(one <= neg_one));
+        assert!(neg_one <= one);
+        assert!(one > neg_one);
+        assert!(!(neg_one > one));
+        assert!(one >= neg_one);
+        assert!(!(neg_one >= one));
+    }
+
+    #[test]
+    #[allow(clippy::erasing_op, clippy::identity_op)]
+    fn round_to_even_f32() {
+        // smallest positive subnormal = 0b0.0000_0000_01 * 2^-14 = 2^-24
+        let min_sub = f16::from_bits(1);
+        let min_sub_f = (-24f32).exp2();
+        assert_eq!(f16::from_f32(min_sub_f).to_bits(), min_sub.to_bits());
+        assert_eq!(f32::from(min_sub).to_bits(), min_sub_f.to_bits());
+
+        // 0.0000000000_011111 rounded to 0.0000000000 (< tie, no rounding)
+        // 0.0000000000_100000 rounded to 0.0000000000 (tie and even, remains at even)
+        // 0.0000000000_100001 rounded to 0.0000000001 (> tie, rounds up)
+        assert_eq!(
+            f16::from_f32(min_sub_f * 0.49).to_bits(),
+            min_sub.to_bits() * 0
+        );
+        assert_eq!(
+            f16::from_f32(min_sub_f * 0.50).to_bits(),
+            min_sub.to_bits() * 0
+        );
+        assert_eq!(
+            f16::from_f32(min_sub_f * 0.51).to_bits(),
+            min_sub.to_bits() * 1
+        );
+
+        // 0.0000000001_011111 rounded to 0.0000000001 (< tie, no rounding)
+        // 0.0000000001_100000 rounded to 0.0000000010 (tie and odd, rounds up to even)
+        // 0.0000000001_100001 rounded to 0.0000000010 (> tie, rounds up)
+        assert_eq!(
+            f16::from_f32(min_sub_f * 1.49).to_bits(),
+            min_sub.to_bits() * 1
+        );
+        assert_eq!(
+            f16::from_f32(min_sub_f * 1.50).to_bits(),
+            min_sub.to_bits() * 2
+        );
+        assert_eq!(
+            f16::from_f32(min_sub_f * 1.51).to_bits(),
+            min_sub.to_bits() * 2
+        );
+
+        // 0.0000000010_011111 rounded to 0.0000000010 (< tie, no rounding)
+        // 0.0000000010_100000 rounded to 0.0000000010 (tie and even, remains at even)
+        // 0.0000000010_100001 rounded to 0.0000000011 (> tie, rounds up)
+        assert_eq!(
+            f16::from_f32(min_sub_f * 2.49).to_bits(),
+            min_sub.to_bits() * 2
+        );
+        assert_eq!(
+            f16::from_f32(min_sub_f * 2.50).to_bits(),
+            min_sub.to_bits() * 2
+        );
+        assert_eq!(
+            f16::from_f32(min_sub_f * 2.51).to_bits(),
+            min_sub.to_bits() * 3
+        );
+
+        assert_eq!(
+            f16::from_f32(2000.49f32).to_bits(),
+            f16::from_f32(2000.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f32(2000.50f32).to_bits(),
+            f16::from_f32(2000.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f32(2000.51f32).to_bits(),
+            f16::from_f32(2001.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f32(2001.49f32).to_bits(),
+            f16::from_f32(2001.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f32(2001.50f32).to_bits(),
+            f16::from_f32(2002.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f32(2001.51f32).to_bits(),
+            f16::from_f32(2002.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f32(2002.49f32).to_bits(),
+            f16::from_f32(2002.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f32(2002.50f32).to_bits(),
+            f16::from_f32(2002.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f32(2002.51f32).to_bits(),
+            f16::from_f32(2003.0).to_bits()
+        );
+    }
+
+    #[test]
+    #[allow(clippy::erasing_op, clippy::identity_op)]
+    fn round_to_even_f64() {
+        // smallest positive subnormal = 0b0.0000_0000_01 * 2^-14 = 2^-24
+        let min_sub = f16::from_bits(1);
+        let min_sub_f = (-24f64).exp2();
+        assert_eq!(f16::from_f64(min_sub_f).to_bits(), min_sub.to_bits());
+        assert_eq!(f64::from(min_sub).to_bits(), min_sub_f.to_bits());
+
+        // 0.0000000000_011111 rounded to 0.0000000000 (< tie, no rounding)
+        // 0.0000000000_100000 rounded to 0.0000000000 (tie and even, remains at even)
+        // 0.0000000000_100001 rounded to 0.0000000001 (> tie, rounds up)
+        assert_eq!(
+            f16::from_f64(min_sub_f * 0.49).to_bits(),
+            min_sub.to_bits() * 0
+        );
+        assert_eq!(
+            f16::from_f64(min_sub_f * 0.50).to_bits(),
+            min_sub.to_bits() * 0
+        );
+        assert_eq!(
+            f16::from_f64(min_sub_f * 0.51).to_bits(),
+            min_sub.to_bits() * 1
+        );
+
+        // 0.0000000001_011111 rounded to 0.0000000001 (< tie, no rounding)
+        // 0.0000000001_100000 rounded to 0.0000000010 (tie and odd, rounds up to even)
+        // 0.0000000001_100001 rounded to 0.0000000010 (> tie, rounds up)
+        assert_eq!(
+            f16::from_f64(min_sub_f * 1.49).to_bits(),
+            min_sub.to_bits() * 1
+        );
+        assert_eq!(
+            f16::from_f64(min_sub_f * 1.50).to_bits(),
+            min_sub.to_bits() * 2
+        );
+        assert_eq!(
+            f16::from_f64(min_sub_f * 1.51).to_bits(),
+            min_sub.to_bits() * 2
+        );
+
+        // 0.0000000010_011111 rounded to 0.0000000010 (< tie, no rounding)
+        // 0.0000000010_100000 rounded to 0.0000000010 (tie and even, remains at even)
+        // 0.0000000010_100001 rounded to 0.0000000011 (> tie, rounds up)
+        assert_eq!(
+            f16::from_f64(min_sub_f * 2.49).to_bits(),
+            min_sub.to_bits() * 2
+        );
+        assert_eq!(
+            f16::from_f64(min_sub_f * 2.50).to_bits(),
+            min_sub.to_bits() * 2
+        );
+        assert_eq!(
+            f16::from_f64(min_sub_f * 2.51).to_bits(),
+            min_sub.to_bits() * 3
+        );
+
+        assert_eq!(
+            f16::from_f64(2000.49f64).to_bits(),
+            f16::from_f64(2000.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f64(2000.50f64).to_bits(),
+            f16::from_f64(2000.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f64(2000.51f64).to_bits(),
+            f16::from_f64(2001.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f64(2001.49f64).to_bits(),
+            f16::from_f64(2001.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f64(2001.50f64).to_bits(),
+            f16::from_f64(2002.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f64(2001.51f64).to_bits(),
+            f16::from_f64(2002.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f64(2002.49f64).to_bits(),
+            f16::from_f64(2002.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f64(2002.50f64).to_bits(),
+            f16::from_f64(2002.0).to_bits()
+        );
+        assert_eq!(
+            f16::from_f64(2002.51f64).to_bits(),
+            f16::from_f64(2003.0).to_bits()
+        );
+    }
+
+    impl quickcheck::Arbitrary for f16 {
+        fn arbitrary<G: quickcheck::Gen>(g: &mut G) -> Self {
+            use rand::Rng;
+            f16(g.gen())
+        }
+    }
+
+    #[quickcheck]
+    fn qc_roundtrip_f16_f32_is_identity(f: f16) -> bool {
+        let roundtrip = f16::from_f32(f.to_f32());
+        if f.is_nan() {
+            roundtrip.is_nan() && f.is_sign_negative() == roundtrip.is_sign_negative()
+        } else {
+            f.0 == roundtrip.0
+        }
+    }
+
+    #[quickcheck]
+    fn qc_roundtrip_f16_f64_is_identity(f: f16) -> bool {
+        let roundtrip = f16::from_f64(f.to_f64());
+        if f.is_nan() {
+            roundtrip.is_nan() && f.is_sign_negative() == roundtrip.is_sign_negative()
+        } else {
+            f.0 == roundtrip.0
+        }
+    }
+}
