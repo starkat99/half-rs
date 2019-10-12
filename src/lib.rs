@@ -27,8 +27,8 @@
 //! supports it, the [`slice`] trait conversions will use vectorized SIMD intructions for
 //! increased efficiency.
 //!
-//! Support for `serde` crate `Serialize` and `Deserialize` traits is provided when the `serde`
-//! feature is enabled. This adds a dependency on `serde` crate so is an optional cargo feature.
+//! Support for [`serde`] crate `Serialize` and `Deserialize` traits is provided when the `serde`
+//! feature is enabled. This adds a dependency on [`serde`] crate so is an optional cargo feature.
 //!
 //! The crate uses `#[no_std]` by default, so can be used in embedded environments without using the
 //! Rust `std` library. A `std` feature is available, which enables additional utilities using the
@@ -41,6 +41,7 @@
 //! [`bfloat16`]: https://en.wikipedia.org/wiki/Bfloat16_floating-point_format
 //! [`slice`]: slice/index.html
 //! [`prelude`]: prelude/index.html
+//! [`serde`]: https://crates.io/crates/serde
 
 #![warn(
     missing_docs,
