@@ -1,13 +1,17 @@
-# half: `f16` and `bf16` types for Rust
+# `f16` and `bf16` floating point types for Rust
 [![Crates.io](https://img.shields.io/crates/v/half.svg)](https://crates.io/crates/half/) [![docs.rs](https://docs.rs/half/badge.svg)](https://docs.rs/half/) [![Build Status](https://travis-ci.org/starkat99/half-rs.svg?branch=master)](https://travis-ci.org/starkat99/half-rs) [![Build status](https://ci.appveyor.com/api/projects/status/bi18aypi3h5r88gs?svg=true)](https://ci.appveyor.com/project/starkat99/half-rs)
 
-This crate implements a half-precision floating point `f16` type for Rust implementing the IEEE 754-2008 standard `binary16` format, as well as a `bf16` type implementing the `bfloat16` format.
+This crate implements a half-precision floating point `f16` type for Rust implementing the IEEE 754-2008 standard
+[`binary16`](https://en.wikipedia.org/wiki/Half-precision_floating-point_format) a.k.a `half` format,
+as well as a `bf16` type implementing the [`bfloat16`](https://en.wikipedia.org/wiki/Bfloat16_floating-point_format) format.
 
-## How-to Use
+## Usage
 
-The `f16` and `bf16` types provides all the basic operations as a normal Rust float type, but since they are primarily leveraged for
-minimal floating point storage and no major hardware implements them, all math operations should be done as an `f32` type.
-This crate by default provides `no_std` support so can easily be used in embedded code where a smaller float format is most useful.
+The `f16` and `bf16` types provides conversion operations as a normal Rust floating point type, but since they are primarily leveraged for
+minimal floating point storage and most major hardware does not implement them, all math operations should be done as an `f32` type.
+
+This crate provides [`no_std`](https://rust-embedded.github.io/book/intro/no-std.html) support by default so can easily be used in embedded
+code where a smaller float format is most useful.
 
 *Requries Rust 1.32 or greater.* If you need support for older versions of Rust, use versions 1.3 and earlier of this crate.
 
@@ -15,15 +19,20 @@ See the [crate documentation](https://docs.rs/half/) for more details.
 
 ### Optional Features
 
-- **`serde`** - Implement `Serialize` and `Deserialize` traits for `f16` and `bf16`. This adds a dependency on the `serde`
-crate.
+- **`serde`** - Implement `Serialize` and `Deserialize` traits for `f16` and `bf16`. This adds a dependency on the
+[`serde`](https://crates.io/crates/serde) crate.
 
 - **`use-intrinsics`** - Use hardware intrinsics for `f16` and `bf16` conversions if available on the compiler host target. By
 default, without this feature, conversions are done only in software, which will be the fallback if the host target does
 not have hardware support. **Available only on Rust nightly channel.**
 
-- **`std`** - Use Rust `std` library. This enables the `vec` module, which contains zero-copy conversions for the `Vec`
-type. This allows fast conversion between raw `Vec<u16>` bits and `Vec<f16>` arrays, and vice versa.
+- **`std`** - Enable features that depend on the Rust `std` library.
+
+  This enables the `vec` module, which contains zero-copy conversions for the `Vec` type. This allows fast conversion between
+  raw `Vec<u16>` bits and `Vec<f16>` or `Vec<bf16>` arrays, and vice versa.
+
+  In addition, enabling the `std` feature enables runtime CPU feature detection when the `use-intrsincis` feature is also enabled.
+  Without this feature detection, intrinsics are only used when compiler host target supports them.
 
 ### More Documentation
 

@@ -10,10 +10,19 @@ use core::{
 
 pub(crate) mod convert;
 
-/// A 16-bit floating point type implementing the IEEE 754-2008 standard `binary16` format.
+/// A 16-bit floating point type implementing the IEEE 754-2008 standard [`binary16`] a.k.a `half`
+/// format.
 ///
-/// Useful constants are located in the [`consts`] module.
+/// This 16-bit floating point type is intended for efficient storage where the full range and
+/// precision of a larger floating point value is not required. Because [`f16`] is primarily for
+/// efficient storage, floating point operations such as addition, multiplication, etc. are not
+/// implemented. Operations should be performed with `f32` or higher-precision types and converted
+/// to/from [`f16`] as necessary.
 ///
+/// Useful constants related to [`f16`] are located in the [`consts`] module.
+///
+/// [`f16`]: struct.f16.html
+/// [`binary16`]: https://en.wikipedia.org/wiki/Half-precision_floating-point_format
 /// [`consts`]: consts/index.html
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, Default)]
@@ -21,82 +30,85 @@ pub(crate) mod convert;
 pub struct f16(u16);
 
 pub mod consts {
-    //! Useful [`f16`] constants.
+    //! Useful `f16` constants.
 
     use super::f16;
 
-    /// 16-bit equivalent of `std::f32::DIGITS`
+    /// Approximate number of [`f16`](../struct.f16.html) significant digits in base 10.
     pub const DIGITS: u32 = 3;
-    /// 16-bit floating point epsilon. `9.7656e-4`
+    /// [`f16`](../struct.f16.html)
+    /// [machine epsilon](https://en.wikipedia.org/wiki/Machine_epsilon) value.
+    ///
+    /// This is the difference between 1.0 and the next largest representable number.
     pub const EPSILON: f16 = f16(0x1400u16);
-    /// 16-bit positive infinity.
+    /// [`f16`](../struct.f16.html) positive Infinity (+∞).
     pub const INFINITY: f16 = f16(0x7C00u16);
-    /// 16-bit equivalent of `std::f32::MANTISSA_DIGITS`
+    /// Number of [`f16`](../struct.f16.html) significant digits in base 2.
     pub const MANTISSA_DIGITS: u32 = 11;
-    /// Largest finite `f16` value. `65504`
+    /// Largest finite [`f16`](../struct.f16.html) value.
     pub const MAX: f16 = f16(0x7BFF);
-    /// 16-bit equivalent of `std::f32::MAX_10_EXP`
+    /// Maximum possible [`f16`](../struct.f16.html) power of 10 exponent.
     pub const MAX_10_EXP: i32 = 4;
-    /// 16-bit equivalent of `std::f32::MAX_EXP`
+    /// Maximum possible [`f16`](../struct.f16.html) power of 2 exponent.
     pub const MAX_EXP: i32 = 16;
-    /// Smallest finite `f16` value. `-65504`
+    /// Smallest finite [`f16`](../struct.f16.html) value.
     pub const MIN: f16 = f16(0xFBFF);
-    /// 16-bit equivalent of `std::f32::MIN_10_EXP`
+    /// Minimum possible normal [`f16`](../struct.f16.html) power of 10 exponent.
     pub const MIN_10_EXP: i32 = -4;
-    /// 16-bit equivalent of `std::f32::MIN_EXP`
+    /// One greater than the minimum possible normal [`f16`](../struct.f16.html) power of 2 exponent.
     pub const MIN_EXP: i32 = -13;
-    /// Smallest positive, normalized `f16` value. Approx. `6.10352e−5`
+    /// Smallest positive normal [`f16`](../struct.f16.html) value.
     pub const MIN_POSITIVE: f16 = f16(0x0400u16);
-    /// 16-bit NaN.
+    /// [`f16`](../struct.f16.html) Not a Number (NaN).
     pub const NAN: f16 = f16(0x7E00u16);
-    /// 16-bit negative infinity.
+    /// [`f16`](../struct.f16.html) negative infinity (-∞).
     pub const NEG_INFINITY: f16 = f16(0xFC00u16);
-    /// 16-bit equivalent of `std::f32::RADIX`
+    /// The radix or base of the internal representation of [`f16`](../struct.f16.html).
     pub const RADIX: u32 = 2;
 
-    /// 16-bit minimum positive subnormal value. Approx. `5.96046e−8`
+    /// Minimum positive subnormal [`f16`](../struct.f16.html) value.
     pub const MIN_POSITIVE_SUBNORMAL: f16 = f16(0x0001u16);
-    /// 16-bit maximum subnormal value. Approx. `6.09756e−5`
+    /// Maximum subnormal [`f16`](../struct.f16.html) value.
     pub const MAX_SUBNORMAL: f16 = f16(0x03FFu16);
 
-    /// 16-bit floating point `1.0`
+    /// [`f16`](../struct.f16.html) 1
     pub const ONE: f16 = f16(0x3C00u16);
-    /// 16-bit floating point `0.0`
+    /// [`f16`](../struct.f16.html) 0
     pub const ZERO: f16 = f16(0x0000u16);
-    /// 16-bit floating point `-0.0`
+    /// [`f16`](../struct.f16.html) -0
     pub const NEG_ZERO: f16 = f16(0x8000u16);
 
-    /// Euler's number.
+    /// [`f16`](../struct.f16.html) Euler's number (ℯ).
     pub const E: f16 = f16(0x4170u16);
-    /// Archimedes' constant.
+    /// [`f16`](../struct.f16.html) Archimedes' constant (π).
     pub const PI: f16 = f16(0x4248u16);
-    /// 1.0/pi
+    /// [`f16`](../struct.f16.html) 1/π
     pub const FRAC_1_PI: f16 = f16(0x3518u16);
-    /// 1.0/sqrt(2.0)
+    /// [`f16`](../struct.f16.html) 1/√2
     pub const FRAC_1_SQRT_2: f16 = f16(0x39A8u16);
-    /// 2.0/pi
+    /// [`f16`](../struct.f16.html) 2/π
     pub const FRAC_2_PI: f16 = f16(0x3918u16);
-    /// 2.0/sqrt(pi)
+    /// [`f16`](../struct.f16.html) 2/√π
     pub const FRAC_2_SQRT_PI: f16 = f16(0x3C83u16);
-    /// pi/2.0
+    /// [`f16`](../struct.f16.html) π/2
     pub const FRAC_PI_2: f16 = f16(0x3E48u16);
-    /// pi/3.0
+    /// [`f16`](../struct.f16.html) π/3
     pub const FRAC_PI_3: f16 = f16(0x3C30u16);
-    /// pi/4.0
+    /// [`f16`](../struct.f16.html) π/4
     pub const FRAC_PI_4: f16 = f16(0x3A48u16);
-    /// pi/6.0
+    /// [`f16`](../struct.f16.html) π/6
     pub const FRAC_PI_6: f16 = f16(0x3830u16);
-    /// pi/8.0
+    /// [`f16`](../struct.f16.html) π/8
     pub const FRAC_PI_8: f16 = f16(0x3648u16);
-    /// ln(10.0)
+    /// [`f16`](../struct.f16.html) 𝗅𝗇 10
     pub const LN_10: f16 = f16(0x409Bu16);
-    /// ln(2.0)
+    /// [`f16`](../struct.f16.html) 𝗅𝗇 2
     pub const LN_2: f16 = f16(0x398Cu16);
-    /// log10(e)
+    /// [`f16`](../struct.f16.html) 𝗅𝗈𝗀₁₀ℯ
     pub const LOG10_E: f16 = f16(0x36F3u16);
-    /// log2(e)
+    /// [`f16`](../struct.f16.html) 𝗅𝗈𝗀₂ℯ
     pub const LOG2_E: f16 = f16(0x3DC5u16);
-    /// sqrt(2)
+    /// [`f16`](../struct.f16.html) √2
     pub const SQRT_2: f16 = f16(0x3DA8u16);
 }
 
@@ -109,10 +121,10 @@ impl f16 {
 
     /// Constructs a 16-bit floating point value from a 32-bit floating point value.
     ///
-    /// If the 32-bit value is to large to fit in 16-bits, +/- infinity will result. NaN values are
+    /// If the 32-bit value is to large to fit in 16-bits, ±∞ will result. NaN values are
     /// preserved. 32-bit subnormal values are too tiny to be represented in 16-bits and result in
-    /// +/- 0. Exponents that underflow the minimum 16-bit exponent will result in 16-bit subnormals
-    /// or +/- 0. All other values are truncated and rounded to the nearest representable 16-bit
+    /// ±0. Exponents that underflow the minimum 16-bit exponent will result in 16-bit subnormals
+    /// or ±0. All other values are truncated and rounded to the nearest representable 16-bit
     /// value.
     #[inline]
     pub fn from_f32(value: f32) -> f16 {
@@ -121,30 +133,30 @@ impl f16 {
 
     /// Constructs a 16-bit floating point value from a 64-bit floating point value.
     ///
-    /// If the 64-bit value is to large to fit in 16-bits, +/- infinity will result. NaN values are
+    /// If the 64-bit value is to large to fit in 16-bits, ±∞ will result. NaN values are
     /// preserved. 64-bit subnormal values are too tiny to be represented in 16-bits and result in
-    /// +/- 0. Exponents that underflow the minimum 16-bit exponent will result in 16-bit subnormals
-    /// or +/- 0. All other values are truncated and rounded to the nearest representable 16-bit
+    /// ±0. Exponents that underflow the minimum 16-bit exponent will result in 16-bit subnormals
+    /// or ±0. All other values are truncated and rounded to the nearest representable 16-bit
     /// value.
     #[inline]
     pub fn from_f64(value: f64) -> f16 {
         f16(convert::f64_to_f16(value))
     }
 
-    /// Converts an `f16` into the underlying bit representation.
+    /// Converts a [`f16`](struct.f16.html) into the underlying bit representation.
     #[inline]
     pub const fn to_bits(self) -> u16 {
         self.0
     }
 
-    /// Converts an `f16` into the underlying bit representation.
-    #[deprecated(since = "1.2.0", note = "renamed to to_bits")]
+    /// Converts a [`f16`](struct.f16.html) into the underlying bit representation.
+    #[deprecated(since = "1.2.0", note = "renamed to [`to_bits`](#method.to_bits)")]
     #[inline]
     pub fn as_bits(self) -> u16 {
         self.to_bits()
     }
 
-    /// Converts an `f16` value in a `f32` value.
+    /// Converts a [`f16`](struct.f16.html) value into a `f32` value.
     ///
     /// This conversion is lossless as all 16-bit floating point values can be represented exactly
     /// in 32-bit floating point.
@@ -153,7 +165,7 @@ impl f16 {
         convert::f16_to_f32(self.0)
     }
 
-    /// Converts an `f16` value in a `f64` value.
+    /// Converts a [`f16`](struct.f16.html) value into a `f64` value.
     ///
     /// This conversion is lossless as all 16-bit floating point values can be represented exactly
     /// in 64-bit floating point.
@@ -167,7 +179,7 @@ impl f16 {
     /// # Examples
     ///
     /// ```rust
-    /// use half::f16;
+    /// # use half::prelude::*;
     ///
     /// let nan = half::consts::NAN;
     /// let f = f16::from_f32(7.0_f32);
@@ -180,13 +192,13 @@ impl f16 {
         self.0 & 0x7FFFu16 > 0x7C00u16
     }
 
-    /// Returns `true` if this value is positive infinity or negative infinity and `false`
+    /// Returns `true` if this value is ±∞ and `false`
     /// otherwise.
     ///
     /// # Examples
     ///
     /// ```rust
-    /// use half::f16;
+    /// # use half::prelude::*;
     ///
     /// let f = f16::from_f32(7.0f32);
     /// let inf = half::consts::INFINITY;
@@ -209,7 +221,7 @@ impl f16 {
     /// # Examples
     ///
     /// ```rust
-    /// use half::f16;
+    /// # use half::prelude::*;
     ///
     /// let f = f16::from_f32(7.0f32);
     /// let inf = half::consts::INFINITY;
@@ -232,7 +244,7 @@ impl f16 {
     /// # Examples
     ///
     /// ```rust
-    /// use half::f16;
+    /// # use half::prelude::*;
     ///
     /// let min = half::consts::MIN_POSITIVE;
     /// let max = half::consts::MAX;
@@ -263,7 +275,7 @@ impl f16 {
     ///
     /// ```rust
     /// use std::num::FpCategory;
-    /// use half::f16;
+    /// # use half::prelude::*;
     ///
     /// let num = f16::from_f32(12.4_f32);
     /// let inf = half::consts::INFINITY;
@@ -300,7 +312,7 @@ impl f16 {
     /// # Examples
     ///
     /// ```rust
-    /// use half::f16;
+    /// # use half::prelude::*;
     ///
     /// let f = f16::from_f32(3.5_f32);
     ///
@@ -319,13 +331,13 @@ impl f16 {
         }
     }
 
-    /// Returns `true` if and only if `self` has a positive sign, including `+0.0`, `NaNs` with
-    /// positive sign bit and positive infinity.
+    /// Returns `true` if and only if `self` has a positive sign, including `+0.0`, `NaNs` with a
+    /// positive sign bit and +∞.
     ///
     /// # Examples
     ///
     /// ```rust
-    /// use half::f16;
+    /// # use half::prelude::*;
     ///
     /// let nan = half::consts::NAN;
     /// let f = f16::from_f32(7.0_f32);
@@ -341,13 +353,13 @@ impl f16 {
         self.0 & 0x8000u16 == 0
     }
 
-    /// Returns `true` if and only if `self` has a negative sign, including `-0.0`, `NaNs` with
-    /// negative sign bit and negative infinity.
+    /// Returns `true` if and only if `self` has a negative sign, including `-0.0`, `NaNs` with a
+    /// negative sign bit and −∞.
     ///
     /// # Examples
     ///
     /// ```rust
-    /// use half::f16;
+    /// # use half::prelude::*;
     ///
     /// let nan = half::consts::NAN;
     /// let f = f16::from_f32(7.0f32);
@@ -365,18 +377,21 @@ impl f16 {
 }
 
 impl From<f16> for f32 {
+    #[inline]
     fn from(x: f16) -> f32 {
         x.to_f32()
     }
 }
 
 impl From<f16> for f64 {
+    #[inline]
     fn from(x: f16) -> f64 {
         x.to_f64()
     }
 }
 
 impl From<i8> for f16 {
+    #[inline]
     fn from(x: i8) -> f16 {
         // Convert to f32, then to f16
         f16::from_f32(f32::from(x))
@@ -384,6 +399,7 @@ impl From<i8> for f16 {
 }
 
 impl From<u8> for f16 {
+    #[inline]
     fn from(x: u8) -> f16 {
         // Convert to f32, then to f16
         f16::from_f32(f32::from(x))

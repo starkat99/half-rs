@@ -1,6 +1,6 @@
 [package]
 name = "half"
-version = "1.3.1"
+version = "1.4.0" # Remember to keep in sync with html_root_url crate attribute
 authors = ["Kathryn Long <squeeself@gmail.com>"]
 description = "Half-precision floating point f16 and bf16 types for Rust implementing the IEEE 754-2008 standard binary16 and bfloat16 types."
 repository = "https://github.com/starkat99/half-rs"
@@ -34,6 +34,7 @@ criterion = "0.3"
 quickcheck = "0.9"
 quickcheck_macros = "0.8"
 rand = "0.7"
+version-sync = "0.8.1"
 
 [[bench]]
 name = "convert"

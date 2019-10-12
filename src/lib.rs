@@ -1,14 +1,14 @@
-//! A crate that provides support for half-precision floating point types.
+//! A crate that provides support for half-precision 16-bit floating point types.
 //!
-//! This crate provides the [`f16`] type, which is an implementation of the IEEE 754-2008 standard `binary16`
-//! floating point type. This 'half' precision floating point type is intended for efficient storage
-//! where the full range and precision of a larger floating point value is not required. This is
-//! especially useful for image storage formats.
+//! This crate provides the [`f16`] type, which is an implementation of the IEEE 754-2008 standard
+//! [`binary16`] a.k.a `half` floating point type. This 16-bit floating point type is intended for
+//! efficient storage where the full range and precision of a larger floating point value is not
+//! required. This is especially useful for image storage formats.
 //!
 //! This crate also provides a [`bf16`] type in the [`bfloat`] module, an alternative 16-bit floating
-//! point format. The `bfloat16` format is a truncated IEEE 754 standard `binary32` float that preserves the
-//! exponent to allow the same range as `f32` but with only 8 bits of precision (instead of 11 bits
-//! for [`f16`]). See the [`bfloat`] module for details.
+//! point format. The [`bfloat16`] format is a truncated IEEE 754 standard `binary32` float that
+//! preserves the exponent to allow the same range as `f32` but with only 8 bits of precision
+//! (instead of 11 bits for [`f16`]). See the [`bfloat`] module for details.
 //!
 //! Because [`f16`] and [`bf16`] are primarily for efficient storage, floating point operations such as
 //! addition, multiplication, etc. are not implemented. Operations should be performed with `f32`
@@ -35,8 +35,10 @@
 //! `std` library, such as the `vec` module that provides zero-copy `Vec` conversions.
 //!
 //! [`f16`]: struct.f16.html
+//! [`binary16`]: https://en.wikipedia.org/wiki/Half-precision_floating-point_format
 //! [`bf16`]: bfloat/struct.bf16.html
 //! [`bfloat`]: bfloat/index.html
+//! [`bfloat16`]: https://en.wikipedia.org/wiki/Bfloat16_floating-point_format
 //! [`slice`]: slice/index.html
 //! [`prelude`]: prelude/index.html
 
@@ -61,6 +63,7 @@
     ),
     feature(stdsimd, f16c_target_feature)
 )]
+#![doc(html_root_url = "https://docs.rs/half/1.4.0")]
 
 pub mod bfloat;
 mod binary16;
@@ -78,6 +81,7 @@ pub use binary16::{consts, f16};
 /// use half::prelude::*;
 /// ```
 pub mod prelude {
+    #[doc(no_inline)]
     pub use crate::{
         bfloat::bf16,
         f16,

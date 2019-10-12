@@ -4,7 +4,7 @@ macro_rules! convert_fn {
     (fn $name:ident($var:ident : $vartype:ty) -> $restype:ty {
             if feature("f16c") { $f16c:expr }
             else { $fallback:expr }}) => {
-        #[inline(always)]
+        #[inline]
         pub(crate) fn $name($var: $vartype) -> $restype {
             // Use CPU feature detection if using std
             #[cfg(all(
