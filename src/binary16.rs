@@ -286,20 +286,12 @@ impl f16 {
     pub fn classify(self) -> FpCategory {
         let exp = self.0 & 0x7C00u16;
         let man = self.0 & 0x03FFu16;
-        if exp == 0 {
-            if man == 0 {
-                FpCategory::Zero
-            } else {
-                FpCategory::Subnormal
-            }
-        } else if exp == 0x7C00u16 {
-            if man == 0 {
-                FpCategory::Infinite
-            } else {
-                FpCategory::Nan
-            }
-        } else {
-            FpCategory::Normal
+        match (exp, man) {
+            (0, 0) => FpCategory::Zero,
+            (0, _) => FpCategory::Subnormal,
+            (0x7C00u16, 0) => FpCategory::Infinite,
+            (0x7C00u16, _) => FpCategory::Nan,
+            _ => FpCategory::Normal,
         }
     }
 
