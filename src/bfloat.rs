@@ -194,7 +194,7 @@ impl bf16 {
     /// assert!(!f.is_nan());
     /// ```
     #[inline]
-    pub fn is_nan(self) -> bool {
+    pub const fn is_nan(self) -> bool {
         self.0 & 0x7FFFu16 > 0x7F80u16
     }
 
@@ -217,7 +217,7 @@ impl bf16 {
     /// assert!(neg_inf.is_infinite());
     /// ```
     #[inline]
-    pub fn is_infinite(self) -> bool {
+    pub const fn is_infinite(self) -> bool {
         self.0 & 0x7FFFu16 == 0x7F80u16
     }
 
@@ -240,7 +240,7 @@ impl bf16 {
     /// assert!(!neg_inf.is_finite());
     /// ```
     #[inline]
-    pub fn is_finite(self) -> bool {
+    pub const fn is_finite(self) -> bool {
         self.0 & 0x7F80u16 != 0x7F80u16
     }
 
@@ -346,7 +346,7 @@ impl bf16 {
     /// assert!(nan.is_sign_positive() != nan.is_sign_negative());
     /// ```
     #[inline]
-    pub fn is_sign_positive(self) -> bool {
+    pub const fn is_sign_positive(self) -> bool {
         self.0 & 0x8000u16 == 0
     }
 
@@ -368,7 +368,7 @@ impl bf16 {
     /// assert!(nan.is_sign_positive() != nan.is_sign_negative());
     /// ```
     #[inline]
-    pub fn is_sign_negative(self) -> bool {
+    pub const fn is_sign_negative(self) -> bool {
         self.0 & 0x8000u16 != 0
     }
 }
