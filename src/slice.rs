@@ -635,14 +635,13 @@ mod test {
 
     #[test]
     fn test_slice_conversions_f16() {
-        use crate::consts::*;
         let bits = &[
-            E.to_bits(),
-            PI.to_bits(),
-            EPSILON.to_bits(),
-            FRAC_1_SQRT_2.to_bits(),
+            f16::E.to_bits(),
+            f16::PI.to_bits(),
+            f16::EPSILON.to_bits(),
+            f16::FRAC_1_SQRT_2.to_bits(),
         ];
-        let numbers = &[E, PI, EPSILON, FRAC_1_SQRT_2];
+        let numbers = &[f16::E, f16::PI, f16::EPSILON, f16::FRAC_1_SQRT_2];
 
         // Convert from bits to numbers
         let from_bits = bits.reinterpret_cast::<f16>();
@@ -655,33 +654,31 @@ mod test {
 
     #[test]
     fn test_mutablility_f16() {
-        use crate::consts::*;
-        let mut bits_array = [PI.to_bits()];
+        let mut bits_array = [f16::PI.to_bits()];
         let bits = &mut bits_array[..];
 
         {
             // would not compile without these braces
             // TODO: add automated test to check that it does not compile without braces
             let numbers = bits.reinterpret_cast_mut();
-            numbers[0] = E;
+            numbers[0] = f16::E;
         }
 
-        assert_eq!(bits, &[E.to_bits()]);
+        assert_eq!(bits, &[f16::E.to_bits()]);
 
-        bits[0] = LN_2.to_bits();
-        assert_eq!(bits, &[LN_2.to_bits()]);
+        bits[0] = f16::LN_2.to_bits();
+        assert_eq!(bits, &[f16::LN_2.to_bits()]);
     }
 
     #[test]
     fn test_slice_conversions_bf16() {
-        use crate::bfloat::consts::*;
         let bits = &[
-            E.to_bits(),
-            PI.to_bits(),
-            EPSILON.to_bits(),
-            FRAC_1_SQRT_2.to_bits(),
+            bf16::E.to_bits(),
+            bf16::PI.to_bits(),
+            bf16::EPSILON.to_bits(),
+            bf16::FRAC_1_SQRT_2.to_bits(),
         ];
-        let numbers = &[E, PI, EPSILON, FRAC_1_SQRT_2];
+        let numbers = &[bf16::E, bf16::PI, bf16::EPSILON, bf16::FRAC_1_SQRT_2];
 
         // Convert from bits to numbers
         let from_bits = bits.reinterpret_cast::<bf16>();
@@ -694,21 +691,20 @@ mod test {
 
     #[test]
     fn test_mutablility_bf16() {
-        use crate::bfloat::consts::*;
-        let mut bits_array = [PI.to_bits()];
+        let mut bits_array = [bf16::PI.to_bits()];
         let bits = &mut bits_array[..];
 
         {
             // would not compile without these braces
             // TODO: add automated test to check that it does not compile without braces
             let numbers = bits.reinterpret_cast_mut();
-            numbers[0] = E;
+            numbers[0] = bf16::E;
         }
 
-        assert_eq!(bits, &[E.to_bits()]);
+        assert_eq!(bits, &[bf16::E.to_bits()]);
 
-        bits[0] = LN_2.to_bits();
-        assert_eq!(bits, &[LN_2.to_bits()]);
+        bits[0] = bf16::LN_2.to_bits();
+        assert_eq!(bits, &[bf16::LN_2.to_bits()]);
     }
 
     #[test]

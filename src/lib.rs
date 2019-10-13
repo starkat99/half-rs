@@ -72,7 +72,10 @@ pub mod slice;
 #[cfg(feature = "std")]
 pub mod vec;
 
-pub use binary16::{consts, f16};
+pub use binary16::f16;
+
+#[allow(deprecated)]
+pub use binary16::consts;
 
 /// A collection of the most used items and traits in this crate for easy importing.
 ///

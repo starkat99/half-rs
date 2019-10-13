@@ -19,97 +19,238 @@ pub(crate) mod convert;
 /// implemented. Operations should be performed with `f32` or higher-precision types and converted
 /// to/from [`f16`] as necessary.
 ///
-/// Useful constants related to [`f16`] are located in the [`consts`] module.
-///
 /// [`f16`]: struct.f16.html
 /// [`binary16`]: https://en.wikipedia.org/wiki/Half-precision_floating-point_format
-/// [`consts`]: consts/index.html
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct f16(u16);
 
+#[deprecated(
+    since = "1.4.0",
+    note = "all constants moved to associated constants of [`f16`](../struct.f16.html)"
+)]
 pub mod consts {
     //! Useful `f16` constants.
 
     use super::f16;
 
     /// Approximate number of [`f16`](../struct.f16.html) significant digits in base 10.
-    pub const DIGITS: u32 = 3;
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::DIGITS`](../struct.f16.html#associatedconstant.DIGITS)"
+    )]
+    pub const DIGITS: u32 = f16::DIGITS;
     /// [`f16`](../struct.f16.html)
     /// [machine epsilon](https://en.wikipedia.org/wiki/Machine_epsilon) value.
     ///
     /// This is the difference between 1.0 and the next largest representable number.
-    pub const EPSILON: f16 = f16(0x1400u16);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::EPSILON`](../struct.f16.html#associatedconstant.EPSILON)"
+    )]
+    pub const EPSILON: f16 = f16::EPSILON;
     /// [`f16`](../struct.f16.html) positive Infinity (+∞).
-    pub const INFINITY: f16 = f16(0x7C00u16);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::INFINITY`](../struct.f16.html#associatedconstant.INFINITY)"
+    )]
+    pub const INFINITY: f16 = f16::INFINITY;
     /// Number of [`f16`](../struct.f16.html) significant digits in base 2.
-    pub const MANTISSA_DIGITS: u32 = 11;
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::MANTISSA_DIGITS`](../struct.f16.html#associatedconstant.MANTISSA_DIGITS)"
+    )]
+    pub const MANTISSA_DIGITS: u32 = f16::MANTISSA_DIGITS;
     /// Largest finite [`f16`](../struct.f16.html) value.
-    pub const MAX: f16 = f16(0x7BFF);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::MAX`](../struct.f16.html#associatedconstant.MAX)"
+    )]
+    pub const MAX: f16 = f16::MAX;
     /// Maximum possible [`f16`](../struct.f16.html) power of 10 exponent.
-    pub const MAX_10_EXP: i32 = 4;
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::MAX_10_EXP`](../struct.f16.html#associatedconstant.MAX_10_EXP)"
+    )]
+    pub const MAX_10_EXP: i32 = f16::MAX_10_EXP;
     /// Maximum possible [`f16`](../struct.f16.html) power of 2 exponent.
-    pub const MAX_EXP: i32 = 16;
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::MAX_EXP`](../struct.f16.html#associatedconstant.MAX_EXP)"
+    )]
+    pub const MAX_EXP: i32 = f16::MAX_EXP;
     /// Smallest finite [`f16`](../struct.f16.html) value.
-    pub const MIN: f16 = f16(0xFBFF);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::MIN`](../struct.f16.html#associatedconstant.MIN)"
+    )]
+    pub const MIN: f16 = f16::MIN;
     /// Minimum possible normal [`f16`](../struct.f16.html) power of 10 exponent.
-    pub const MIN_10_EXP: i32 = -4;
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::MIN_10_EXP`](../struct.f16.html#associatedconstant.MIN_10_EXP)"
+    )]
+    pub const MIN_10_EXP: i32 = f16::MIN_10_EXP;
     /// One greater than the minimum possible normal [`f16`](../struct.f16.html) power of 2 exponent.
-    pub const MIN_EXP: i32 = -13;
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::MIN_EXP`](../struct.f16.html#associatedconstant.MIN_EXP)"
+    )]
+    pub const MIN_EXP: i32 = f16::MIN_EXP;
     /// Smallest positive normal [`f16`](../struct.f16.html) value.
-    pub const MIN_POSITIVE: f16 = f16(0x0400u16);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::MIN_POSITIVE`](../struct.f16.html#associatedconstant.MIN_POSITIVE)"
+    )]
+    pub const MIN_POSITIVE: f16 = f16::MIN_POSITIVE;
     /// [`f16`](../struct.f16.html) Not a Number (NaN).
-    pub const NAN: f16 = f16(0x7E00u16);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::NAN`](../struct.f16.html#associatedconstant.NAN)"
+    )]
+    pub const NAN: f16 = f16::NAN;
     /// [`f16`](../struct.f16.html) negative infinity (-∞).
-    pub const NEG_INFINITY: f16 = f16(0xFC00u16);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::NEG_INFINITY`](../struct.f16.html#associatedconstant.NEG_INFINITY)"
+    )]
+    pub const NEG_INFINITY: f16 = f16::NEG_INFINITY;
     /// The radix or base of the internal representation of [`f16`](../struct.f16.html).
-    pub const RADIX: u32 = 2;
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::RADIX`](../struct.f16.html#associatedconstant.RADIX)"
+    )]
+    pub const RADIX: u32 = f16::RADIX;
 
     /// Minimum positive subnormal [`f16`](../struct.f16.html) value.
-    pub const MIN_POSITIVE_SUBNORMAL: f16 = f16(0x0001u16);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::MIN_POSITIVE_SUBNORMAL`](../struct.f16.html#associatedconstant.MIN_POSITIVE_SUBNORMAL)"
+    )]
+    pub const MIN_POSITIVE_SUBNORMAL: f16 = f16::MIN_POSITIVE_SUBNORMAL;
     /// Maximum subnormal [`f16`](../struct.f16.html) value.
-    pub const MAX_SUBNORMAL: f16 = f16(0x03FFu16);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::MAX_SUBNORMAL`](../struct.f16.html#associatedconstant.MAX_SUBNORMAL)"
+    )]
+    pub const MAX_SUBNORMAL: f16 = f16::MAX_SUBNORMAL;
 
     /// [`f16`](../struct.f16.html) 1
-    pub const ONE: f16 = f16(0x3C00u16);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::ONE`](../struct.f16.html#associatedconstant.ONE)"
+    )]
+    pub const ONE: f16 = f16::ONE;
     /// [`f16`](../struct.f16.html) 0
-    pub const ZERO: f16 = f16(0x0000u16);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::ZERO`](../struct.f16.html#associatedconstant.ZERO)"
+    )]
+    pub const ZERO: f16 = f16::ZERO;
     /// [`f16`](../struct.f16.html) -0
-    pub const NEG_ZERO: f16 = f16(0x8000u16);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::NEG_ZERO`](../struct.f16.html#associatedconstant.NEG_ZERO)"
+    )]
+    pub const NEG_ZERO: f16 = f16::NEG_ZERO;
 
     /// [`f16`](../struct.f16.html) Euler's number (ℯ).
-    pub const E: f16 = f16(0x4170u16);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::E`](../struct.f16.html#associatedconstant.E)"
+    )]
+    pub const E: f16 = f16::E;
     /// [`f16`](../struct.f16.html) Archimedes' constant (π).
-    pub const PI: f16 = f16(0x4248u16);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::PI`](../struct.f16.html#associatedconstant.PI)"
+    )]
+    pub const PI: f16 = f16::PI;
     /// [`f16`](../struct.f16.html) 1/π
-    pub const FRAC_1_PI: f16 = f16(0x3518u16);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::FRAC_1_PI`](../struct.f16.html#associatedconstant.FRAC_1_PI)"
+    )]
+    pub const FRAC_1_PI: f16 = f16::FRAC_1_PI;
     /// [`f16`](../struct.f16.html) 1/√2
-    pub const FRAC_1_SQRT_2: f16 = f16(0x39A8u16);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::FRAC_1_SQRT_2`](../struct.f16.html#associatedconstant.FRAC_1_SQRT_2)"
+    )]
+    pub const FRAC_1_SQRT_2: f16 = f16::FRAC_1_SQRT_2;
     /// [`f16`](../struct.f16.html) 2/π
-    pub const FRAC_2_PI: f16 = f16(0x3918u16);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::FRAC_2_PI`](../struct.f16.html#associatedconstant.FRAC_2_PI)"
+    )]
+    pub const FRAC_2_PI: f16 = f16::FRAC_2_PI;
     /// [`f16`](../struct.f16.html) 2/√π
-    pub const FRAC_2_SQRT_PI: f16 = f16(0x3C83u16);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::FRAC_2_SQRT_PI`](../struct.f16.html#associatedconstant.FRAC_2_SQRT_PI)"
+    )]
+    pub const FRAC_2_SQRT_PI: f16 = f16::FRAC_2_SQRT_PI;
     /// [`f16`](../struct.f16.html) π/2
-    pub const FRAC_PI_2: f16 = f16(0x3E48u16);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::FRAC_PI_2`](../struct.f16.html#associatedconstant.FRAC_PI_2)"
+    )]
+    pub const FRAC_PI_2: f16 = f16::FRAC_PI_2;
     /// [`f16`](../struct.f16.html) π/3
-    pub const FRAC_PI_3: f16 = f16(0x3C30u16);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::FRAC_PI_3`](../struct.f16.html#associatedconstant.FRAC_PI_3)"
+    )]
+    pub const FRAC_PI_3: f16 = f16::FRAC_PI_3;
     /// [`f16`](../struct.f16.html) π/4
-    pub const FRAC_PI_4: f16 = f16(0x3A48u16);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::FRAC_PI_4`](../struct.f16.html#associatedconstant.FRAC_PI_4)"
+    )]
+    pub const FRAC_PI_4: f16 = f16::FRAC_PI_4;
     /// [`f16`](../struct.f16.html) π/6
-    pub const FRAC_PI_6: f16 = f16(0x3830u16);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::FRAC_PI_6`](../struct.f16.html#associatedconstant.FRAC_PI_6)"
+    )]
+    pub const FRAC_PI_6: f16 = f16::FRAC_PI_6;
     /// [`f16`](../struct.f16.html) π/8
-    pub const FRAC_PI_8: f16 = f16(0x3648u16);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::FRAC_PI_8`](../struct.f16.html#associatedconstant.FRAC_PI_8)"
+    )]
+    pub const FRAC_PI_8: f16 = f16::FRAC_PI_8;
     /// [`f16`](../struct.f16.html) 𝗅𝗇 10
-    pub const LN_10: f16 = f16(0x409Bu16);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::LN_10`](../struct.f16.html#associatedconstant.LN_10)"
+    )]
+    pub const LN_10: f16 = f16::LN_10;
     /// [`f16`](../struct.f16.html) 𝗅𝗇 2
-    pub const LN_2: f16 = f16(0x398Cu16);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::LN_2`](../struct.f16.html#associatedconstant.LN_2)"
+    )]
+    pub const LN_2: f16 = f16::LN_2;
     /// [`f16`](../struct.f16.html) 𝗅𝗈𝗀₁₀ℯ
-    pub const LOG10_E: f16 = f16(0x36F3u16);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::LOG10_E`](../struct.f16.html#associatedconstant.LOG10_E)"
+    )]
+    pub const LOG10_E: f16 = f16::LOG10_E;
     /// [`f16`](../struct.f16.html) 𝗅𝗈𝗀₂ℯ
-    pub const LOG2_E: f16 = f16(0x3DC5u16);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::LOG2_E`](../struct.f16.html#associatedconstant.LOG2_E)"
+    )]
+    pub const LOG2_E: f16 = f16::LOG2_E;
     /// [`f16`](../struct.f16.html) √2
-    pub const SQRT_2: f16 = f16(0x3DA8u16);
+    #[deprecated(
+        since = "1.4.0",
+        note = "moved to [`f16::SQRT_2`](../struct.f16.html#associatedconstant.SQRT_2)"
+    )]
+    pub const SQRT_2: f16 = f16::SQRT_2;
 }
 
 impl f16 {
@@ -181,7 +322,7 @@ impl f16 {
     /// ```rust
     /// # use half::prelude::*;
     ///
-    /// let nan = half::consts::NAN;
+    /// let nan = f16::NAN;
     /// let f = f16::from_f32(7.0_f32);
     ///
     /// assert!(nan.is_nan());
@@ -201,9 +342,9 @@ impl f16 {
     /// # use half::prelude::*;
     ///
     /// let f = f16::from_f32(7.0f32);
-    /// let inf = half::consts::INFINITY;
-    /// let neg_inf = half::consts::NEG_INFINITY;
-    /// let nan = half::consts::NAN;
+    /// let inf = f16::INFINITY;
+    /// let neg_inf = f16::NEG_INFINITY;
+    /// let nan = f16::NAN;
     ///
     /// assert!(!f.is_infinite());
     /// assert!(!nan.is_infinite());
@@ -224,9 +365,9 @@ impl f16 {
     /// # use half::prelude::*;
     ///
     /// let f = f16::from_f32(7.0f32);
-    /// let inf = half::consts::INFINITY;
-    /// let neg_inf = half::consts::NEG_INFINITY;
-    /// let nan = half::consts::NAN;
+    /// let inf = f16::INFINITY;
+    /// let neg_inf = f16::NEG_INFINITY;
+    /// let nan = f16::NAN;
     ///
     /// assert!(f.is_finite());
     ///
@@ -246,8 +387,8 @@ impl f16 {
     /// ```rust
     /// # use half::prelude::*;
     ///
-    /// let min = half::consts::MIN_POSITIVE;
-    /// let max = half::consts::MAX;
+    /// let min = f16::MIN_POSITIVE;
+    /// let max = f16::MAX;
     /// let lower_than_min = f16::from_f32(1.0e-10_f32);
     /// let zero = f16::from_f32(0.0_f32);
     ///
@@ -255,8 +396,8 @@ impl f16 {
     /// assert!(max.is_normal());
     ///
     /// assert!(!zero.is_normal());
-    /// assert!(!half::consts::NAN.is_normal());
-    /// assert!(!half::consts::INFINITY.is_normal());
+    /// assert!(!f16::NAN.is_normal());
+    /// assert!(!f16::INFINITY.is_normal());
     /// // Values between `0` and `min` are Subnormal.
     /// assert!(!lower_than_min.is_normal());
     /// ```
@@ -278,7 +419,7 @@ impl f16 {
     /// # use half::prelude::*;
     ///
     /// let num = f16::from_f32(12.4_f32);
-    /// let inf = half::consts::INFINITY;
+    /// let inf = f16::INFINITY;
     ///
     /// assert_eq!(num.classify(), FpCategory::Normal);
     /// assert_eq!(inf.classify(), FpCategory::Infinite);
@@ -309,9 +450,9 @@ impl f16 {
     /// let f = f16::from_f32(3.5_f32);
     ///
     /// assert_eq!(f.signum(), f16::from_f32(1.0));
-    /// assert_eq!(half::consts::NEG_INFINITY.signum(), f16::from_f32(-1.0));
+    /// assert_eq!(f16::NEG_INFINITY.signum(), f16::from_f32(-1.0));
     ///
-    /// assert!(half::consts::NAN.signum().is_nan());
+    /// assert!(f16::NAN.signum().is_nan());
     /// ```
     pub fn signum(self) -> f16 {
         if self.is_nan() {
@@ -331,7 +472,7 @@ impl f16 {
     /// ```rust
     /// # use half::prelude::*;
     ///
-    /// let nan = half::consts::NAN;
+    /// let nan = f16::NAN;
     /// let f = f16::from_f32(7.0_f32);
     /// let g = f16::from_f32(-7.0_f32);
     ///
@@ -353,7 +494,7 @@ impl f16 {
     /// ```rust
     /// # use half::prelude::*;
     ///
-    /// let nan = half::consts::NAN;
+    /// let nan = f16::NAN;
     /// let f = f16::from_f32(7.0f32);
     /// let g = f16::from_f32(-7.0f32);
     ///
@@ -366,6 +507,83 @@ impl f16 {
     pub const fn is_sign_negative(self) -> bool {
         self.0 & 0x8000u16 != 0
     }
+
+    /// Approximate number of [`f16`](struct.f16.html) significant digits in base 10.
+    pub const DIGITS: u32 = 3;
+    /// [`f16`](struct.f16.html)
+    /// [machine epsilon](https://en.wikipedia.org/wiki/Machine_epsilon) value.
+    ///
+    /// This is the difference between 1.0 and the next largest representable number.
+    pub const EPSILON: f16 = f16(0x1400u16);
+    /// [`f16`](struct.f16.html) positive Infinity (+∞).
+    pub const INFINITY: f16 = f16(0x7C00u16);
+    /// Number of [`f16`](struct.f16.html) significant digits in base 2.
+    pub const MANTISSA_DIGITS: u32 = 11;
+    /// Largest finite [`f16`](struct.f16.html) value.
+    pub const MAX: f16 = f16(0x7BFF);
+    /// Maximum possible [`f16`](struct.f16.html) power of 10 exponent.
+    pub const MAX_10_EXP: i32 = 4;
+    /// Maximum possible [`f16`](struct.f16.html) power of 2 exponent.
+    pub const MAX_EXP: i32 = 16;
+    /// Smallest finite [`f16`](struct.f16.html) value.
+    pub const MIN: f16 = f16(0xFBFF);
+    /// Minimum possible normal [`f16`](struct.f16.html) power of 10 exponent.
+    pub const MIN_10_EXP: i32 = -4;
+    /// One greater than the minimum possible normal [`f16`](struct.f16.html) power of 2 exponent.
+    pub const MIN_EXP: i32 = -13;
+    /// Smallest positive normal [`f16`](struct.f16.html) value.
+    pub const MIN_POSITIVE: f16 = f16(0x0400u16);
+    /// [`f16`](struct.f16.html) Not a Number (NaN).
+    pub const NAN: f16 = f16(0x7E00u16);
+    /// [`f16`](struct.f16.html) negative infinity (-∞).
+    pub const NEG_INFINITY: f16 = f16(0xFC00u16);
+    /// The radix or base of the internal representation of [`f16`](struct.f16.html).
+    pub const RADIX: u32 = 2;
+
+    /// Minimum positive subnormal [`f16`](struct.f16.html) value.
+    pub const MIN_POSITIVE_SUBNORMAL: f16 = f16(0x0001u16);
+    /// Maximum subnormal [`f16`](struct.f16.html) value.
+    pub const MAX_SUBNORMAL: f16 = f16(0x03FFu16);
+
+    /// [`f16`](struct.f16.html) 1
+    pub const ONE: f16 = f16(0x3C00u16);
+    /// [`f16`](struct.f16.html) 0
+    pub const ZERO: f16 = f16(0x0000u16);
+    /// [`f16`](struct.f16.html) -0
+    pub const NEG_ZERO: f16 = f16(0x8000u16);
+
+    /// [`f16`](struct.f16.html) Euler's number (ℯ).
+    pub const E: f16 = f16(0x4170u16);
+    /// [`f16`](struct.f16.html) Archimedes' constant (π).
+    pub const PI: f16 = f16(0x4248u16);
+    /// [`f16`](struct.f16.html) 1/π
+    pub const FRAC_1_PI: f16 = f16(0x3518u16);
+    /// [`f16`](struct.f16.html) 1/√2
+    pub const FRAC_1_SQRT_2: f16 = f16(0x39A8u16);
+    /// [`f16`](struct.f16.html) 2/π
+    pub const FRAC_2_PI: f16 = f16(0x3918u16);
+    /// [`f16`](struct.f16.html) 2/√π
+    pub const FRAC_2_SQRT_PI: f16 = f16(0x3C83u16);
+    /// [`f16`](struct.f16.html) π/2
+    pub const FRAC_PI_2: f16 = f16(0x3E48u16);
+    /// [`f16`](struct.f16.html) π/3
+    pub const FRAC_PI_3: f16 = f16(0x3C30u16);
+    /// [`f16`](struct.f16.html) π/4
+    pub const FRAC_PI_4: f16 = f16(0x3A48u16);
+    /// [`f16`](struct.f16.html) π/6
+    pub const FRAC_PI_6: f16 = f16(0x3830u16);
+    /// [`f16`](struct.f16.html) π/8
+    pub const FRAC_PI_8: f16 = f16(0x3648u16);
+    /// [`f16`](struct.f16.html) 𝗅𝗇 10
+    pub const LN_10: f16 = f16(0x409Bu16);
+    /// [`f16`](struct.f16.html) 𝗅𝗇 2
+    pub const LN_2: f16 = f16(0x398Cu16);
+    /// [`f16`](struct.f16.html) 𝗅𝗈𝗀₁₀ℯ
+    pub const LOG10_E: f16 = f16(0x36F3u16);
+    /// [`f16`](struct.f16.html) 𝗅𝗈𝗀₂ℯ
+    pub const LOG2_E: f16 = f16(0x3DC5u16);
+    /// [`f16`](struct.f16.html) √2
+    pub const SQRT_2: f16 = f16(0x3DA8u16);
 }
 
 impl From<f16> for f32 {
@@ -543,8 +761,8 @@ mod test {
     #[test]
     fn test_f16_consts() {
         // DIGITS
-        let digits = ((consts::MANTISSA_DIGITS as f32 - 1.0) * 2f32.log10()).floor() as u32;
-        assert_eq!(consts::DIGITS, digits);
+        let digits = ((f16::MANTISSA_DIGITS as f32 - 1.0) * 2f32.log10()).floor() as u32;
+        assert_eq!(f16::DIGITS, digits);
         // sanity check to show test is good
         let digits32 = ((core::f32::MANTISSA_DIGITS as f32 - 1.0) * 2f32.log10()).floor() as u32;
         assert_eq!(core::f32::DIGITS, digits32);
@@ -553,19 +771,19 @@ mod test {
         let one = f16::from_f32(1.0);
         let one_plus_epsilon = f16::from_bits(one.to_bits() + 1);
         let epsilon = f16::from_f32(one_plus_epsilon.to_f32() - 1.0);
-        assert_eq!(consts::EPSILON, epsilon);
+        assert_eq!(f16::EPSILON, epsilon);
         // sanity check to show test is good
         let one_plus_epsilon32 = f32::from_bits(1.0f32.to_bits() + 1);
         let epsilon32 = one_plus_epsilon32 - 1f32;
         assert_eq!(core::f32::EPSILON, epsilon32);
 
         // MAX, MIN and MIN_POSITIVE
-        let max = f16::from_bits(consts::INFINITY.to_bits() - 1);
-        let min = f16::from_bits(consts::NEG_INFINITY.to_bits() - 1);
-        let min_pos = f16::from_f32(2f32.powi(consts::MIN_EXP - 1));
-        assert_eq!(consts::MAX, max);
-        assert_eq!(consts::MIN, min);
-        assert_eq!(consts::MIN_POSITIVE, min_pos);
+        let max = f16::from_bits(f16::INFINITY.to_bits() - 1);
+        let min = f16::from_bits(f16::NEG_INFINITY.to_bits() - 1);
+        let min_pos = f16::from_f32(2f32.powi(f16::MIN_EXP - 1));
+        assert_eq!(f16::MAX, max);
+        assert_eq!(f16::MIN, min);
+        assert_eq!(f16::MIN_POSITIVE, min_pos);
         // sanity check to show test is good
         let max32 = f32::from_bits(core::f32::INFINITY.to_bits() - 1);
         let min32 = f32::from_bits(core::f32::NEG_INFINITY.to_bits() - 1);
@@ -575,12 +793,12 @@ mod test {
         assert_eq!(core::f32::MIN_POSITIVE, min_pos32);
 
         // MIN_10_EXP and MAX_10_EXP
-        let ten_to_min = 10f32.powi(consts::MIN_10_EXP);
-        assert!(ten_to_min / 10.0 < consts::MIN_POSITIVE.to_f32());
-        assert!(ten_to_min > consts::MIN_POSITIVE.to_f32());
-        let ten_to_max = 10f32.powi(consts::MAX_10_EXP);
-        assert!(ten_to_max < consts::MAX.to_f32());
-        assert!(ten_to_max * 10.0 > consts::MAX.to_f32());
+        let ten_to_min = 10f32.powi(f16::MIN_10_EXP);
+        assert!(ten_to_min / 10.0 < f16::MIN_POSITIVE.to_f32());
+        assert!(ten_to_min > f16::MIN_POSITIVE.to_f32());
+        let ten_to_max = 10f32.powi(f16::MAX_10_EXP);
+        assert!(ten_to_max < f16::MAX.to_f32());
+        assert!(ten_to_max * 10.0 > f16::MAX.to_f32());
         // sanity check to show test is good
         let ten_to_min32 = 10f64.powi(core::f32::MIN_10_EXP);
         assert!(ten_to_min32 / 10.0 < f64::from(core::f32::MIN_POSITIVE));
@@ -599,15 +817,15 @@ mod test {
         let neg_inf = f16::from_f32(core::f32::NEG_INFINITY);
         let nan = f16::from_f32(core::f32::NAN);
 
-        assert_eq!(consts::ONE, one);
-        assert_eq!(consts::ZERO, zero);
+        assert_eq!(f16::ONE, one);
+        assert_eq!(f16::ZERO, zero);
         assert!(zero.is_sign_positive());
-        assert_eq!(consts::NEG_ZERO, neg_zero);
+        assert_eq!(f16::NEG_ZERO, neg_zero);
         assert!(neg_zero.is_sign_negative());
-        assert_eq!(consts::INFINITY, inf);
-        assert_eq!(consts::NEG_INFINITY, neg_inf);
+        assert_eq!(f16::INFINITY, inf);
+        assert_eq!(f16::NEG_INFINITY, neg_inf);
         assert!(nan.is_nan());
-        assert!(consts::NAN.is_nan());
+        assert!(f16::NAN.is_nan());
 
         let e = f16::from_f32(core::f32::consts::E);
         let pi = f16::from_f32(core::f32::consts::PI);
@@ -626,22 +844,22 @@ mod test {
         let log2_e = f16::from_f32(core::f32::consts::LOG2_E);
         let sqrt_2 = f16::from_f32(core::f32::consts::SQRT_2);
 
-        assert_eq!(consts::E, e);
-        assert_eq!(consts::PI, pi);
-        assert_eq!(consts::FRAC_1_PI, frac_1_pi);
-        assert_eq!(consts::FRAC_1_SQRT_2, frac_1_sqrt_2);
-        assert_eq!(consts::FRAC_2_PI, frac_2_pi);
-        assert_eq!(consts::FRAC_2_SQRT_PI, frac_2_sqrt_pi);
-        assert_eq!(consts::FRAC_PI_2, frac_pi_2);
-        assert_eq!(consts::FRAC_PI_3, frac_pi_3);
-        assert_eq!(consts::FRAC_PI_4, frac_pi_4);
-        assert_eq!(consts::FRAC_PI_6, frac_pi_6);
-        assert_eq!(consts::FRAC_PI_8, frac_pi_8);
-        assert_eq!(consts::LN_10, ln_10);
-        assert_eq!(consts::LN_2, ln_2);
-        assert_eq!(consts::LOG10_E, log10_e);
-        assert_eq!(consts::LOG2_E, log2_e);
-        assert_eq!(consts::SQRT_2, sqrt_2);
+        assert_eq!(f16::E, e);
+        assert_eq!(f16::PI, pi);
+        assert_eq!(f16::FRAC_1_PI, frac_1_pi);
+        assert_eq!(f16::FRAC_1_SQRT_2, frac_1_sqrt_2);
+        assert_eq!(f16::FRAC_2_PI, frac_2_pi);
+        assert_eq!(f16::FRAC_2_SQRT_PI, frac_2_sqrt_pi);
+        assert_eq!(f16::FRAC_PI_2, frac_pi_2);
+        assert_eq!(f16::FRAC_PI_3, frac_pi_3);
+        assert_eq!(f16::FRAC_PI_4, frac_pi_4);
+        assert_eq!(f16::FRAC_PI_6, frac_pi_6);
+        assert_eq!(f16::FRAC_PI_8, frac_pi_8);
+        assert_eq!(f16::LN_10, ln_10);
+        assert_eq!(f16::LN_2, ln_2);
+        assert_eq!(f16::LOG10_E, log10_e);
+        assert_eq!(f16::LOG2_E, log2_e);
+        assert_eq!(f16::SQRT_2, sqrt_2);
     }
 
     #[test]
@@ -653,15 +871,15 @@ mod test {
         let neg_inf = f16::from_f64(core::f64::NEG_INFINITY);
         let nan = f16::from_f64(core::f64::NAN);
 
-        assert_eq!(consts::ONE, one);
-        assert_eq!(consts::ZERO, zero);
+        assert_eq!(f16::ONE, one);
+        assert_eq!(f16::ZERO, zero);
         assert!(zero.is_sign_positive());
-        assert_eq!(consts::NEG_ZERO, neg_zero);
+        assert_eq!(f16::NEG_ZERO, neg_zero);
         assert!(neg_zero.is_sign_negative());
-        assert_eq!(consts::INFINITY, inf);
-        assert_eq!(consts::NEG_INFINITY, neg_inf);
+        assert_eq!(f16::INFINITY, inf);
+        assert_eq!(f16::NEG_INFINITY, neg_inf);
         assert!(nan.is_nan());
-        assert!(consts::NAN.is_nan());
+        assert!(f16::NAN.is_nan());
 
         let e = f16::from_f64(core::f64::consts::E);
         let pi = f16::from_f64(core::f64::consts::PI);
@@ -680,22 +898,22 @@ mod test {
         let log2_e = f16::from_f64(core::f64::consts::LOG2_E);
         let sqrt_2 = f16::from_f64(core::f64::consts::SQRT_2);
 
-        assert_eq!(consts::E, e);
-        assert_eq!(consts::PI, pi);
-        assert_eq!(consts::FRAC_1_PI, frac_1_pi);
-        assert_eq!(consts::FRAC_1_SQRT_2, frac_1_sqrt_2);
-        assert_eq!(consts::FRAC_2_PI, frac_2_pi);
-        assert_eq!(consts::FRAC_2_SQRT_PI, frac_2_sqrt_pi);
-        assert_eq!(consts::FRAC_PI_2, frac_pi_2);
-        assert_eq!(consts::FRAC_PI_3, frac_pi_3);
-        assert_eq!(consts::FRAC_PI_4, frac_pi_4);
-        assert_eq!(consts::FRAC_PI_6, frac_pi_6);
-        assert_eq!(consts::FRAC_PI_8, frac_pi_8);
-        assert_eq!(consts::LN_10, ln_10);
-        assert_eq!(consts::LN_2, ln_2);
-        assert_eq!(consts::LOG10_E, log10_e);
-        assert_eq!(consts::LOG2_E, log2_e);
-        assert_eq!(consts::SQRT_2, sqrt_2);
+        assert_eq!(f16::E, e);
+        assert_eq!(f16::PI, pi);
+        assert_eq!(f16::FRAC_1_PI, frac_1_pi);
+        assert_eq!(f16::FRAC_1_SQRT_2, frac_1_sqrt_2);
+        assert_eq!(f16::FRAC_2_PI, frac_2_pi);
+        assert_eq!(f16::FRAC_2_SQRT_PI, frac_2_sqrt_pi);
+        assert_eq!(f16::FRAC_PI_2, frac_pi_2);
+        assert_eq!(f16::FRAC_PI_3, frac_pi_3);
+        assert_eq!(f16::FRAC_PI_4, frac_pi_4);
+        assert_eq!(f16::FRAC_PI_6, frac_pi_6);
+        assert_eq!(f16::FRAC_PI_8, frac_pi_8);
+        assert_eq!(f16::LN_10, ln_10);
+        assert_eq!(f16::LN_2, ln_2);
+        assert_eq!(f16::LOG10_E, log10_e);
+        assert_eq!(f16::LOG2_E, log2_e);
+        assert_eq!(f16::SQRT_2, sqrt_2);
     }
 
     #[test]
@@ -757,7 +975,7 @@ mod test {
         let f = f16::from_f32(7.1);
         let diff = (f.to_f32() - 7.1f32).abs();
         // diff must be <= 4 * EPSILON, as 7 has two more significant bits than 1
-        assert!(diff <= 4.0 * consts::EPSILON.to_f32());
+        assert!(diff <= 4.0 * f16::EPSILON.to_f32());
 
         assert_eq!(f16::from_bits(0x0000_0001).to_f32(), 2.0f32.powi(-24));
         assert_eq!(f16::from_bits(0x0000_0005).to_f32(), 5.0 * 2.0f32.powi(-24));
@@ -778,7 +996,7 @@ mod test {
         let f = f16::from_f64(7.1);
         let diff = (f.to_f64() - 7.1f64).abs();
         // diff must be <= 4 * EPSILON, as 7 has two more significant bits than 1
-        assert!(diff <= 4.0 * consts::EPSILON.to_f64());
+        assert!(diff <= 4.0 * f16::EPSILON.to_f64());
 
         assert_eq!(f16::from_bits(0x0000_0001).to_f64(), 2.0f64.powi(-24));
         assert_eq!(f16::from_bits(0x0000_0005).to_f64(), 5.0 * 2.0f64.powi(-24));

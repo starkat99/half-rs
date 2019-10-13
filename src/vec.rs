@@ -255,13 +255,12 @@ mod test {
 
     #[test]
     fn test_vec_conversions_f16() {
-        use crate::consts::*;
-        let numbers = vec![E, PI, EPSILON, FRAC_1_SQRT_2];
+        let numbers = vec![f16::E, f16::PI, f16::EPSILON, f16::FRAC_1_SQRT_2];
         let bits = vec![
-            E.to_bits(),
-            PI.to_bits(),
-            EPSILON.to_bits(),
-            FRAC_1_SQRT_2.to_bits(),
+            f16::E.to_bits(),
+            f16::PI.to_bits(),
+            f16::EPSILON.to_bits(),
+            f16::FRAC_1_SQRT_2.to_bits(),
         ];
         let bits_cloned = bits.clone();
 
@@ -276,13 +275,12 @@ mod test {
 
     #[test]
     fn test_vec_conversions_bf16() {
-        use crate::bfloat::consts::*;
-        let numbers = vec![E, PI, EPSILON, FRAC_1_SQRT_2];
+        let numbers = vec![bf16::E, bf16::PI, bf16::EPSILON, bf16::FRAC_1_SQRT_2];
         let bits = vec![
-            E.to_bits(),
-            PI.to_bits(),
-            EPSILON.to_bits(),
-            FRAC_1_SQRT_2.to_bits(),
+            bf16::E.to_bits(),
+            bf16::PI.to_bits(),
+            bf16::EPSILON.to_bits(),
+            bf16::FRAC_1_SQRT_2.to_bits(),
         ];
         let bits_cloned = bits.clone();
 

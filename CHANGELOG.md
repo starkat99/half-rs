@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
    are only available with the `std` cargo feature.
 - `prelude` has been added, for easy importing of most common functionality. Currently the
   prelude imports `f16`, `bfloat::bf16`, and the new slice and vec extension traits.
+- New associated constants on `f16` type to replace deprecated `consts` module.
 
 ### Fixed
 - Software conversion (when not using `use-intrinsics` feature) now matches hardware rounding
@@ -28,6 +29,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Minimum rustc version bumped to 1.32.
 
 ### Deprecated
+- `consts` module and all its constants have been deprecated; use the associated constants on `f16` instead.
 - `slice::from_bits` has been deprecated; use `slice::HalfBitsSliceExt::reinterpret_cast` instead.
 - `slice::from_bits_mut` has been deprecated; use `slice::HalfBitsSliceExt::reinterpret_cast_mut` instead.
 - `slice::to_bits` has been deprecated; use `slice::HalfFloatSliceExt::reinterpret_cast` instead.
