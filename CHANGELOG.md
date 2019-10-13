@@ -4,6 +4,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.4.0] - 2019-10-13 <a name="1.4.0"></a>
 ### Added
 - Added a `bf16` type implementing the alternative
   [`bfloat16`](https://en.wikipedia.org/wiki/Bfloat16_floating-point_format) 16-bit floating point
@@ -29,6 +31,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - Minimum rustc version bumped to 1.32.
+- Runtime target host feature detection is now used if both `std` and `use-intrinsics` features are enabled
+  and the compile target host does not support required features.
+- When `use-intrinsics` feature is enabled, will now always compile and run without error correctly regardless
+  of compile target options.
 
 ### Deprecated
 - `consts` module and all its constants have been deprecated; use the associated constants on `f16` instead.
@@ -123,7 +129,8 @@ converted to `f16` infinity instead of NaN. Fixes [#5], by [@tspiteri].
 [@Moongoodboy-K]: https://github.com/Moongoodboy-K
 [@johannesvollmer]: https://github.com/johannesvollmer
 
-[Unreleased]: https://github.com/starkat99/half-rs/compare/v1.3.1...HEAD
+[Unreleased]: https://github.com/starkat99/half-rs/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/starkat99/half-rs/compare/v1.3.1...v1.4.0
 [1.3.1]: https://github.com/starkat99/half-rs/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/starkat99/half-rs/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/starkat99/half-rs/compare/v1.1.2...v1.2.0
