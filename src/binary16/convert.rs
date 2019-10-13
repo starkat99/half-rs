@@ -82,6 +82,9 @@ convert_fn! {
     }
 }
 
+// TODO: While SIMD versions are faster, further improvements can be made by doing runtime feature
+// detection once at beginning of convert slice method, rather than per chunk
+
 convert_fn! {
     fn f32x4_to_f16x4(f: &[f32]) -> [u16; 4] {
         if feature("f16c") {

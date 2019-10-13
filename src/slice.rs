@@ -938,4 +938,36 @@ mod test {
         buf16.convert_from_f64_slice(&vf64);
         assert_eq!(&vf16, &buf16);
     }
+
+    #[test]
+    #[should_panic]
+    fn convert_from_f32_slice_len_mismatch_panics() {
+        let mut slice1 = [f16::ZERO; 3];
+        let slice2 = [0f32; 4];
+        slice1.convert_from_f32_slice(&slice2);
+    }
+
+    #[test]
+    #[should_panic]
+    fn convert_from_f64_slice_len_mismatch_panics() {
+        let mut slice1 = [f16::ZERO; 3];
+        let slice2 = [0f64; 4];
+        slice1.convert_from_f64_slice(&slice2);
+    }
+
+    #[test]
+    #[should_panic]
+    fn convert_to_f32_slice_len_mismatch_panics() {
+        let slice1 = [f16::ZERO; 3];
+        let mut slice2 = [0f32; 4];
+        slice1.convert_to_f32_slice(&mut slice2);
+    }
+
+    #[test]
+    #[should_panic]
+    fn convert_to_f64_slice_len_mismatch_panics() {
+        let slice1 = [f16::ZERO; 3];
+        let mut slice2 = [0f64; 4];
+        slice1.convert_to_f64_slice(&mut slice2);
+    }
 }
