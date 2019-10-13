@@ -11,14 +11,14 @@
 //! [`HalfFloatSliceExt`]: trait.HalfFloatSliceExt.html
 //! [`prelude`]: ../prelude/index.html
 
-use crate::{bfloat::bf16, binary16::convert, f16};
+use crate::{bf16, binary16::convert, f16};
 use core::slice;
 
 /// Extensions to `[f16]` and `[bf16]` slices to support conversion and reinterpret operations.
 ///
 /// This trait is sealed and cannot be implemented outside of this crate.
 pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
-    /// Reinterpret a slice of [`f16`](../struct.f16.html) or [`bf16`](../bfloat/struct.bf16.html)
+    /// Reinterpret a slice of [`f16`](../struct.f16.html) or [`bf16`](../struct.bf16.html)
     /// numbers as a slice of `u16` bits.
     ///
     /// This is a zero-copy operation. The reinterpreted slice has the same lifetime and memory
@@ -36,7 +36,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     fn reinterpret_cast(&self) -> &[u16];
 
     /// Reinterpret a mutable slice of [`f16`](../struct.f16.html) or
-    /// [`bf16`](../bfloat/struct.bf16.html) numbers as a mutable slice of `u16` bits.
+    /// [`bf16`](../struct.bf16.html) numbers as a mutable slice of `u16` bits.
     ///
     /// This is a zero-copy operation. The transmuted slice has the same lifetime as the original,
     /// which prevents mutating `self` as long as the returned `&mut [u16]` is borrowed.
@@ -62,7 +62,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     fn reinterpret_cast_mut(&mut self) -> &mut [u16];
 
     /// Convert all of the elements of a `[f32]` slice into [`f16`](../struct.f16.html) or
-    /// [`bf16`](../bfloat/struct.bf16.html) values in `self`.
+    /// [`bf16`](../struct.bf16.html) values in `self`.
     ///
     /// The length of `src` must be the same as `self`.
     ///
@@ -92,7 +92,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     fn convert_from_f32_slice(&mut self, src: &[f32]);
 
     /// Convert all of the elements of a `[f64]` slice into [`f16`](../struct.f16.html) or
-    /// [`bf16`](../bfloat/struct.bf16.html) values in `self`.
+    /// [`bf16`](../struct.bf16.html) values in `self`.
     ///
     /// The length of `src` must be the same as `self`.
     ///
@@ -121,7 +121,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     /// ```
     fn convert_from_f64_slice(&mut self, src: &[f64]);
 
-    /// Convert all of the [`f16`](../struct.f16.html) or [`bf16`](../bfloat/struct.bf16.html)
+    /// Convert all of the [`f16`](../struct.f16.html) or [`bf16`](../struct.bf16.html)
     /// elements of `self` into `f32` values in `dst`.
     ///
     /// The length of `src` must be the same as `self`.
@@ -150,7 +150,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     /// ```
     fn convert_to_f32_slice(&self, dst: &mut [f32]);
 
-    /// Convert all of the [`f16`](../struct.f16.html) or [`bf16`](../bfloat/struct.bf16.html)
+    /// Convert all of the [`f16`](../struct.f16.html) or [`bf16`](../struct.bf16.html)
     /// elements of `self` into `f64` values in `dst`.
     ///
     /// The length of `src` must be the same as `self`.
@@ -182,7 +182,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     // Because trait is sealed, we can get away with different interfaces between features
 
     #[cfg(feature = "std")]
-    /// Convert all of the [`f16`](../struct.f16.html) or [`bf16`](../bfloat/struct.bf16.html)
+    /// Convert all of the [`f16`](../struct.f16.html) or [`bf16`](../struct.bf16.html)
     /// elements of `self` into `f32` values in a new vector.
     ///
     /// The conversion operation is vectorized over the slice, meaning the conversion may be more
@@ -202,7 +202,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     /// ```
     fn to_f32_vec(&self) -> Vec<f32>;
 
-    /// Convert all of the [`f16`](../struct.f16.html) or [`bf16`](../bfloat/struct.bf16.html)
+    /// Convert all of the [`f16`](../struct.f16.html) or [`bf16`](../struct.bf16.html)
     /// elements of `self` into `f64` values in a new vector.
     ///
     /// The conversion operation is vectorized over the slice, meaning the conversion may be more
@@ -229,10 +229,10 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
 /// This trait is sealed and cannot be implemented outside of this crate.
 pub trait HalfBitsSliceExt: private::SealedHalfBitsSlice {
     /// Reinterpret a slice of `u16` bits as a slice of [`f16`](../struct.f16.html) or
-    /// [`bf16`](../bfloat/struct.bf16.html) numbers.
+    /// [`bf16`](../struct.bf16.html) numbers.
     ///
     /// `H` is the type to cast to, and must be either the [`f16`](../struct.f16.html) or
-    /// [`bf16`](../bfloat/struct.bf16.html) type.
+    /// [`bf16`](../struct.bf16.html) type.
     ///
     /// This is a zero-copy operation. The reinterpreted slice has the same lifetime and memory
     /// location as `self`.
@@ -255,10 +255,10 @@ pub trait HalfBitsSliceExt: private::SealedHalfBitsSlice {
         H: crate::private::SealedHalf;
 
     /// Reinterpret a mutable slice of `u16` bits as a mutable slice of [`f16`](../struct.f16.html)
-    /// or [`bf16`](../bfloat/struct.bf16.html)  numbers.
+    /// or [`bf16`](../struct.bf16.html)  numbers.
     ///
     /// `H` is the type to cast to, and must be either the [`f16`](../struct.f16.html) or
-    /// [`bf16`](../bfloat/struct.bf16.html) type.
+    /// [`bf16`](../struct.bf16.html) type.
     ///
     /// This is a zero-copy operation. The transmuted slice has the same lifetime as the original,
     /// which prevents mutating `self` as long as the returned `&mut [f16]` is borrowed.
@@ -291,7 +291,7 @@ pub trait HalfBitsSliceExt: private::SealedHalfBitsSlice {
 }
 
 mod private {
-    use crate::{bfloat::bf16, f16};
+    use crate::{bf16, f16};
 
     pub trait SealedHalfFloatSlice {}
     impl SealedHalfFloatSlice for [f16] {}
@@ -631,7 +631,7 @@ pub fn to_bits(bits: &[f16]) -> &[u16] {
 #[cfg(test)]
 mod test {
     use super::{HalfBitsSliceExt, HalfFloatSliceExt};
-    use crate::{bfloat::bf16, f16};
+    use crate::{bf16, f16};
 
     #[test]
     fn test_slice_conversions_f16() {

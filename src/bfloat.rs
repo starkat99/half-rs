@@ -1,18 +1,3 @@
-//! Alternative 16-bit floating point type `bf16`.
-//!
-//! The [`bfloat16`] floating point format is a truncated 16-bit version of the IEEE 754 standard
-//! `binary32`, a.k.a `f32`. [`bf16`] has approximately the same dynamic range as `f32` by having
-//! a lower precision than [`f16`]. While [`f16`] has a precision of 11 bits, [`bf16`] has a
-//! precision of only 8 bits.
-//!
-//! Like [`f16`], [`bf16`] does not offer arithmetic operations as it is intended for compact
-//! storage rather than calculations. Operations should be performed with `f32` or higher-precision
-//! types and converted to/from [`bf16`] as necessary.
-//!
-//! [`bfloat16`]: https://en.wikipedia.org/wiki/Bfloat16_floating-point_format
-//! [`bf16`]: struct.bf16.html
-//! [`f16`]: ../struct.f16.html
-
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
@@ -38,7 +23,7 @@ pub(crate) mod convert;
 ///
 /// [`bfloat16`]: https://en.wikipedia.org/wiki/Bfloat16_floating-point_format
 /// [`bf16`]: struct.bf16.html
-/// [`f16`]: ../struct.f16.html
+/// [`f16`]: struct.f16.html
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]

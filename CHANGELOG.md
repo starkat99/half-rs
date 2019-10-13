@@ -5,7 +5,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
-- Added `bfloat16` type for alternative 16-bit floating point conversions. By [@tspiteri].
+- Added a `bf16` type implementing the alternative
+  [`bfloat16`](https://en.wikipedia.org/wiki/Bfloat16_floating-point_format) 16-bit floating point
+  format. By [@tspiteri].
 - `f16::from_bits`, `f16::to_bits`, `f16::is_nan`, `f16::is_infinite`, `f16::is_finite`,
   `f16::is_sign_positive`, and `f16::is_sign_negative` are now `const` fns.
 - `slice::HalfBitsSliceExt` and `slice::HalfBitsSliceExt` extension traits have been added for
@@ -16,7 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
    performing efficient reinterpret casts to and from `Vec<f16>` and `Vec<bf16>`. These traits
    are only available with the `std` cargo feature.
 - `prelude` has been added, for easy importing of most common functionality. Currently the
-  prelude imports `f16`, `bfloat::bf16`, and the new slice and vec extension traits.
+  prelude imports `f16`, `bf16`, and the new slice and vec extension traits.
 - New associated constants on `f16` type to replace deprecated `consts` module.
 
 ### Fixed

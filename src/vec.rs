@@ -15,14 +15,14 @@
 
 #![cfg(feature = "std")]
 
-use super::{bfloat::bf16, f16, slice::HalfFloatSliceExt};
+use super::{bf16, f16, slice::HalfFloatSliceExt};
 use core::mem;
 
 /// Extensions to `Vec<f16>` and `Vec<bf16>` to support reinterpret operations.
 ///
 /// This trait is sealed and cannot be implemented outside of this crate.
 pub trait HalfFloatVecExt: private::SealedHalfFloatVec {
-    /// Reinterpret a vector of [`f16`](../struct.f16.html) or [`bf16`](../bfloat/struct.bf16.html)
+    /// Reinterpret a vector of [`f16`](../struct.f16.html) or [`bf16`](../struct.bf16.html)
     /// numbers as a vector of `u16` bits.
     ///
     /// This is a zero-copy operation. The reinterpreted vector has the same memory location as
@@ -40,7 +40,7 @@ pub trait HalfFloatVecExt: private::SealedHalfFloatVec {
     fn reinterpret_into(self) -> Vec<u16>;
 
     /// Convert all of the elements of a `[f32]` slice into a new [`f16`](../struct.f16.html) or
-    /// [`bf16`](../bfloat/struct.bf16.html) vector.
+    /// [`bf16`](../struct.bf16.html) vector.
     ///
     /// The conversion operation is vectorized over the slice, meaning the conversion may be more
     /// efficient than converting individual elements on some hardware that supports SIMD
@@ -58,7 +58,7 @@ pub trait HalfFloatVecExt: private::SealedHalfFloatVec {
     fn from_f32_slice(slice: &[f32]) -> Self;
 
     /// Convert all of the elements of a `[f64]` slice into a new [`f16`](../struct.f16.html) or
-    /// [`bf16`](../bfloat/struct.bf16.html) vector.
+    /// [`bf16`](../struct.bf16.html) vector.
     ///
     /// The conversion operation is vectorized over the slice, meaning the conversion may be more
     /// efficient than converting individual elements on some hardware that supports SIMD
@@ -81,10 +81,10 @@ pub trait HalfFloatVecExt: private::SealedHalfFloatVec {
 /// This trait is sealed and cannot be implemented outside of this crate.
 pub trait HalfBitsVecExt: private::SealedHalfBitsVec {
     /// Reinterpret a vector of `u16` bits as a vector of [`f16`](../struct.f16.html) or
-    /// [`bf16`](../bfloat/struct.bf16.html) numbers.
+    /// [`bf16`](../struct.bf16.html) numbers.
     ///
     /// `H` is the type to cast to, and must be either the [`f16`](../struct.f16.html) or
-    /// [`bf16`](../bfloat/struct.bf16.html) type.
+    /// [`bf16`](../struct.bf16.html) type.
     ///
     /// This is a zero-copy operation. The reinterpreted vector has the same memory location as
     /// `self`.
@@ -104,7 +104,7 @@ pub trait HalfBitsVecExt: private::SealedHalfBitsVec {
 }
 
 mod private {
-    use crate::{bfloat::bf16, f16};
+    use crate::{bf16, f16};
 
     pub trait SealedHalfFloatVec {}
     impl SealedHalfFloatVec for Vec<f16> {}
@@ -251,7 +251,7 @@ pub fn to_bits(numbers: Vec<f16>) -> Vec<u16> {
 #[cfg(test)]
 mod test {
     use super::{HalfBitsVecExt, HalfFloatVecExt};
-    use crate::{bfloat::bf16, f16};
+    use crate::{bf16, f16};
 
     #[test]
     fn test_vec_conversions_f16() {
