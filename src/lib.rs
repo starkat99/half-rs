@@ -32,7 +32,7 @@
 //!
 //! The crate uses `#[no_std]` by default, so can be used in embedded environments without using the
 //! Rust `std` library. A `std` feature is available, which enables additional utilities using the
-//! `std` library, such as the `vec` module that provides zero-copy `Vec` conversions.
+//! `std` library, such as the [`vec`] module that provides zero-copy `Vec` conversions.
 //!
 //! [`f16`]: struct.f16.html
 //! [`binary16`]: https://en.wikipedia.org/wiki/Half-precision_floating-point_format
@@ -41,6 +41,7 @@
 //! [`slice`]: slice/index.html
 //! [`prelude`]: prelude/index.html
 //! [`serde`]: https://crates.io/crates/serde
+//! [`vec`]: vec/index.html
 
 #![warn(
     missing_docs,
