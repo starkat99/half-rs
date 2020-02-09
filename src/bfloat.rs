@@ -26,6 +26,7 @@ pub(crate) mod convert;
 /// [`f16`]: struct.f16.html
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, Default)]
+#[repr(transparent)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct bf16(u16);
 

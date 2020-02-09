@@ -23,6 +23,7 @@ pub(crate) mod convert;
 /// [`binary16`]: https://en.wikipedia.org/wiki/Half-precision_floating-point_format
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, Default)]
+#[repr(transparent)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct f16(u16);
 
