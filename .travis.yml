@@ -1,13 +1,12 @@
 os:
-- linux
-- windows
+  - linux
+  - windows
 sudo: false
 language: rust
 rust:
-- stable
-- 1.32.0
-- beta
-- nightly
+  - stable
+  - beta
+  - nightly
 matrix:
   include:
     - rust: stable
@@ -31,8 +30,15 @@ matrix:
     - rust: nightly
       os: windows
       env: CARGOFLAGS=--all-features
+
+    - rust: 1.32.0
+      script:
+        - cargo update
+        - cargo update -p unicode-normalization --precise 0.1.9
+        - cargo update -p criterion --precise 0.3.0
+        - cargo test --features std
 branches:
   except:
-  - gh-pages
+    - gh-pages
 script:
-- cargo test $CARGOFLAGS
+  - cargo test $CARGOFLAGS
