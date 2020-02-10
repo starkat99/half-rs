@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.4.1] - 2020-02-10 <a name="1.4.1"></a>
+### Fixed
+- Added `#[repr(transparent)]` to `f16`/`bf16` to remove undefined behavior. By [@jfrimmel].
+
 ## [1.4.0] - 2019-10-13 <a name="1.4.0"></a>
 ### Added
 - Added a `bf16` type implementing the alternative
@@ -128,8 +132,10 @@ converted to `f16` infinity instead of NaN. Fixes [#5], by [@tspiteri].
 [@PSeitz]: https://github.com/PSeitz
 [@Moongoodboy-K]: https://github.com/Moongoodboy-K
 [@johannesvollmer]: https://github.com/johannesvollmer
+[@jfrimmel]: https://github.com/jfrimmel
 
-[Unreleased]: https://github.com/starkat99/half-rs/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/starkat99/half-rs/compare/v1.4.1...HEAD
+[1.4.1]: https://github.com/starkat99/half-rs/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/starkat99/half-rs/compare/v1.3.1...v1.4.0
 [1.3.1]: https://github.com/starkat99/half-rs/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/starkat99/half-rs/compare/v1.2.0...v1.3.0
