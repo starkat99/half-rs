@@ -568,7 +568,7 @@ impl HalfBitsSliceExt for [u16] {
     where
         H: crate::private::SealedHalf,
     {
-        let pointer = self.as_ptr() as *mut H;
+        let pointer = self.as_mut_ptr() as *mut H;
         let length = self.len();
         // SAFETY: We are reconstructing full length of original slice, using its same lifetime,
         // and the size of elements are identical
