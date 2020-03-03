@@ -26,7 +26,7 @@ See the [crate documentation](https://docs.rs/half/) for more details.
 default, without this feature, conversions are done only in software, which will be the fallback if the host target does
 not have hardware support. **Available only on Rust nightly channel.**
 
-- **`alloc`** - Enable use of the `alloc` crate.
+- **`alloc`** - Enable use of the `alloc` crate when not using the `std` library.
 
   This enables the `vec` module, which contains zero-copy conversions for the `Vec` type. This allows fast conversion between
   raw `Vec<u16>` bits and `Vec<f16>` or `Vec<bf16>` arrays, and vice versa. *Requires Rust 1.36 or greater.*
