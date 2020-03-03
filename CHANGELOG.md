@@ -4,8 +4,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### Fixed
-- Added the `alloc` feature to support the `alloc` crate in `no_std` environments. By [@zserik].
+
+## [1.5.0] - 2020-03-03 <a name="1.5.0"></a>
+### Added
+- Added the `alloc` feature to support the `alloc` crate in `no_std` environments. By [@zserik]. The `vec` module is now available with either `alloc` or `std` feature.
 
 ## [1.4.1] - 2020-02-10 <a name="1.4.1"></a>
 ### Fixed
@@ -137,7 +139,8 @@ converted to `f16` infinity instead of NaN. Fixes [#5], by [@tspiteri].
 [@jfrimmel]: https://github.com/jfrimmel
 [@zserik]: https://github.com/zserik
 
-[Unreleased]: https://github.com/starkat99/half-rs/compare/v1.4.1...HEAD
+[Unreleased]: https://github.com/starkat99/half-rs/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/starkat99/half-rs/compare/v1.4.1...v1.5.0
 [1.4.1]: https://github.com/starkat99/half-rs/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/starkat99/half-rs/compare/v1.3.1...v1.4.0
 [1.3.1]: https://github.com/starkat99/half-rs/compare/v1.3.0...v1.3.1
