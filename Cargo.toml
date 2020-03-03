@@ -16,9 +16,10 @@ travis-ci = { repository = "starkat99/half-rs" }
 maintenance = { status = "passively-maintained" }
 
 [features]
-std = []
+std = ["alloc"]
 use-intrinsics = []
 serialize = ["serde"] # Deprecated. Use serde directly.
+alloc = []
 
 [dependencies.serde]
 version = "1.0"
