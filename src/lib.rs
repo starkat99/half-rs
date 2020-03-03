@@ -57,6 +57,7 @@
 )]
 #![allow(clippy::verbose_bit_mask, clippy::cast_lossless)]
 #![cfg_attr(not(feature = "std"), no_std)]
+
 #![cfg_attr(
     all(
         feature = "use-intrinsics",
@@ -66,10 +67,13 @@
 )]
 #![doc(html_root_url = "https://docs.rs/half/1.4.1")]
 
+#![cfg(feature = "alloc")]
+extern crate alloc;
+
 mod bfloat;
 mod binary16;
 pub mod slice;
-#[cfg(feature = "std")]
+#[cfg(feature = "alloc")]
 pub mod vec;
 
 pub use binary16::f16;

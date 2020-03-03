@@ -13,10 +13,11 @@
 //! [`HalfFloatVecExt`]: trait.HalfFloatVecExt.html
 //! [`prelude`]: ../prelude/index.html
 
-#![cfg(feature = "std")]
+#![cfg(feature = "alloc")]
 
 use super::{bf16, f16, slice::HalfFloatSliceExt};
 use core::mem;
+use alloc::vec::Vec;
 
 /// Extensions to `Vec<f16>` and `Vec<bf16>` to support reinterpret operations.
 ///
@@ -104,6 +105,7 @@ pub trait HalfBitsVecExt: private::SealedHalfBitsVec {
 }
 
 mod private {
+    use alloc::vec::Vec;
     use crate::{bf16, f16};
 
     pub trait SealedHalfFloatVec {}
@@ -252,6 +254,7 @@ pub fn to_bits(numbers: Vec<f16>) -> Vec<u16> {
 mod test {
     use super::{HalfBitsVecExt, HalfFloatVecExt};
     use crate::{bf16, f16};
+    use alloc::vec::Vec;
 
     #[test]
     fn test_vec_conversions_f16() {
