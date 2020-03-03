@@ -26,12 +26,14 @@ See the [crate documentation](https://docs.rs/half/) for more details.
 default, without this feature, conversions are done only in software, which will be the fallback if the host target does
 not have hardware support. **Available only on Rust nightly channel.**
 
-- **`std`** - Enable features that depend on the Rust `std` library.
+- **`alloc`** - Enable use of the `alloc` crate.
 
   This enables the `vec` module, which contains zero-copy conversions for the `Vec` type. This allows fast conversion between
-  raw `Vec<u16>` bits and `Vec<f16>` or `Vec<bf16>` arrays, and vice versa.
+  raw `Vec<u16>` bits and `Vec<f16>` or `Vec<bf16>` arrays, and vice versa. *Requires Rust 1.36 or greater.*
 
-  In addition, enabling the `std` feature enables runtime CPU feature detection when the `use-intrsincis` feature is also enabled.
+- **`std`** - Enable features that depend on the Rust `std` library, including everything in the `alloc` feature.
+
+  Enabling the `std` feature enables runtime CPU feature detection when the `use-intrsincis` feature is also enabled.
   Without this feature detection, intrinsics are only used when compiler host target supports them.
 
 ### More Documentation
