@@ -7,17 +7,18 @@
 //! larger buffers of floating point values, and are automatically included in the [`prelude`]
 //! module.
 //!
-//! This module is only available with the `std` feature.
+//! This module is only available with the `std` or `alloc` feature.
 //!
 //! [`HalfBitsVecExt`]: trait.HalfBitsVecExt.html
 //! [`HalfFloatVecExt`]: trait.HalfFloatVecExt.html
 //! [`prelude`]: ../prelude/index.html
 
-#![cfg(feature = "alloc")]
+#![cfg(any(feature = "alloc", feature = "std"))]
 
 use super::{bf16, f16, slice::HalfFloatSliceExt};
-use core::mem;
+#[cfg(all(feature = "alloc", not(feature = "std")))]
 use alloc::vec::Vec;
+use core::mem;
 
 /// Extensions to `Vec<f16>` and `Vec<bf16>` to support reinterpret operations.
 ///
@@ -105,8 +106,9 @@ pub trait HalfBitsVecExt: private::SealedHalfBitsVec {
 }
 
 mod private {
-    use alloc::vec::Vec;
     use crate::{bf16, f16};
+    #[cfg(all(feature = "alloc", not(feature = "std")))]
+    use alloc::vec::Vec;
 
     pub trait SealedHalfFloatVec {}
     impl SealedHalfFloatVec for Vec<f16> {}
@@ -254,7 +256,8 @@ pub fn to_bits(numbers: Vec<f16>) -> Vec<u16> {
 mod test {
     use super::{HalfBitsVecExt, HalfFloatVecExt};
     use crate::{bf16, f16};
-    use alloc::vec::Vec;
+    #[cfg(all(feature = "alloc", not(feature = "std")))]
+    use alloc::vec;
 
     #[test]
     fn test_vec_conversions_f16() {

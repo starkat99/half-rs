@@ -15,6 +15,8 @@ matrix:
       env: CARGOFLAGS="--features std"
     - rust: stable
       env: CARGOFLAGS="--features std,serde"
+    - rust: stable
+      env: CARGOFLAGS="--features alloc"
     - rust: nightly
       env: CARGOFLAGS=--all-features
 
@@ -24,6 +26,9 @@ matrix:
     - rust: stable
       os: windows
       env: CARGOFLAGS="--features std"
+    - rust: stable
+      os: windows
+      env: CARGOFLAGS="--features alloc"
     - rust: stable
       os: windows
       env: CARGOFLAGS="--features std,serde"
@@ -41,4 +46,4 @@ branches:
   except:
     - gh-pages
 script:
-  - cargo test $CARGOFLAGS
+  - cargo test --verbose $CARGOFLAGS

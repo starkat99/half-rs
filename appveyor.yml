@@ -38,65 +38,80 @@ os: Visual Studio 2015
 # matrix entries to test different combinations of features.
 environment:
   matrix:
+    ### MSVC Toolchains ###
 
-### MSVC Toolchains ###
-
-  # Stable 64-bit MSVC
+    # Stable 64-bit MSVC
     - channel: stable
       target: x86_64-pc-windows-msvc
-  # Stable 32-bit MSVC
+    # Stable 32-bit MSVC
     - channel: stable
       target: i686-pc-windows-msvc
-  # Stable 64-bit MSVC w/ optional features
+    # Stable 64-bit MSVC w/ optional features
     - channel: stable
       target: x86_64-pc-windows-msvc
       cargoflags: --features "std serde"
-  # Stable 32-bit MSVC w/ optional features
+    # Stable 64-bit MSVC w/ optional features
+    - channel: stable
+      target: x86_64-pc-windows-msvc
+      cargoflags: --features "alloc"
+    # Stable 32-bit MSVC w/ optional features
     - channel: stable
       target: i686-pc-windows-msvc
       cargoflags: --features "std serde"
-  # Beta 64-bit MSVC
+    # Stable 32-bit MSVC w/ optional features
+    - channel: stable
+      target: i686-pc-windows-msvc
+      cargoflags: --features "alloc"
+    # Beta 64-bit MSVC
     - channel: beta
       target: x86_64-pc-windows-msvc
-  # Beta 32-bit MSVC
+    # Beta 32-bit MSVC
     - channel: beta
       target: i686-pc-windows-msvc
-  # Nightly 64-bit MSVC w/ nightly features
+    # Nightly 64-bit MSVC w/ nightly features
     - channel: nightly
       target: x86_64-pc-windows-msvc
       cargoflags: --features "use-intrinsics"
-  # Nightly 32-bit MSVC w/ nightly features
+    # Nightly 32-bit MSVC w/ nightly features
     - channel: nightly
       target: i686-pc-windows-msvc
       cargoflags: --features "use-intrinsics"
 
-### GNU Toolchains ###
+    ### GNU Toolchains ###
 
-  # Stable 64-bit GNU
+    # Stable 64-bit GNU
     - channel: stable
       target: x86_64-pc-windows-gnu
-  # Stable 32-bit GNU
+    # Stable 32-bit GNU
     - channel: stable
       target: i686-pc-windows-gnu
-  # Stable 64-bit GNU w/ optional features
+    # Stable 64-bit GNU w/ optional features
     - channel: stable
       target: x86_64-pc-windows-gnu
       cargoflags: --features "std serde"
-  # Stable 32-bit GNU w/ optional features
+    # Stable 64-bit GNU w/ optional features
+    - channel: stable
+      target: x86_64-pc-windows-gnu
+      cargoflags: --features "alloc"
+    # Stable 32-bit GNU w/ optional features
     - channel: stable
       target: i686-pc-windows-gnu
       cargoflags: --features "std serde"
-  # Beta 64-bit GNU
+    # Stable 32-bit GNU w/ optional features
+    - channel: stable
+      target: i686-pc-windows-gnu
+      cargoflags: --features "alloc"
+    # Beta 64-bit GNU
     - channel: beta
       target: x86_64-pc-windows-gnu
-  # Beta 32-bit GNU
+    # Beta 32-bit GNU
     - channel: beta
       target: i686-pc-windows-gnu
-  # Nightly 64-bit GNU w/ nightly features
+    # Nightly 64-bit GNU w/ nightly features
     - channel: nightly
       target: x86_64-pc-windows-gnu
       cargoflags: --features "use-intrinsics"
-  # Nightly 32-bit GNU w/ nightly features
+    # Nightly 32-bit GNU w/ nightly features
     - channel: nightly
       target: i686-pc-windows-gnu
       cargoflags: --features "use-intrinsics"
@@ -111,7 +126,7 @@ environment:
 #    - channel: nightly
 
 # If you only care about stable channel build failures, uncomment the following line:
-    #- channel: beta
+#- channel: beta
 
 ## Install Script ##
 

@@ -14,6 +14,9 @@
 use crate::{bf16, binary16::convert, f16};
 use core::slice;
 
+#[cfg(all(feature = "alloc", not(feature = "std")))]
+use alloc::vec::Vec;
+
 /// Extensions to `[f16]` and `[bf16]` slices to support conversion and reinterpret operations.
 ///
 /// This trait is sealed and cannot be implemented outside of this crate.
@@ -181,7 +184,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
 
     // Because trait is sealed, we can get away with different interfaces between features
 
-    #[cfg(feature = "std")]
+    #[cfg(any(feature = "alloc", feature = "std"))]
     /// Convert all of the [`f16`](../struct.f16.html) or [`bf16`](../struct.bf16.html)
     /// elements of `self` into `f32` values in a new vector.
     ///
@@ -190,7 +193,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     /// conversions. See [crate documentation](../index.html) for more information on hardware
     /// conversion support.
     ///
-    /// This method is only available with the `std` feature.
+    /// This method is only available with the `std` or `alloc` feature.
     ///
     /// # Examples
     /// ```rust
@@ -210,7 +213,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     /// conversions. See [crate documentation](../index.html) for more information on hardware
     /// conversion support.
     ///
-    /// This method is only available with the `std` feature.
+    /// This method is only available with the `std` or `alloc` feature.
     ///
     /// # Examples
     /// ```rust
@@ -220,7 +223,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     ///
     /// assert_eq!(vec, vec![1., 2., 3., 4.]);
     /// ```
-    #[cfg(feature = "std")]
+    #[cfg(any(feature = "alloc", feature = "std"))]
     fn to_f64_vec(&self) -> Vec<f64>;
 }
 
@@ -428,7 +431,7 @@ impl HalfFloatSliceExt for [f16] {
         }
     }
 
-    #[cfg(feature = "std")]
+    #[cfg(any(feature = "alloc", feature = "std"))]
     #[inline]
     fn to_f32_vec(&self) -> Vec<f32> {
         let mut vec = Vec::with_capacity(self.len());
@@ -440,7 +443,7 @@ impl HalfFloatSliceExt for [f16] {
         vec
     }
 
-    #[cfg(feature = "std")]
+    #[cfg(any(feature = "alloc", feature = "std"))]
     #[inline]
     fn to_f64_vec(&self) -> Vec<f64> {
         let mut vec = Vec::with_capacity(self.len());
@@ -524,7 +527,7 @@ impl HalfFloatSliceExt for [bf16] {
         }
     }
 
-    #[cfg(feature = "std")]
+    #[cfg(any(feature = "alloc", feature = "std"))]
     #[inline]
     fn to_f32_vec(&self) -> Vec<f32> {
         let mut vec = Vec::with_capacity(self.len());
@@ -536,7 +539,7 @@ impl HalfFloatSliceExt for [bf16] {
         vec
     }
 
-    #[cfg(feature = "std")]
+    #[cfg(any(feature = "alloc", feature = "std"))]
     #[inline]
     fn to_f64_vec(&self) -> Vec<f64> {
         let mut vec = Vec::with_capacity(self.len());

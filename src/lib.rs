@@ -32,7 +32,9 @@
 //!
 //! The crate uses `#[no_std]` by default, so can be used in embedded environments without using the
 //! Rust `std` library. A `std` feature is available, which enables additional utilities using the
-//! `std` library, such as the [`vec`] module that provides zero-copy `Vec` conversions.
+//! `std` library, such as the [`vec`] module that provides zero-copy `Vec` conversions. The `alloc`
+//! feature may be used to enable the [`vec`] module without adding a dependency to the `std`
+//! library.
 //!
 //! [`f16`]: struct.f16.html
 //! [`binary16`]: https://en.wikipedia.org/wiki/Half-precision_floating-point_format
@@ -57,7 +59,6 @@
 )]
 #![allow(clippy::verbose_bit_mask, clippy::cast_lossless)]
 #![cfg_attr(not(feature = "std"), no_std)]
-
 #![cfg_attr(
     all(
         feature = "use-intrinsics",
@@ -67,13 +68,13 @@
 )]
 #![doc(html_root_url = "https://docs.rs/half/1.4.1")]
 
-#![cfg(feature = "alloc")]
+#[cfg(all(feature = "alloc", not(feature = "std")))]
 extern crate alloc;
 
 mod bfloat;
 mod binary16;
 pub mod slice;
-#[cfg(feature = "alloc")]
+#[cfg(any(feature = "alloc", feature = "std"))]
 pub mod vec;
 
 pub use binary16::f16;
@@ -97,7 +98,7 @@ pub mod prelude {
         slice::{HalfBitsSliceExt, HalfFloatSliceExt},
     };
 
-    #[cfg(feature = "std")]
+    #[cfg(any(feature = "alloc", feature = "std"))]
     pub use crate::vec::{HalfBitsVecExt, HalfFloatVecExt};
 }
 
