@@ -291,6 +291,13 @@ impl f16 {
         self.0
     }
 
+    /// Return the memory representation of the underlying bit representation as a byte array in
+    /// little-endian byte order.
+    #[inline]
+    pub const fn to_le_bytes(self) -> [u8; 2] {
+        self.0.to_le_bytes()
+    }
+
     /// Converts a [`f16`](struct.f16.html) into the underlying bit representation.
     #[deprecated(since = "1.2.0", note = "renamed to [`to_bits`](#method.to_bits)")]
     #[inline]
