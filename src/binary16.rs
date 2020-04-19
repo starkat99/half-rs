@@ -291,6 +291,43 @@ impl f16 {
         self.0
     }
 
+    /// Converts `self` to little endian from the target's endianness.
+    ///
+    /// On little endian this is a no-op. On big endian the bytes are swapped.
+    #[inline]
+    pub const fn to_le(self) -> u16 {
+        self.0.to_le()
+    }
+
+    /// Converts `self` to big endian from the target's endianness.
+    ///
+    /// On big endian this is a no-op. On little endian the bytes are swapped.
+    #[inline]
+    pub const fn to_be(self) -> u16 {
+        self.0.to_be()
+    }
+
+    /// Return the memory representation of the underlying bit representation as a byte array in
+    /// little-endian byte order.
+    #[inline]
+    pub fn to_le_bytes(self) -> [u8; 2] {
+        self.0.to_le_bytes()
+    }
+
+    /// Return the memory representation of the underlying bit representation as a byte array in
+    /// big-endian (network) byte order.
+    #[inline]
+    pub fn to_be_bytes(self) -> [u8; 2] {
+        self.0.to_be_bytes()
+    }
+
+    /// Return the memory representation of the underlying bit representation as a byte array in
+    /// native byte order.
+    #[inline]
+    pub fn to_ne_bytes(self) -> [u8; 2] {
+        self.0.to_ne_bytes()
+    }
+
     /// Converts a [`f16`](struct.f16.html) into the underlying bit representation.
     #[deprecated(since = "1.2.0", note = "renamed to [`to_bits`](#method.to_bits)")]
     #[inline]
