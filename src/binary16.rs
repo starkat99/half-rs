@@ -293,6 +293,14 @@ impl f16 {
 
     /// Return the memory representation of the underlying bit representation as a byte array in
     /// little-endian byte order.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use half::prelude::*;
+    /// let bytes = f16::from_f32(12.5).to_le_bytes();
+    /// assert_eq!(bytes, [0x40, 0x4A]);
+    /// ```
     #[inline]
     pub fn to_le_bytes(self) -> [u8; 2] {
         self.0.to_le_bytes()
@@ -300,6 +308,14 @@ impl f16 {
 
     /// Return the memory representation of the underlying bit representation as a byte array in
     /// big-endian (network) byte order.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use half::prelude::*;
+    /// let bytes = f16::from_f32(12.5).to_be_bytes();
+    /// assert_eq!(bytes, [0x4A, 0x40]);
+    /// ```
     #[inline]
     pub fn to_be_bytes(self) -> [u8; 2] {
         self.0.to_be_bytes()
@@ -307,6 +323,21 @@ impl f16 {
 
     /// Return the memory representation of the underlying bit representation as a byte array in
     /// native byte order.
+    ///
+    /// As the target platform's native endianness is used, portable code should use `to_be_bytes`
+    /// or `to_le_bytes`, as appropriate, instead.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use half::prelude::*;
+    /// let bytes = f16::from_f32(12.5).to_ne_bytes();
+    /// assert_eq!(bytes, if cfg!(target_endian = "big") {
+    ///     [0x4A, 0x40]
+    /// } else {
+    ///     [0x40, 0x4A]
+    /// });
+    /// ```
     #[inline]
     pub fn to_ne_bytes(self) -> [u8; 2] {
         self.0.to_ne_bytes()
