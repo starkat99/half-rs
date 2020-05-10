@@ -4,10 +4,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Added `LOG2_10` and `LOG10_2` constants to both `f16` and `bf16`, which were added to `f32` and
+  `f64` in the standard library in 1.43.0. By [@tspiteri].
+- Added `to_le/be/ne_bytes` and `from_le/be/ne_bytes` to both `f16` and `bf16`, which were added to
+  the standard library in 1.40.0. By [@bzm3r].
 
 ## [1.5.0] - 2020-03-03 <a name="1.5.0"></a>
 ### Added
-- Added the `alloc` feature to support the `alloc` crate in `no_std` environments. By [@zserik]. The `vec` module is now available with either `alloc` or `std` feature.
+- Added the `alloc` feature to support the `alloc` crate in `no_std` environments. By [@zserik]. The
+  `vec` module is now available with either `alloc` or `std` feature.
 
 ## [1.4.1] - 2020-02-10 <a name="1.4.1"></a>
 ### Fixed
@@ -39,17 +45,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - Minimum rustc version bumped to 1.32.
-- Runtime target host feature detection is now used if both `std` and `use-intrinsics` features are enabled
-  and the compile target host does not support required features.
-- When `use-intrinsics` feature is enabled, will now always compile and run without error correctly regardless
-  of compile target options.
+- Runtime target host feature detection is now used if both `std` and `use-intrinsics` features are
+  enabled and the compile target host does not support required features.
+- When `use-intrinsics` feature is enabled, will now always compile and run without error correctly
+  regardless of compile target options.
 
 ### Deprecated
-- `consts` module and all its constants have been deprecated; use the associated constants on `f16` instead.
+- `consts` module and all its constants have been deprecated; use the associated constants on `f16`
+  instead.
 - `slice::from_bits` has been deprecated; use `slice::HalfBitsSliceExt::reinterpret_cast` instead.
-- `slice::from_bits_mut` has been deprecated; use `slice::HalfBitsSliceExt::reinterpret_cast_mut` instead.
+- `slice::from_bits_mut` has been deprecated; use `slice::HalfBitsSliceExt::reinterpret_cast_mut`
+  instead.
 - `slice::to_bits` has been deprecated; use `slice::HalfFloatSliceExt::reinterpret_cast` instead.
-- `slice::to_bits_mut` has been deprecated; use `slice::HalfFloatSliceExt::reinterpret_cast_mut` instead.
+- `slice::to_bits_mut` has been deprecated; use `slice::HalfFloatSliceExt::reinterpret_cast_mut`
+  instead.
 - `vec::from_bits` has been deprecated; use `vec::HalfBitsVecExt::reinterpret_into` instead.
 - `vec::to_bits` has been deprecated; use `vec::HalfFloatVecExt::reinterpret_into` instead.
 
@@ -62,12 +71,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [1.3.0] - 2018-10-02 <a name="1.3.0"></a>
 ### Added
 - `slice::from_bits_mut` and `slice::to_bits_mut` for conversion between mutable `u16` and `f16`
-slices. Fixes [#16], by [@johannesvollmer].
+  slices. Fixes [#16], by [@johannesvollmer].
 
 ## [1.2.0] - 2018-09-03 <a name="1.2.0"></a>
 ### Added
-- `slice` and optional `vec` (only included with `std` feature) modules for conversions between `u16` and `f16`
-buffers. Fixes [#14], by [@johannesvollmer].
+- `slice` and optional `vec` (only included with `std` feature) modules for conversions between
+  `u16` and `f16` buffers. Fixes [#14], by [@johannesvollmer].
 - `to_bits` added to replace `as_bits`. Fixes [#12], by [@tspiteri].
 ### Fixed
 - `serde` optional dependency no longer uses its default `std` feature.
@@ -77,7 +86,8 @@ buffers. Fixes [#14], by [@johannesvollmer].
 
 ## [1.1.2] - 2018-07-12 <a name="1.1.2"></a>
 ### Fixed
-- Fixed compilation error in 1.1.1 on rustc < 1.27, now compiles again on rustc >= 1.10. Fixes [#11].
+- Fixed compilation error in 1.1.1 on rustc < 1.27, now compiles again on rustc >= 1.10. Fixes
+  [#11].
 
 ## [1.1.1] - 2018-06-24 - **Yanked** <a name="1.1.1"></a>
 ### ***Yanked***
@@ -92,12 +102,13 @@ buffers. Fixes [#14], by [@johannesvollmer].
 ## [1.0.2] - 2018-01-12 <a name="1.0.2"></a>
 ### Changed
 - Update behavior of `is_sign_positive` and `is_sign_negative` to match the IEEE754 conforming
-behavior of the standard library since Rust 1.20.0. Fixes [#3], by [@tspiteri].
+  behavior of the standard library since Rust 1.20.0. Fixes [#3], by [@tspiteri].
 - Small optimization on `is_nan` and `is_infinite` from [@tspiteri].
 ### Fixed
-- Fix comparisons of +0 to -0 and comparisons involving negative numbers. Fixes [#2], by [@tspiteri].
+- Fix comparisons of +0 to -0 and comparisons involving negative numbers. Fixes [#2], by
+  [@tspiteri].
 - Fix loss of sign when converting `f16` and `f32` to `f16`, and case where `f64` NaN could be
-converted to `f16` infinity instead of NaN. Fixes [#5], by [@tspiteri].
+  converted to `f16` infinity instead of NaN. Fixes [#5], by [@tspiteri].
 
 ## [1.0.1] - 2017-08-30 <a name="1.0.1"></a>
 ### Added
@@ -138,6 +149,7 @@ converted to `f16` infinity instead of NaN. Fixes [#5], by [@tspiteri].
 [@johannesvollmer]: https://github.com/johannesvollmer
 [@jfrimmel]: https://github.com/jfrimmel
 [@zserik]: https://github.com/zserik
+[@bzm3r]: https://github.com/bzm3r
 
 [Unreleased]: https://github.com/starkat99/half-rs/compare/v1.5.0...HEAD
 [1.5.0]: https://github.com/starkat99/half-rs/compare/v1.4.1...v1.5.0
