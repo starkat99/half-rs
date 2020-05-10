@@ -291,22 +291,6 @@ impl f16 {
         self.0
     }
 
-    /// Converts `self` to little endian from the target's endianness.
-    ///
-    /// On little endian this is a no-op. On big endian the bytes are swapped.
-    #[inline]
-    pub const fn to_le(self) -> u16 {
-        self.0.to_le()
-    }
-
-    /// Converts `self` to big endian from the target's endianness.
-    ///
-    /// On big endian this is a no-op. On little endian the bytes are swapped.
-    #[inline]
-    pub const fn to_be(self) -> u16 {
-        self.0.to_be()
-    }
-
     /// Return the memory representation of the underlying bit representation as a byte array in
     /// little-endian byte order.
     #[inline]
