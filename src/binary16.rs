@@ -343,6 +343,55 @@ impl f16 {
         self.0.to_ne_bytes()
     }
 
+    /// Create a floating point value from its representation as a byte array in little endian.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use half::prelude::*;
+    /// let value = f16::from_le_bytes([0x40, 0x4A]);
+    /// assert_eq!(value, f16::from_f32(12.5));
+    /// ```
+    #[inline]
+    pub fn from_le_bytes(bytes: [u8; 2]) -> f16 {
+        f16::from_bits(u16::from_le_bytes(bytes))
+    }
+
+    /// Create a floating point value from its representation as a byte array in big endian.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use half::prelude::*;
+    /// let value = f16::from_be_bytes([0x4A, 0x40]);
+    /// assert_eq!(value, f16::from_f32(12.5));
+    /// ```
+    #[inline]
+    pub fn from_be_bytes(bytes: [u8; 2]) -> f16 {
+        f16::from_bits(u16::from_be_bytes(bytes))
+    }
+
+    /// Create a floating point value from its representation as a byte array in native endian.
+    ///
+    /// As the target platform's native endianness is used, portable code likely wants to use
+    /// `from_be_bytes` or `from_le_bytes`, as appropriate instead.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use half::prelude::*;
+    /// let value = f16::from_ne_bytes(if cfg!(target_endian = "big") {
+    ///     [0x4A, 0x40]
+    /// } else {
+    ///     [0x40, 0x4A]
+    /// });
+    /// assert_eq!(value, f16::from_f32(12.5));
+    /// ```
+    #[inline]
+    pub fn from_ne_bytes(bytes: [u8; 2]) -> f16 {
+        f16::from_bits(u16::from_ne_bytes(bytes))
+    }
+
     /// Converts a [`f16`](struct.f16.html) into the underlying bit representation.
     #[deprecated(since = "1.2.0", note = "renamed to [`to_bits`](#method.to_bits)")]
     #[inline]
