@@ -41,7 +41,6 @@ matrix:
         - cargo update
         - cargo update -p unicode-normalization --precise 0.1.9
         - cargo update -p criterion --precise 0.3.0
-        - cargo update -p percent-encoding --precise 2.0.0
         - cargo test --features std
 branches:
   except:
