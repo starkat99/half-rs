@@ -46,4 +46,5 @@ branches:
   except:
     - gh-pages
 script:
+  - cargo build --verbose --all-targets $CARGOFLAGS
   - cargo test --verbose $CARGOFLAGS
