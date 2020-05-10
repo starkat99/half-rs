@@ -33,9 +33,9 @@ features = ["std", "serde"]
 [dev-dependencies]
 criterion = "0.3"
 quickcheck = "0.9"
-quickcheck_macros = "0.8"
+quickcheck_macros = "0.9"
 rand = "0.7"
-version-sync = "0.9"
+version-sync = "0.8"
 
 [[bench]]
 name = "convert"
