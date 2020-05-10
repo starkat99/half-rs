@@ -581,8 +581,12 @@ impl f16 {
     pub const LN_2: f16 = f16(0x398Cu16);
     /// [`f16`](struct.f16.html) 𝗅𝗈𝗀₁₀ℯ
     pub const LOG10_E: f16 = f16(0x36F3u16);
+    /// [`f16`](struct.f16.html) 𝗅𝗈𝗀₁₀2
+    pub const LOG10_2: f16 = f16(0x34D1u16);
     /// [`f16`](struct.f16.html) 𝗅𝗈𝗀₂ℯ
     pub const LOG2_E: f16 = f16(0x3DC5u16);
+    /// [`f16`](struct.f16.html) 𝗅𝗈𝗀₂10
+    pub const LOG2_10: f16 = f16(0x42A5u16);
     /// [`f16`](struct.f16.html) √2
     pub const SQRT_2: f16 = f16(0x3DA8u16);
 }
@@ -842,7 +846,11 @@ mod test {
         let ln_10 = f16::from_f32(core::f32::consts::LN_10);
         let ln_2 = f16::from_f32(core::f32::consts::LN_2);
         let log10_e = f16::from_f32(core::f32::consts::LOG10_E);
+        // core::f32::consts::LOG10_2 requires rustc 1.43.0
+        let log10_2 = f16::from_f32(2f32.log10());
         let log2_e = f16::from_f32(core::f32::consts::LOG2_E);
+        // core::f32::consts::LOG2_10 requires rustc 1.43.0
+        let log2_10 = f16::from_f32(10f32.log2());
         let sqrt_2 = f16::from_f32(core::f32::consts::SQRT_2);
 
         assert_eq!(f16::E, e);
@@ -859,7 +867,9 @@ mod test {
         assert_eq!(f16::LN_10, ln_10);
         assert_eq!(f16::LN_2, ln_2);
         assert_eq!(f16::LOG10_E, log10_e);
+        assert_eq!(f16::LOG10_2, log10_2);
         assert_eq!(f16::LOG2_E, log2_e);
+        assert_eq!(f16::LOG2_10, log2_10);
         assert_eq!(f16::SQRT_2, sqrt_2);
     }
 
@@ -896,7 +906,11 @@ mod test {
         let ln_10 = f16::from_f64(core::f64::consts::LN_10);
         let ln_2 = f16::from_f64(core::f64::consts::LN_2);
         let log10_e = f16::from_f64(core::f64::consts::LOG10_E);
+        // core::f64::consts::LOG10_2 requires rustc 1.43.0
+        let log10_2 = f16::from_f64(2f64.log10());
         let log2_e = f16::from_f64(core::f64::consts::LOG2_E);
+        // core::f64::consts::LOG2_10 requires rustc 1.43.0
+        let log2_10 = f16::from_f64(10f64.log2());
         let sqrt_2 = f16::from_f64(core::f64::consts::SQRT_2);
 
         assert_eq!(f16::E, e);
@@ -913,7 +927,9 @@ mod test {
         assert_eq!(f16::LN_10, ln_10);
         assert_eq!(f16::LN_2, ln_2);
         assert_eq!(f16::LOG10_E, log10_e);
+        assert_eq!(f16::LOG10_2, log10_2);
         assert_eq!(f16::LOG2_E, log2_e);
+        assert_eq!(f16::LOG2_10, log2_10);
         assert_eq!(f16::SQRT_2, sqrt_2);
     }
 
