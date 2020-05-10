@@ -66,7 +66,7 @@
     ),
     feature(stdsimd, f16c_target_feature)
 )]
-#![doc(html_root_url = "https://docs.rs/half/1.5.0")]
+#![doc(html_root_url = "https://docs.rs/half/1.6.0")]
 
 #[cfg(all(feature = "alloc", not(feature = "std")))]
 extern crate alloc;
