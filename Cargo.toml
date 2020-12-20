@@ -21,6 +21,12 @@ use-intrinsics = []
 serialize = ["serde"] # Deprecated. Use serde directly.
 alloc = []
 
+[dependencies.bytemuck]
+version = "1.4.1"
+optional = true
+default-features = false
+features = ["derive"]
+
 [dependencies.serde]
 version = "1.0"
 optional = true
