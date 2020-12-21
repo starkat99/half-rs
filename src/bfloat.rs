@@ -646,6 +646,8 @@ mod impl_num_traits {
         fn from_u16(n: u16) -> Option<Self> { n.to_f32().map(|x| Self::from_f32(x)) }
         fn from_i32(n: i32) -> Option<Self> { n.to_f32().map(|x| Self::from_f32(x)) }
         fn from_u32(n: u32) -> Option<Self> { n.to_f32().map(|x| Self::from_f32(x)) }
+        fn from_f32(n: f32) -> Option<Self> { n.to_f32().map(|x| Self::from_f32(x)) }
+        fn from_f64(n: f64) -> Option<Self> { n.to_f64().map(|x| Self::from_f64(x)) }
     }
 }
 
