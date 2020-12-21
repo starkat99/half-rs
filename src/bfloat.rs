@@ -597,7 +597,7 @@ impl FromStr for bf16 {
 
 impl Debug for bf16 {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
-        write!(f, "0x{:X}", self.0)
+        write!(f, "{}", self.to_f32())
     }
 }
 
