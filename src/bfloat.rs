@@ -1,6 +1,9 @@
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
+#[cfg(feature = "bytemuck")]
+use bytemuck::{Zeroable, Pod};
+
 use core::{
     cmp::Ordering,
     fmt::{Debug, Display, Error, Formatter, LowerExp, UpperExp},
@@ -28,6 +31,7 @@ pub(crate) mod convert;
 #[derive(Clone, Copy, Default)]
 #[repr(transparent)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "bytemuck", derive(Zeroable, Pod))]
 pub struct bf16(u16);
 
 impl bf16 {
