@@ -27,6 +27,11 @@ optional = true
 default-features = false
 features = ["derive"]
 
+[dependencies.num-traits]
+version = "0.2.14"
+optional = true
+default-features = false
+
 [package.metadata.docs.rs]
 features = ["std", "serde"]
 

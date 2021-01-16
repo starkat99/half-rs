@@ -27,6 +27,38 @@ pub(crate) mod convert;
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct f16(u16);
 
+#[cfg(feature = "num-traits")]
+mod impl_num_traits {
+    use super::f16;
+    use num_traits::{ToPrimitive, FromPrimitive};
+    
+    impl ToPrimitive for f16 {
+        fn to_i64(&self) -> Option<i64> { Self::to_f32(*self).to_i64() }
+        fn to_u64(&self) -> Option<u64> { Self::to_f32(*self).to_u64() }
+        fn to_i8(&self) -> Option<i8> { Self::to_f32(*self).to_i8() }
+        fn to_u8(&self) -> Option<u8> { Self::to_f32(*self).to_u8() }
+        fn to_i16(&self) -> Option<i16> { Self::to_f32(*self).to_i16() }
+        fn to_u16(&self) -> Option<u16> { Self::to_f32(*self).to_u16() }
+        fn to_i32(&self) -> Option<i32> { Self::to_f32(*self).to_i32() }
+        fn to_u32(&self) -> Option<u32> { Self::to_f32(*self).to_u32() }
+        fn to_f32(&self) -> Option<f32> { Some(Self::to_f32(*self)) }
+        fn to_f64(&self) -> Option<f64> { Some(Self::to_f64(*self)) }
+    }
+
+    impl FromPrimitive for f16 {
+        fn from_i64(n: i64) -> Option<Self> { n.to_f32().map(|x| Self::from_f32(x)) }
+        fn from_u64(n: u64) -> Option<Self> { n.to_f32().map(|x| Self::from_f32(x)) }
+        fn from_i8(n: i8) -> Option<Self> { n.to_f32().map(|x| Self::from_f32(x)) }
+        fn from_u8(n: u8) -> Option<Self> { n.to_f32().map(|x| Self::from_f32(x)) }
+        fn from_i16(n: i16) -> Option<Self> { n.to_f32().map(|x| Self::from_f32(x)) }
+        fn from_u16(n: u16) -> Option<Self> { n.to_f32().map(|x| Self::from_f32(x)) }
+        fn from_i32(n: i32) -> Option<Self> { n.to_f32().map(|x| Self::from_f32(x)) }
+        fn from_u32(n: u32) -> Option<Self> { n.to_f32().map(|x| Self::from_f32(x)) }
+        fn from_f32(n: f32) -> Option<Self> { n.to_f32().map(|x| Self::from_f32(x)) }
+        fn from_f64(n: f64) -> Option<Self> { n.to_f64().map(|x| Self::from_f64(x)) }
+    }
+}
+
 #[deprecated(
     since = "1.4.0",
     note = "all constants moved to associated constants of [`f16`](../struct.f16.html)"
