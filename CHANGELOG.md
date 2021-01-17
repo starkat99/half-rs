@@ -5,6 +5,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.7.1] - 2021-01-17 <a name="1.7.1"></a>
+### Fixed
+- Docs.rs now generates docs for `bytemuck` and `num-traits` optional features.
 
 ## [1.7.0] - 2021-01-17 <a name="1.7.0"></a>
 ### Added
@@ -171,7 +174,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [@charles-r-earp]: https://github.com/charles-r-earp
 
 
-[Unreleased]: https://github.com/starkat99/half-rs/compare/v1.7.0...HEAD
+[Unreleased]: https://github.com/starkat99/half-rs/compare/v1.7.1...HEAD
+[1.7.1]: https://github.com/starkat99/half-rs/compare/v1.7.0...v1.7.1
 [1.7.0]: https://github.com/starkat99/half-rs/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/starkat99/half-rs/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/starkat99/half-rs/compare/v1.4.1...v1.5.0
