@@ -29,6 +29,9 @@
 //!
 //! Support for [`serde`] crate `Serialize` and `Deserialize` traits is provided when the `serde`
 //! feature is enabled. This adds a dependency on [`serde`] crate so is an optional cargo feature.
+//! Support for [`bytemuck`] crate `Zeroable` and `Pod` traits is provided with the `bytemuck`
+//! feature. Support for the [`num-traits`] crate `ToPrimitive` and `FromPrimitive` traits is
+//! provided with the `num-traits` feature.
 //!
 //! The crate uses `#[no_std]` by default, so can be used in embedded environments without using the
 //! Rust `std` library. A `std` feature is available, which enables additional utilities using the
@@ -43,6 +46,8 @@
 //! [`slice`]: slice/index.html
 //! [`prelude`]: prelude/index.html
 //! [`serde`]: https://crates.io/crates/serde
+//! [`bytemuck`]: https://crates.io/crates/bytemuck
+//! [`num-traits`]: https://crates.io/crates/num-traits
 //! [`vec`]: vec/index.html
 
 #![warn(

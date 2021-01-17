@@ -4,6 +4,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Added optional implementations of `bytemuck` traits `Zeroable` and `Pod` under `bytemuck` cargo
+  feature. By [@charles-r-earp].
+- Added optional implementations of `num-traits` traits `ToPrimitive` and `FromtPrimitive` under
+  `num-traits` cargo feature. By [@charles-r-earp].
+- Added implementations of `Binary`, `Octal`, `LowerHex`, and `UpperHex` string format traits to
+  format raw `f16`/`bf16` bytes to string.
+
+### Changed
+- `Debug` trait implementation now formats `f16`/`bf16` as float instead of raw bytes hex. Use newly
+  implemented formatting traits to format in hex instead of `Debug`.
 
 
 ## [1.6.0] - 2020-05-09 <a name="1.6.0"></a>
@@ -153,6 +164,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [@jfrimmel]: https://github.com/jfrimmel
 [@zserik]: https://github.com/zserik
 [@bzm3r]: https://github.com/bzm3r
+[@charles-r-earp]: https://github.com/charles-r-earp
 
 
 [Unreleased]: https://github.com/starkat99/half-rs/compare/v1.6.0...HEAD
