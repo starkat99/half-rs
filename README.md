@@ -36,7 +36,7 @@ not have hardware support. **Available only on Rust nightly channel.**
   Enabling the `std` feature enables runtime CPU feature detection when the `use-intrsincis` feature is also enabled.
   Without this feature detection, intrinsics are only used when compiler host target supports them.
 
-- **`num-traits`** - Enable `ToPrimitive` and `FromPrimitive` trait implementations from the
+- **`num-traits`** - Enable `ToPrimitive`, `FromPrimitive`, `Num`, `Float`, and `FloatCore` trait implementations from the
   `num-traits` crate.
 
 - **`bytemuck`** - Enable `Zeroable` and `Pod` trait implementations from the `bytemuck` crate.

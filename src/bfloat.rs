@@ -648,7 +648,12 @@ impl UpperHex for bf16 {
 #[cfg(feature = "num-traits")]
 mod impl_num_traits {
     use super::bf16;
-    use num_traits::{FromPrimitive, ToPrimitive};
+    use core::cmp::Ordering;
+    use core::num::FpCategory;
+    use core::ops::{Add, Mul};
+    use core::ops::{Div, Neg, Rem, Sub};
+    use num_traits::float::FloatCore;
+    use num_traits::{Float, FloatConst, FromPrimitive, Num, NumCast, One, ToPrimitive, Zero};
 
     impl ToPrimitive for bf16 {
         fn to_i64(&self) -> Option<i64> {
@@ -685,34 +690,564 @@ mod impl_num_traits {
 
     impl FromPrimitive for bf16 {
         fn from_i64(n: i64) -> Option<Self> {
-            n.to_f32().map(|x| Self::from_f32(x))
+            n.to_f32().map(Self::from_f32)
         }
         fn from_u64(n: u64) -> Option<Self> {
-            n.to_f32().map(|x| Self::from_f32(x))
+            n.to_f32().map(Self::from_f32)
         }
         fn from_i8(n: i8) -> Option<Self> {
-            n.to_f32().map(|x| Self::from_f32(x))
+            n.to_f32().map(Self::from_f32)
         }
         fn from_u8(n: u8) -> Option<Self> {
-            n.to_f32().map(|x| Self::from_f32(x))
+            n.to_f32().map(Self::from_f32)
         }
         fn from_i16(n: i16) -> Option<Self> {
-            n.to_f32().map(|x| Self::from_f32(x))
+            n.to_f32().map(Self::from_f32)
         }
         fn from_u16(n: u16) -> Option<Self> {
-            n.to_f32().map(|x| Self::from_f32(x))
+            n.to_f32().map(Self::from_f32)
         }
         fn from_i32(n: i32) -> Option<Self> {
-            n.to_f32().map(|x| Self::from_f32(x))
+            n.to_f32().map(Self::from_f32)
         }
         fn from_u32(n: u32) -> Option<Self> {
-            n.to_f32().map(|x| Self::from_f32(x))
+            n.to_f32().map(Self::from_f32)
         }
         fn from_f32(n: f32) -> Option<Self> {
-            n.to_f32().map(|x| Self::from_f32(x))
+            n.to_f32().map(Self::from_f32)
         }
         fn from_f64(n: f64) -> Option<Self> {
-            n.to_f64().map(|x| Self::from_f64(x))
+            n.to_f64().map(Self::from_f64)
+        }
+    }
+
+    impl Num for bf16 {
+        type FromStrRadixErr = <f32 as Num>::FromStrRadixErr;
+
+        fn from_str_radix(str: &str, radix: u32) -> Result<Self, Self::FromStrRadixErr> {
+            Ok(Self::from_f32(f32::from_str_radix(str, radix)?))
+        }
+    }
+
+    impl One for bf16 {
+        #[inline]
+        fn one() -> Self {
+            Self::ONE
+        }
+    }
+
+    impl Zero for bf16 {
+        #[inline]
+        fn zero() -> Self {
+            Self::ZERO
+        }
+
+        #[inline]
+        fn is_zero(&self) -> bool {
+            *self == Self::ZERO
+        }
+    }
+
+    impl Neg for bf16 {
+        type Output = Self;
+
+        fn neg(self) -> Self::Output {
+            Self(self.0 ^ 0x8000)
+        }
+    }
+
+    impl Add for bf16 {
+        type Output = Self;
+
+        fn add(self, rhs: Self) -> Self::Output {
+            Self::from_f32(Self::to_f32(self) + Self::to_f32(rhs))
+        }
+    }
+
+    impl Sub for bf16 {
+        type Output = Self;
+
+        fn sub(self, rhs: Self) -> Self::Output {
+            Self::from_f32(Self::to_f32(self) - Self::to_f32(rhs))
+        }
+    }
+
+    impl Mul for bf16 {
+        type Output = Self;
+
+        fn mul(self, rhs: Self) -> Self::Output {
+            Self::from_f32(Self::to_f32(self) * Self::to_f32(rhs))
+        }
+    }
+
+    impl Div for bf16 {
+        type Output = Self;
+
+        fn div(self, rhs: Self) -> Self::Output {
+            Self::from_f32(Self::to_f32(self) / Self::to_f32(rhs))
+        }
+    }
+
+    impl Rem for bf16 {
+        type Output = Self;
+
+        fn rem(self, rhs: Self) -> Self::Output {
+            Self::from_f32(Self::to_f32(self) % Self::to_f32(rhs))
+        }
+    }
+
+    impl NumCast for bf16 {
+        fn from<T: ToPrimitive>(n: T) -> Option<Self> {
+            n.to_f32().map(Self::from_f32)
+        }
+    }
+
+    impl FloatCore for bf16 {
+        fn infinity() -> Self {
+            Self::INFINITY
+        }
+
+        fn neg_infinity() -> Self {
+            Self::NEG_INFINITY
+        }
+
+        fn nan() -> Self {
+            Self::NAN
+        }
+
+        fn neg_zero() -> Self {
+            Self::NEG_ZERO
+        }
+
+        fn min_value() -> Self {
+            Self::MIN
+        }
+
+        fn min_positive_value() -> Self {
+            Self::MIN_POSITIVE
+        }
+
+        fn epsilon() -> Self {
+            Self::EPSILON
+        }
+
+        fn max_value() -> Self {
+            Self::MAX
+        }
+
+        fn is_nan(self) -> bool {
+            self.is_nan()
+        }
+
+        fn is_infinite(self) -> bool {
+            self.is_infinite()
+        }
+
+        fn is_finite(self) -> bool {
+            self.is_finite()
+        }
+
+        fn is_normal(self) -> bool {
+            self.is_normal()
+        }
+
+        fn classify(self) -> FpCategory {
+            self.classify()
+        }
+
+        fn floor(self) -> Self {
+            Self::from_f32(self.to_f32().floor())
+        }
+
+        fn ceil(self) -> Self {
+            Self::from_f32(self.to_f32().ceil())
+        }
+
+        fn round(self) -> Self {
+            Self::from_f32(self.to_f32().round())
+        }
+
+        fn trunc(self) -> Self {
+            Self::from_f32(self.to_f32().trunc())
+        }
+
+        fn fract(self) -> Self {
+            Self::from_f32(self.to_f32().fract())
+        }
+
+        fn abs(self) -> Self {
+            Self(self.0 & 0x7FFF)
+        }
+
+        fn signum(self) -> Self {
+            self.signum()
+        }
+
+        fn is_sign_positive(self) -> bool {
+            self.is_sign_positive()
+        }
+
+        fn is_sign_negative(self) -> bool {
+            self.is_sign_negative()
+        }
+
+        fn min(self, other: Self) -> Self {
+            match self.partial_cmp(&other) {
+                None => {
+                    if self.is_nan() {
+                        other
+                    } else {
+                        self
+                    }
+                }
+                Some(Ordering::Greater) | Some(Ordering::Equal) => other,
+                Some(Ordering::Less) => self,
+            }
+        }
+
+        fn max(self, other: Self) -> Self {
+            match self.partial_cmp(&other) {
+                None => {
+                    if self.is_nan() {
+                        other
+                    } else {
+                        self
+                    }
+                }
+                Some(Ordering::Greater) | Some(Ordering::Equal) => self,
+                Some(Ordering::Less) => other,
+            }
+        }
+
+        fn recip(self) -> Self {
+            Self::from_f32(self.to_f32().recip())
+        }
+
+        fn powi(self, exp: i32) -> Self {
+            Self::from_f32(self.to_f32().powi(exp))
+        }
+
+        fn to_degrees(self) -> Self {
+            Self::from_f32(self.to_f32().to_degrees())
+        }
+
+        fn to_radians(self) -> Self {
+            Self::from_f32(self.to_f32().to_radians())
+        }
+
+        fn integer_decode(self) -> (u64, i16, i8) {
+            FloatCore::integer_decode(self.to_f32())
+        }
+    }
+
+    impl Float for bf16 {
+        fn nan() -> Self {
+            Self::NAN
+        }
+
+        fn infinity() -> Self {
+            Self::INFINITY
+        }
+
+        fn neg_infinity() -> Self {
+            Self::NEG_INFINITY
+        }
+
+        fn neg_zero() -> Self {
+            Self::NEG_ZERO
+        }
+
+        fn min_value() -> Self {
+            Self::MIN
+        }
+
+        fn min_positive_value() -> Self {
+            Self::MIN_POSITIVE
+        }
+
+        fn epsilon() -> Self {
+            Self::EPSILON
+        }
+
+        fn max_value() -> Self {
+            Self::MAX
+        }
+
+        fn is_nan(self) -> bool {
+            self.is_nan()
+        }
+
+        fn is_infinite(self) -> bool {
+            self.is_infinite()
+        }
+
+        fn is_finite(self) -> bool {
+            self.is_finite()
+        }
+
+        fn is_normal(self) -> bool {
+            self.is_normal()
+        }
+
+        fn classify(self) -> FpCategory {
+            self.classify()
+        }
+
+        fn floor(self) -> Self {
+            Self::from_f32(self.to_f32().floor())
+        }
+
+        fn ceil(self) -> Self {
+            Self::from_f32(self.to_f32().ceil())
+        }
+
+        fn round(self) -> Self {
+            Self::from_f32(self.to_f32().round())
+        }
+
+        fn trunc(self) -> Self {
+            Self::from_f32(self.to_f32().trunc())
+        }
+
+        fn fract(self) -> Self {
+            Self::from_f32(self.to_f32().fract())
+        }
+
+        fn abs(self) -> Self {
+            Self::from_f32(self.to_f32().abs())
+        }
+
+        fn signum(self) -> Self {
+            Self::from_f32(self.to_f32().signum())
+        }
+
+        fn is_sign_positive(self) -> bool {
+            self.is_sign_positive()
+        }
+
+        fn is_sign_negative(self) -> bool {
+            self.is_sign_negative()
+        }
+
+        fn mul_add(self, a: Self, b: Self) -> Self {
+            Self::from_f32(self.to_f32().mul_add(a.to_f32(), b.to_f32()))
+        }
+
+        fn recip(self) -> Self {
+            Self::from_f32(self.to_f32().recip())
+        }
+
+        fn powi(self, n: i32) -> Self {
+            Self::from_f32(self.to_f32().powi(n))
+        }
+
+        fn powf(self, n: Self) -> Self {
+            Self::from_f32(self.to_f32().powf(n.to_f32()))
+        }
+
+        fn sqrt(self) -> Self {
+            Self::from_f32(self.to_f32().sqrt())
+        }
+
+        fn exp(self) -> Self {
+            Self::from_f32(self.to_f32().exp())
+        }
+
+        fn exp2(self) -> Self {
+            Self::from_f32(self.to_f32().exp2())
+        }
+
+        fn ln(self) -> Self {
+            Self::from_f32(self.to_f32().ln())
+        }
+
+        fn log(self, base: Self) -> Self {
+            Self::from_f32(self.to_f32().log(base.to_f32()))
+        }
+
+        fn log2(self) -> Self {
+            Self::from_f32(self.to_f32().log2())
+        }
+
+        fn log10(self) -> Self {
+            Self::from_f32(self.to_f32().log10())
+        }
+
+        fn to_degrees(self) -> Self {
+            Self::from_f32(self.to_f32().to_degrees())
+        }
+
+        fn to_radians(self) -> Self {
+            Self::from_f32(self.to_f32().to_radians())
+        }
+
+        fn max(self, other: Self) -> Self {
+            FloatCore::max(self, other)
+        }
+
+        fn min(self, other: Self) -> Self {
+            FloatCore::min(self, other)
+        }
+
+        fn abs_sub(self, other: Self) -> Self {
+            Self::from_f32((self.to_f32() - other.to_f32()).max(0.0))
+        }
+
+        fn cbrt(self) -> Self {
+            Self::from_f32(self.to_f32().cbrt())
+        }
+
+        fn hypot(self, other: Self) -> Self {
+            Self::from_f32(self.to_f32().hypot(other.to_f32()))
+        }
+
+        fn sin(self) -> Self {
+            Self::from_f32(self.to_f32().sin())
+        }
+
+        fn cos(self) -> Self {
+            Self::from_f32(self.to_f32().cos())
+        }
+
+        fn tan(self) -> Self {
+            Self::from_f32(self.to_f32().tan())
+        }
+
+        fn asin(self) -> Self {
+            Self::from_f32(self.to_f32().asin())
+        }
+
+        fn acos(self) -> Self {
+            Self::from_f32(self.to_f32().acos())
+        }
+
+        fn atan(self) -> Self {
+            Self::from_f32(self.to_f32().atan())
+        }
+
+        fn atan2(self, other: Self) -> Self {
+            Self::from_f32(self.to_f32().atan2(other.to_f32()))
+        }
+
+        fn sin_cos(self) -> (Self, Self) {
+            let (sin, cos) = self.to_f32().sin_cos();
+            (Self::from_f32(sin), Self::from_f32(cos))
+        }
+
+        fn exp_m1(self) -> Self {
+            Self::from_f32(self.to_f32().exp_m1())
+        }
+
+        fn ln_1p(self) -> Self {
+            Self::from_f32(self.to_f32().ln_1p())
+        }
+
+        fn sinh(self) -> Self {
+            Self::from_f32(self.to_f32().sinh())
+        }
+
+        fn cosh(self) -> Self {
+            Self::from_f32(self.to_f32().cosh())
+        }
+
+        fn tanh(self) -> Self {
+            Self::from_f32(self.to_f32().tanh())
+        }
+
+        fn asinh(self) -> Self {
+            Self::from_f32(self.to_f32().asinh())
+        }
+
+        fn acosh(self) -> Self {
+            Self::from_f32(self.to_f32().acosh())
+        }
+
+        fn atanh(self) -> Self {
+            Self::from_f32(self.to_f32().atanh())
+        }
+
+        fn integer_decode(self) -> (u64, i16, i8) {
+            Float::integer_decode(self.to_f32())
+        }
+    }
+
+    impl FloatConst for bf16 {
+        fn E() -> Self {
+            Self::E
+        }
+
+        fn FRAC_1_PI() -> Self {
+            Self::FRAC_1_PI
+        }
+
+        fn FRAC_1_SQRT_2() -> Self {
+            Self::FRAC_1_SQRT_2
+        }
+
+        fn FRAC_2_PI() -> Self {
+            Self::FRAC_2_PI
+        }
+
+        fn FRAC_2_SQRT_PI() -> Self {
+            Self::FRAC_2_SQRT_PI
+        }
+
+        fn FRAC_PI_2() -> Self {
+            Self::FRAC_PI_2
+        }
+
+        fn FRAC_PI_3() -> Self {
+            Self::FRAC_PI_3
+        }
+
+        fn FRAC_PI_4() -> Self {
+            Self::FRAC_PI_4
+        }
+
+        fn FRAC_PI_6() -> Self {
+            Self::FRAC_PI_6
+        }
+
+        fn FRAC_PI_8() -> Self {
+            Self::FRAC_PI_8
+        }
+
+        fn LN_10() -> Self {
+            Self::LN_10
+        }
+
+        fn LN_2() -> Self {
+            Self::LN_2
+        }
+
+        fn LOG10_E() -> Self {
+            Self::LOG10_E
+        }
+
+        fn LOG2_E() -> Self {
+            Self::LOG2_E
+        }
+
+        fn PI() -> Self {
+            Self::PI
+        }
+
+        fn SQRT_2() -> Self {
+            Self::SQRT_2
+        }
+
+        fn LOG10_2() -> Self
+        where
+            Self: Sized + Div<Self, Output = Self>,
+        {
+            Self::LOG10_2
+        }
+
+        fn LOG2_10() -> Self
+        where
+            Self: Sized + Div<Self, Output = Self>,
+        {
+            Self::LOG2_10
         }
     }
 }
