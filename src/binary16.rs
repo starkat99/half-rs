@@ -40,7 +40,9 @@ mod impl_num_traits {
     use core::num::FpCategory;
     use core::ops::{Add, Div, Mul, Neg, Rem, Sub};
     use num_traits::float::FloatCore;
-    use num_traits::{Float, FloatConst, FromPrimitive, Num, NumCast, One, ToPrimitive, Zero};
+    use num_traits::{
+        AsPrimitive, Float, FloatConst, FromPrimitive, Num, NumCast, One, ToPrimitive, Zero,
+    };
 
     impl ToPrimitive for f16 {
         fn to_i64(&self) -> Option<i64> {
@@ -636,6 +638,77 @@ mod impl_num_traits {
         {
             Self::LOG2_10
         }
+    }
+
+    macro_rules! impl_as_primitive_to_f16 {
+        ($ty:ty, $meth:ident) => {
+            impl AsPrimitive<$ty> for f16 {
+                fn as_(self) -> $ty {
+                    self.$meth().as_()
+                }
+            }
+        };
+    }
+
+    impl_as_primitive_to_f16!(i64, to_f32);
+    impl_as_primitive_to_f16!(u64, to_f32);
+    impl_as_primitive_to_f16!(i8, to_f32);
+    impl_as_primitive_to_f16!(u8, to_f32);
+    impl_as_primitive_to_f16!(i16, to_f32);
+    impl_as_primitive_to_f16!(u16, to_f32);
+    impl_as_primitive_to_f16!(i32, to_f32);
+    impl_as_primitive_to_f16!(u32, to_f32);
+    impl_as_primitive_to_f16!(f32, to_f32);
+    impl_as_primitive_to_f16!(f64, to_f64);
+
+    macro_rules! impl_as_primitive_f16_from {
+        ($ty:ty, $meth:ident) => {
+            impl AsPrimitive<f16> for $ty {
+                fn as_(self) -> f16 {
+                    f16::$meth(self.as_())
+                }
+            }
+        };
+    }
+
+    impl_as_primitive_f16_from!(i64, from_f32);
+    impl_as_primitive_f16_from!(u64, from_f32);
+    impl_as_primitive_f16_from!(i8, from_f32);
+    impl_as_primitive_f16_from!(u8, from_f32);
+    impl_as_primitive_f16_from!(i16, from_f32);
+    impl_as_primitive_f16_from!(u16, from_f32);
+    impl_as_primitive_f16_from!(i32, from_f32);
+    impl_as_primitive_f16_from!(u32, from_f32);
+    impl_as_primitive_f16_from!(f32, from_f32);
+    impl_as_primitive_f16_from!(f64, from_f64);
+
+    #[test]
+    fn as_primitive() {
+        let two = f16::from_f32(2.0);
+        assert_eq!(<i32 as AsPrimitive<f16>>::as_(2), two);
+        assert_eq!(<f16 as AsPrimitive<i32>>::as_(two), 2);
+
+        assert_eq!(<f32 as AsPrimitive<f16>>::as_(2.0), two);
+        assert_eq!(<f16 as AsPrimitive<f32>>::as_(two), 2.0);
+
+        assert_eq!(<f64 as AsPrimitive<f16>>::as_(2.0), two);
+        assert_eq!(<f16 as AsPrimitive<f64>>::as_(two), 2.0);
+    }
+
+    #[test]
+    fn to_primitive() {
+        let two = f16::from_f32(2.0);
+        assert_eq!(ToPrimitive::to_i32(&two).unwrap(), 2i32);
+        assert_eq!(ToPrimitive::to_f32(&two).unwrap(), 2.0f32);
+        assert_eq!(ToPrimitive::to_f64(&two).unwrap(), 2.0f64);
+    }
+
+    #[test]
+    fn from_primitive() {
+        let two = f16::from_f32(2.0);
+        assert_eq!(<f16 as FromPrimitive>::from_i32(2).unwrap(), two);
+        assert_eq!(<f16 as FromPrimitive>::from_f32(2.0).unwrap(), two);
+        assert_eq!(<f16 as FromPrimitive>::from_f64(2.0).unwrap(), two);
     }
 }
 
