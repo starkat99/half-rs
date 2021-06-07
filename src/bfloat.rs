@@ -654,7 +654,8 @@ mod impl_num_traits {
     use core::ops::{Div, Neg, Rem, Sub};
     use num_traits::float::FloatCore;
     use num_traits::{
-        AsPrimitive, Float, FloatConst, FromPrimitive, Num, NumCast, One, ToPrimitive, Zero,
+        AsPrimitive, Bounded, Float, FloatConst, FromPrimitive, Num, NumCast, One, ToPrimitive,
+        Zero,
     };
 
     impl ToPrimitive for bf16 {
@@ -1250,6 +1251,16 @@ mod impl_num_traits {
             Self: Sized + Div<Self, Output = Self>,
         {
             Self::LOG2_10
+        }
+    }
+
+    impl Bounded for bf16 {
+        fn min_value() -> Self {
+            bf16::MIN
+        }
+
+        fn max_value() -> Self {
+            bf16::MAX
         }
     }
 
