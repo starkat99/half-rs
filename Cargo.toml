@@ -45,7 +45,7 @@ features = ["std", "serde", "bytemuck", "num-traits"]
 [dev-dependencies]
 criterion = "0.3"
 quickcheck = "0.9"
-quickcheck_macros = "0.9"
+quickcheck_macros = "1"
 rand = "0.7"
 version-sync = "0.8"
 
