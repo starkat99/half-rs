@@ -5,6 +5,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.7.1] - 2021-01-17 <a name="1.7.1"></a>
+### Fixed
+- Docs.rs now generates docs for `bytemuck` and `num-traits` optional features.
+
+## [1.7.0] - 2021-01-17 <a name="1.7.0"></a>
+### Added
+- Added optional implementations of `bytemuck` traits `Zeroable` and `Pod` under `bytemuck` cargo
+  feature. By [@charles-r-earp].
+- Added optional implementations of `num-traits` traits `ToPrimitive` and `FromPrimitive` under
+  `num-traits` cargo feature. By [@charles-r-earp].
+- Added implementations of `Binary`, `Octal`, `LowerHex`, and `UpperHex` string format traits to
+  format raw `f16`/`bf16` bytes to string.
+
+### Changed
+- `Debug` trait implementation now formats `f16`/`bf16` as float instead of raw bytes hex. Use newly
+  implemented formatting traits to format in hex instead of `Debug`. Fixes [#37].
+
 
 ## [1.6.0] - 2020-05-09 <a name="1.6.0"></a>
 ### Added
@@ -145,6 +162,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#16]: https://github.com/starkat99/half-rs/issues/16
 [#23]: https://github.com/starkat99/half-rs/issues/23
 [#24]: https://github.com/starkat99/half-rs/issues/24
+[#37]: https://github.com/starkat99/half-rs/issues/37
 
 [@tspiteri]: https://github.com/tspiteri
 [@PSeitz]: https://github.com/PSeitz
@@ -153,9 +171,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [@jfrimmel]: https://github.com/jfrimmel
 [@zserik]: https://github.com/zserik
 [@bzm3r]: https://github.com/bzm3r
+[@charles-r-earp]: https://github.com/charles-r-earp
 
 
-[Unreleased]: https://github.com/starkat99/half-rs/compare/v1.6.0...HEAD
+[Unreleased]: https://github.com/starkat99/half-rs/compare/v1.7.1...HEAD
+[1.7.1]: https://github.com/starkat99/half-rs/compare/v1.7.0...v1.7.1
+[1.7.0]: https://github.com/starkat99/half-rs/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/starkat99/half-rs/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/starkat99/half-rs/compare/v1.4.1...v1.5.0
 [1.4.1]: https://github.com/starkat99/half-rs/compare/v1.4.0...v1.4.1

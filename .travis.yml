@@ -38,9 +38,7 @@ matrix:
 
     - rust: 1.32.0
       script:
-        - cargo update
-        - cargo update -p unicode-normalization --precise 0.1.9
-        - cargo update -p criterion --precise 0.3.0
+        - cp ./ci/Cargo.lock.1.32.0 ./Cargo.lock
         - cargo test --features std
 branches:
   except:

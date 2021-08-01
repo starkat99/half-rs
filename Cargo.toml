@@ -1,6 +1,6 @@
 [package]
 name = "half"
-version = "1.6.0" # Remember to keep in sync with html_root_url crate attribute
+version = "1.7.1" # Remember to keep in sync with html_root_url crate attribute
 authors = ["Kathryn Long <squeeself@gmail.com>"]
 description = "Half-precision floating point f16 and bf16 types for Rust implementing the IEEE 754-2008 standard binary16 and bfloat16 types."
 repository = "https://github.com/starkat99/half-rs"
@@ -9,6 +9,7 @@ keywords = ["f16", "bfloat16", "no_std"]
 license = "MIT/Apache-2.0"
 categories = ["no-std", "data-structures", "encoding"]
 edition = "2018"
+exclude = ["/ci", "/*.yml"]
 
 [badges]
 appveyor = { repository = "starkat99/half-rs" }
@@ -39,7 +40,7 @@ optional = true
 default-features = false
 
 [package.metadata.docs.rs]
-features = ["std", "serde"]
+features = ["std", "serde", "bytemuck", "num-traits"]
 
 [dev-dependencies]
 criterion = "0.3"

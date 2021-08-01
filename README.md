@@ -13,7 +13,7 @@ minimal floating point storage and most major hardware does not implement them, 
 This crate provides [`no_std`](https://rust-embedded.github.io/book/intro/no-std.html) support by default so can easily be used in embedded
 code where a smaller float format is most useful.
 
-*Requries Rust 1.32 or greater.* If you need support for older versions of Rust, use versions 1.3 and earlier of this crate.
+*Requires Rust 1.32 or greater.* If you need support for older versions of Rust, use versions 1.3 and earlier of this crate.
 
 See the [crate documentation](https://docs.rs/half/) for more details.
 
@@ -35,6 +35,11 @@ not have hardware support. **Available only on Rust nightly channel.**
 
   Enabling the `std` feature enables runtime CPU feature detection when the `use-intrsincis` feature is also enabled.
   Without this feature detection, intrinsics are only used when compiler host target supports them.
+
+- **`num-traits`** - Enable `ToPrimitive`, `FromPrimitive`, `Num`, `Float`, `FloatCore` and `Bounded` trait implementations
+  from the `num-traits` crate.
+
+- **`bytemuck`** - Enable `Zeroable` and `Pod` trait implementations from the `bytemuck` crate.
 
 ### More Documentation
 
