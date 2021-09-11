@@ -1316,9 +1316,11 @@ mod impl_num_traits {
 mod test {
     use super::*;
     use core::cmp::Ordering;
+    #[cfg(feature = "num-traits")]
     use num_traits::{AsPrimitive, FromPrimitive, ToPrimitive};
     use quickcheck_macros::quickcheck;
 
+    #[cfg(feature = "num-traits")]
     #[test]
     fn as_primitive() {
         let two = bf16::from_f32(2.0);
@@ -1332,6 +1334,7 @@ mod test {
         assert_eq!(<bf16 as AsPrimitive<f64>>::as_(two), 2.0);
     }
 
+    #[cfg(feature = "num-traits")]
     #[test]
     fn to_primitive() {
         let two = bf16::from_f32(2.0);
@@ -1340,6 +1343,7 @@ mod test {
         assert_eq!(ToPrimitive::to_f64(&two).unwrap(), 2.0f64);
     }
 
+    #[cfg(feature = "num-traits")]
     #[test]
     fn from_primitive() {
         let two = bf16::from_f32(2.0);
