@@ -631,6 +631,7 @@ pub fn to_bits(bits: &[f16]) -> &[u16] {
     bits.reinterpret_cast()
 }
 
+#[allow(clippy::float_cmp)]
 #[cfg(test)]
 mod test {
     use super::{HalfBitsSliceExt, HalfFloatSliceExt};

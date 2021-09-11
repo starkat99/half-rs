@@ -1305,6 +1305,19 @@ mod impl_num_traits {
     impl_as_primitive_bf16_from!(u32, from_f32);
     impl_as_primitive_bf16_from!(f32, from_f32);
     impl_as_primitive_bf16_from!(f64, from_f64);
+}
+
+#[allow(
+    clippy::cognitive_complexity,
+    clippy::float_cmp,
+    clippy::neg_cmp_op_on_partial_ord
+)]
+#[cfg(test)]
+mod test {
+    use super::*;
+    use core::cmp::Ordering;
+    use num_traits::{AsPrimitive, FromPrimitive, ToPrimitive};
+    use quickcheck_macros::quickcheck;
 
     #[test]
     fn as_primitive() {
@@ -1334,19 +1347,6 @@ mod impl_num_traits {
         assert_eq!(<bf16 as FromPrimitive>::from_f32(2.0).unwrap(), two);
         assert_eq!(<bf16 as FromPrimitive>::from_f64(2.0).unwrap(), two);
     }
-}
-
-#[allow(
-    clippy::cognitive_complexity,
-    clippy::float_cmp,
-    clippy::neg_cmp_op_on_partial_ord
-)]
-#[cfg(test)]
-mod test {
-    use super::*;
-    use core;
-    use core::cmp::Ordering;
-    use quickcheck_macros::quickcheck;
 
     #[test]
     fn test_bf16_consts_from_f32() {

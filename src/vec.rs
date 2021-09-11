@@ -145,7 +145,7 @@ impl HalfFloatVecExt for Vec<f16> {
         // so this is safe to do instead of double initialize from resize, and we're setting it to
         // same value as capacity.
         unsafe { vec.set_len(slice.len()) };
-        vec.convert_from_f32_slice(&slice);
+        vec.convert_from_f32_slice(slice);
         vec
     }
 
@@ -155,7 +155,7 @@ impl HalfFloatVecExt for Vec<f16> {
         // so this is safe to do instead of double initialize from resize, and we're setting it to
         // same value as capacity.
         unsafe { vec.set_len(slice.len()) };
-        vec.convert_from_f64_slice(&slice);
+        vec.convert_from_f64_slice(slice);
         vec
     }
 }
@@ -187,7 +187,7 @@ impl HalfFloatVecExt for Vec<bf16> {
         // so this is safe to do instead of double initialize from resize, and we're setting it to
         // same value as capacity.
         unsafe { vec.set_len(slice.len()) };
-        vec.convert_from_f32_slice(&slice);
+        vec.convert_from_f32_slice(slice);
         vec
     }
 
@@ -197,7 +197,7 @@ impl HalfFloatVecExt for Vec<bf16> {
         // so this is safe to do instead of double initialize from resize, and we're setting it to
         // same value as capacity.
         unsafe { vec.set_len(slice.len()) };
-        vec.convert_from_f64_slice(&slice);
+        vec.convert_from_f64_slice(slice);
         vec
     }
 }

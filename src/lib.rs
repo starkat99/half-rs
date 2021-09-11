@@ -55,12 +55,7 @@
     missing_copy_implementations,
     missing_debug_implementations,
     trivial_numeric_casts,
-    unused_extern_crates,
-    unused_import_braces,
-    future_incompatible,
-    rust_2018_compatibility,
-    rust_2018_idioms,
-    clippy::all
+    future_incompatible
 )]
 #![allow(clippy::verbose_bit_mask, clippy::cast_lossless)]
 #![cfg_attr(not(feature = "std"), no_std)]

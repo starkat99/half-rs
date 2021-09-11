@@ -692,35 +692,6 @@ mod impl_num_traits {
     impl_as_primitive_f16_from!(u32, from_f32);
     impl_as_primitive_f16_from!(f32, from_f32);
     impl_as_primitive_f16_from!(f64, from_f64);
-
-    #[test]
-    fn as_primitive() {
-        let two = f16::from_f32(2.0);
-        assert_eq!(<i32 as AsPrimitive<f16>>::as_(2), two);
-        assert_eq!(<f16 as AsPrimitive<i32>>::as_(two), 2);
-
-        assert_eq!(<f32 as AsPrimitive<f16>>::as_(2.0), two);
-        assert_eq!(<f16 as AsPrimitive<f32>>::as_(two), 2.0);
-
-        assert_eq!(<f64 as AsPrimitive<f16>>::as_(2.0), two);
-        assert_eq!(<f16 as AsPrimitive<f64>>::as_(two), 2.0);
-    }
-
-    #[test]
-    fn to_primitive() {
-        let two = f16::from_f32(2.0);
-        assert_eq!(ToPrimitive::to_i32(&two).unwrap(), 2i32);
-        assert_eq!(ToPrimitive::to_f32(&two).unwrap(), 2.0f32);
-        assert_eq!(ToPrimitive::to_f64(&two).unwrap(), 2.0f64);
-    }
-
-    #[test]
-    fn from_primitive() {
-        let two = f16::from_f32(2.0);
-        assert_eq!(<f16 as FromPrimitive>::from_i32(2).unwrap(), two);
-        assert_eq!(<f16 as FromPrimitive>::from_f32(2.0).unwrap(), two);
-        assert_eq!(<f16 as FromPrimitive>::from_f64(2.0).unwrap(), two);
-    }
 }
 
 #[deprecated(
@@ -1580,9 +1551,38 @@ impl UpperHex for f16 {
 #[cfg(test)]
 mod test {
     use super::*;
-    use core;
     use core::cmp::Ordering;
+    use num_traits::{AsPrimitive, FromPrimitive, ToPrimitive};
     use quickcheck_macros::quickcheck;
+
+    #[test]
+    fn as_primitive() {
+        let two = f16::from_f32(2.0);
+        assert_eq!(<i32 as AsPrimitive<f16>>::as_(2), two);
+        assert_eq!(<f16 as AsPrimitive<i32>>::as_(two), 2);
+
+        assert_eq!(<f32 as AsPrimitive<f16>>::as_(2.0), two);
+        assert_eq!(<f16 as AsPrimitive<f32>>::as_(two), 2.0);
+
+        assert_eq!(<f64 as AsPrimitive<f16>>::as_(2.0), two);
+        assert_eq!(<f16 as AsPrimitive<f64>>::as_(two), 2.0);
+    }
+
+    #[test]
+    fn to_primitive() {
+        let two = f16::from_f32(2.0);
+        assert_eq!(ToPrimitive::to_i32(&two).unwrap(), 2i32);
+        assert_eq!(ToPrimitive::to_f32(&two).unwrap(), 2.0f32);
+        assert_eq!(ToPrimitive::to_f64(&two).unwrap(), 2.0f64);
+    }
+
+    #[test]
+    fn from_primitive() {
+        let two = f16::from_f32(2.0);
+        assert_eq!(<f16 as FromPrimitive>::from_i32(2).unwrap(), two);
+        assert_eq!(<f16 as FromPrimitive>::from_f32(2.0).unwrap(), two);
+        assert_eq!(<f16 as FromPrimitive>::from_f64(2.0).unwrap(), two);
+    }
 
     #[test]
     fn test_f16_consts() {
