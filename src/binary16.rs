@@ -2094,9 +2094,8 @@ mod test {
     }
 
     impl quickcheck::Arbitrary for f16 {
-        fn arbitrary<G: quickcheck::Gen>(g: &mut G) -> Self {
-            use rand::Rng;
-            f16(g.gen())
+        fn arbitrary(g: &mut quickcheck::Gen) -> Self {
+            f16(u16::arbitrary(g))
         }
     }
 

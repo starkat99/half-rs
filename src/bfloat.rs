@@ -1800,9 +1800,8 @@ mod test {
     }
 
     impl quickcheck::Arbitrary for bf16 {
-        fn arbitrary<G: quickcheck::Gen>(g: &mut G) -> Self {
-            use rand::Rng;
-            bf16(g.gen())
+        fn arbitrary(g: &mut quickcheck::Gen) -> Self {
+            bf16(u16::arbitrary(g))
         }
     }
 

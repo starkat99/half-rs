@@ -10,7 +10,7 @@ keywords = ["f16", "bfloat16", "no_std"]
 license = "MIT OR Apache-2.0"
 categories = ["no-std", "data-structures", "encoding"]
 edition = "2018"
-exclude = ["/ci", "/*.yml"]
+exclude = [".git*"]
 
 [badges]
 maintenance = { status = "passively-maintained" }
@@ -32,10 +32,10 @@ num-traits = { version = "0.2.14", default-features = false, optional = true }
 
 [dev-dependencies]
 criterion = "0.3"
-quickcheck = "0.9"
-quickcheck_macros = "0.9"
-rand = "0.7"
-version-sync = "0.8"
+quickcheck = "1.0"
+quickcheck_macros = "1.0"
+rand = "0.8.4"
+version-sync = "0.9.2"
 
 [[bench]]
 name = "convert"
