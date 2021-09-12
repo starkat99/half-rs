@@ -1,5 +1,5 @@
 # `f16` and `bf16` floating point types for Rust
-[![Crates.io](https://img.shields.io/crates/v/half.svg)](https://crates.io/crates/half/) [![Documentation](https://docs.rs/half/badge.svg)](https://docs.rs/half/) [![Build status](https://github.com/starkat99/half-rs/actions/workflows/rust.yml/badge.svg?branch=master)](https://github.com/starkat99/half-rs/actions/workflows/rust.yml)
+[![Crates.io](https://img.shields.io/crates/v/half.svg)](https://crates.io/crates/half/) [![Documentation](https://docs.rs/half/badge.svg)](https://docs.rs/half/) ![Crates.io](https://img.shields.io/crates/l/half) [![Build status](https://github.com/starkat99/half-rs/actions/workflows/rust.yml/badge.svg?branch=master)](https://github.com/starkat99/half-rs/actions/workflows/rust.yml)
 
 This crate implements a half-precision floating point `f16` type for Rust implementing the IEEE
 754-2008 standard [`binary16`](https://en.wikipedia.org/wiki/Half-precision_floating-point_format) 
