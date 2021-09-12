@@ -27,9 +27,23 @@ condition = { env_set = ["CARGO_MAKE_RUN_CLIPPY"] }
 [tasks.check-format-ci-flow]
 condition = { env_set = ["CARGO_MAKE_RUN_CHECK_FORMAT"] }
 
+[tasks.check-docs]
+description = "Checks docs for errors."
+category = "Documentation"
+install_crate = false
+env = { RUSTDOCFLAGS = "-D warnings" }
+command = "cargo"
+args = [
+    "doc", 
+    "--workspace",
+    "--no-deps",
+    "@@remove-empty(CARGO_MAKE_CARGO_VERBOSE_FLAGS)",
+    "${CARGO_MAKE_CARGO_ALL_FEATURES}",
+]
+
 # Build & Test with no features enabled
 [tasks.post-ci-flow]
-run_task = [{ name = ["build-no-std", "test-no-std"] }]
+run_task = [{ name = ["check-docs", "build-no-std", "test-no-std"] }]
 
 [tasks.build-no-std]
 description = "Build without any features"

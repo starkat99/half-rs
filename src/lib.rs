@@ -7,16 +7,16 @@
 //!
 //! This crate also provides a [`bf16`] type, an alternative 16-bit floating point format. The
 //! [`bfloat16`] format is a truncated IEEE 754 standard `binary32` float that preserves the
-//! exponent to allow the same range as `f32` but with only 8 bits of precision (instead of 11
+//! exponent to allow the same range as [`f32`] but with only 8 bits of precision (instead of 11
 //! bits for [`f16`]). See the [`bf16`] type for details.
 //!
-//! Because [`f16`] and [`bf16`] are primarily for efficient storage, floating point operations such as
-//! addition, multiplication, etc. are not implemented. Operations should be performed with `f32`
-//! or higher-precision types and converted to/from [`f16`] or [`bf16`] as necessary.
+//! Because [`f16`] and [`bf16`] are primarily for efficient storage, floating point operations such
+//! as addition, multiplication, etc. are not implemented. Operations should be performed with
+//! [`f32`] or higher-precision types and converted to/from [`f16`] or [`bf16`] as necessary.
 //!
-//! This crate also provides a [`slice`] module for zero-copy in-place conversions of `u16` slices
-//! to both [`f16`] and [`bf16`], as well as efficient vectorized conversions of larger buffers of
-//! floating point values to and from these half formats.
+//! This crate also provides a [`mod@slice`] module for zero-copy in-place conversions of [`u16`]
+//! slices to both [`f16`] and [`bf16`], as well as efficient vectorized conversions of larger
+//! buffers of floating point values to and from these half formats.
 //!
 //! A [`prelude`] module is provided for easy importing of available utility traits.
 //!
@@ -24,7 +24,7 @@
 //! `use-intrinsics` feature to use LLVM intrinsics for hardware conversions. This crate does no
 //! checks on whether the hardware supports the feature. This feature currently only works on
 //! nightly Rust due to a compiler feature gate. When this feature is enabled and the hardware
-//! supports it, the [`slice`] trait conversions will use vectorized SIMD intructions for
+//! supports it, the [`prim@slice`] trait conversions will use vectorized SIMD intructions for
 //! increased efficiency.
 //!
 //! Support for [`serde`] crate `Serialize` and `Deserialize` traits is provided when the `serde`
@@ -35,20 +35,15 @@
 //!
 //! The crate uses `#[no_std]` by default, so can be used in embedded environments without using the
 //! Rust `std` library. A `std` feature is available, which enables additional utilities using the
-//! `std` library, such as the [`vec`] module that provides zero-copy `Vec` conversions. The `alloc`
-//! feature may be used to enable the [`vec`] module without adding a dependency to the `std`
-//! library.
+//! `std` library, such as the [`mod@vec`] module that provides zero-copy `Vec` conversions. The
+//! `alloc` feature may be used to enable the [`mod@vec`] module without adding a dependency to the
+//! `std` library.
 //!
-//! [`f16`]: struct.f16.html
 //! [`binary16`]: https://en.wikipedia.org/wiki/Half-precision_floating-point_format
-//! [`bf16`]: struct.bf16.html
 //! [`bfloat16`]: https://en.wikipedia.org/wiki/Bfloat16_floating-point_format
-//! [`slice`]: slice/index.html
-//! [`prelude`]: prelude/index.html
 //! [`serde`]: https://crates.io/crates/serde
 //! [`bytemuck`]: https://crates.io/crates/bytemuck
 //! [`num-traits`]: https://crates.io/crates/num-traits
-//! [`vec`]: vec/index.html
 
 #![warn(
     missing_docs,

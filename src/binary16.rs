@@ -16,15 +16,14 @@ use core::{
 pub(crate) mod convert;
 
 /// A 16-bit floating point type implementing the IEEE 754-2008 standard [`binary16`] a.k.a `half`
-/// format.
+/// format
 ///
 /// This 16-bit floating point type is intended for efficient storage where the full range and
 /// precision of a larger floating point value is not required. Because [`f16`] is primarily for
 /// efficient storage, floating point operations such as addition, multiplication, etc. are not
-/// implemented. Operations should be performed with `f32` or higher-precision types and converted
+/// implemented. Operations should be performed with [`f32`] or higher-precision types and converted
 /// to/from [`f16`] as necessary.
 ///
-/// [`f16`]: struct.f16.html
 /// [`binary16`]: https://en.wikipedia.org/wiki/Half-precision_floating-point_format
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, Default)]
@@ -694,241 +693,137 @@ mod impl_num_traits {
     impl_as_primitive_f16_from!(f64, from_f64);
 }
 
+#[doc(hidden)]
 #[deprecated(
     since = "1.4.0",
-    note = "all constants moved to associated constants of [`f16`](../struct.f16.html)"
+    note = "all constants moved to associated constants of `f16`"
 )]
 pub mod consts {
-    //! Useful `f16` constants.
+    //! Useful [`f16`] constants
 
     use super::f16;
 
-    /// Approximate number of [`f16`](../struct.f16.html) significant digits in base 10.
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::DIGITS`](../struct.f16.html#associatedconstant.DIGITS)"
-    )]
+    /// Approximate number of [`f16`] significant digits in base 10
+    #[deprecated(since = "1.4.0", note = "moved to `f16::DIGITS`")]
     pub const DIGITS: u32 = f16::DIGITS;
-    /// [`f16`](../struct.f16.html)
-    /// [machine epsilon](https://en.wikipedia.org/wiki/Machine_epsilon) value.
+    /// [`f16`]
+    /// [machine epsilon](https://en.wikipedia.org/wiki/Machine_epsilon) value
     ///
     /// This is the difference between 1.0 and the next largest representable number.
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::EPSILON`](../struct.f16.html#associatedconstant.EPSILON)"
-    )]
+    #[deprecated(since = "1.4.0", note = "moved to `f16::EPSILON`")]
     pub const EPSILON: f16 = f16::EPSILON;
-    /// [`f16`](../struct.f16.html) positive Infinity (+∞).
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::INFINITY`](../struct.f16.html#associatedconstant.INFINITY)"
-    )]
+    /// [`f16`] positive Infinity (+∞)
+    #[deprecated(since = "1.4.0", note = "moved to `f16::INFINITY`")]
     pub const INFINITY: f16 = f16::INFINITY;
-    /// Number of [`f16`](../struct.f16.html) significant digits in base 2.
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::MANTISSA_DIGITS`](../struct.f16.html#associatedconstant.MANTISSA_DIGITS)"
-    )]
+    /// Number of [`f16`] significant digits in base 2
+    #[deprecated(since = "1.4.0", note = "moved to `f16::MANTISSA_DIGITS`")]
     pub const MANTISSA_DIGITS: u32 = f16::MANTISSA_DIGITS;
-    /// Largest finite [`f16`](../struct.f16.html) value.
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::MAX`](../struct.f16.html#associatedconstant.MAX)"
-    )]
+    /// Largest finite [`f16`] value
+    #[deprecated(since = "1.4.0", note = "moved to `f16::MAX`")]
     pub const MAX: f16 = f16::MAX;
-    /// Maximum possible [`f16`](../struct.f16.html) power of 10 exponent.
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::MAX_10_EXP`](../struct.f16.html#associatedconstant.MAX_10_EXP)"
-    )]
+    /// Maximum possible [`f16`] power of 10 exponent
+    #[deprecated(since = "1.4.0", note = "moved to `f16::MAX_10_EXP`")]
     pub const MAX_10_EXP: i32 = f16::MAX_10_EXP;
-    /// Maximum possible [`f16`](../struct.f16.html) power of 2 exponent.
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::MAX_EXP`](../struct.f16.html#associatedconstant.MAX_EXP)"
-    )]
+    /// Maximum possible [`f16`] power of 2 exponent
+    #[deprecated(since = "1.4.0", note = "moved to `f16::MAX_EXP`")]
     pub const MAX_EXP: i32 = f16::MAX_EXP;
-    /// Smallest finite [`f16`](../struct.f16.html) value.
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::MIN`](../struct.f16.html#associatedconstant.MIN)"
-    )]
+    /// Smallest finite [`f16`] value
+    #[deprecated(since = "1.4.0", note = "moved to `f16::MIN`")]
     pub const MIN: f16 = f16::MIN;
-    /// Minimum possible normal [`f16`](../struct.f16.html) power of 10 exponent.
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::MIN_10_EXP`](../struct.f16.html#associatedconstant.MIN_10_EXP)"
-    )]
+    /// Minimum possible normal [`f16`] power of 10 exponent
+    #[deprecated(since = "1.4.0", note = "moved to `f16::MIN_10_EXP`")]
     pub const MIN_10_EXP: i32 = f16::MIN_10_EXP;
-    /// One greater than the minimum possible normal [`f16`](../struct.f16.html) power of 2 exponent.
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::MIN_EXP`](../struct.f16.html#associatedconstant.MIN_EXP)"
-    )]
+    /// One greater than the minimum possible normal [`f16`] power of 2 exponent
+    #[deprecated(since = "1.4.0", note = "moved to `f16::MIN_EXP`")]
     pub const MIN_EXP: i32 = f16::MIN_EXP;
-    /// Smallest positive normal [`f16`](../struct.f16.html) value.
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::MIN_POSITIVE`](../struct.f16.html#associatedconstant.MIN_POSITIVE)"
-    )]
+    /// Smallest positive normal [`f16`] value
+    #[deprecated(since = "1.4.0", note = "moved to `f16::MIN_POSITIVE`")]
     pub const MIN_POSITIVE: f16 = f16::MIN_POSITIVE;
-    /// [`f16`](../struct.f16.html) Not a Number (NaN).
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::NAN`](../struct.f16.html#associatedconstant.NAN)"
-    )]
+    /// [`f16`] Not a Number (NaN)
+    #[deprecated(since = "1.4.0", note = "moved to `f16::NAN`")]
     pub const NAN: f16 = f16::NAN;
-    /// [`f16`](../struct.f16.html) negative infinity (-∞).
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::NEG_INFINITY`](../struct.f16.html#associatedconstant.NEG_INFINITY)"
-    )]
+    /// [`f16`] negative infinity (-∞)
+    #[deprecated(since = "1.4.0", note = "moved to `f16::NEG_INFINITY`")]
     pub const NEG_INFINITY: f16 = f16::NEG_INFINITY;
-    /// The radix or base of the internal representation of [`f16`](../struct.f16.html).
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::RADIX`](../struct.f16.html#associatedconstant.RADIX)"
-    )]
+    /// The radix or base of the internal representation of [`f16`]
+    #[deprecated(since = "1.4.0", note = "moved to `f16::RADIX`")]
     pub const RADIX: u32 = f16::RADIX;
 
-    /// Minimum positive subnormal [`f16`](../struct.f16.html) value.
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::MIN_POSITIVE_SUBNORMAL`](../struct.f16.html#associatedconstant.MIN_POSITIVE_SUBNORMAL)"
-    )]
+    /// Minimum positive subnormal [`f16`] value
+    #[deprecated(since = "1.4.0", note = "moved to `f16::MIN_POSITIVE_SUBNORMAL`")]
     pub const MIN_POSITIVE_SUBNORMAL: f16 = f16::MIN_POSITIVE_SUBNORMAL;
-    /// Maximum subnormal [`f16`](../struct.f16.html) value.
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::MAX_SUBNORMAL`](../struct.f16.html#associatedconstant.MAX_SUBNORMAL)"
-    )]
+    /// Maximum subnormal [`f16`] value
+    #[deprecated(since = "1.4.0", note = "moved to `f16::MAX_SUBNORMAL`")]
     pub const MAX_SUBNORMAL: f16 = f16::MAX_SUBNORMAL;
 
-    /// [`f16`](../struct.f16.html) 1
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::ONE`](../struct.f16.html#associatedconstant.ONE)"
-    )]
+    /// [`f16`] 1
+    #[deprecated(since = "1.4.0", note = "moved to `f16::ONE`")]
     pub const ONE: f16 = f16::ONE;
-    /// [`f16`](../struct.f16.html) 0
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::ZERO`](../struct.f16.html#associatedconstant.ZERO)"
-    )]
+    /// [`f16`] 0
+    #[deprecated(since = "1.4.0", note = "moved to `f16::ZERO`")]
     pub const ZERO: f16 = f16::ZERO;
-    /// [`f16`](../struct.f16.html) -0
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::NEG_ZERO`](../struct.f16.html#associatedconstant.NEG_ZERO)"
-    )]
+    /// [`f16`] -0
+    #[deprecated(since = "1.4.0", note = "moved to `f16::NEG_ZERO`")]
     pub const NEG_ZERO: f16 = f16::NEG_ZERO;
 
-    /// [`f16`](../struct.f16.html) Euler's number (ℯ).
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::E`](../struct.f16.html#associatedconstant.E)"
-    )]
+    /// [`f16`] Euler's number (ℯ)
+    #[deprecated(since = "1.4.0", note = "moved to `f16::E`")]
     pub const E: f16 = f16::E;
-    /// [`f16`](../struct.f16.html) Archimedes' constant (π).
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::PI`](../struct.f16.html#associatedconstant.PI)"
-    )]
+    /// [`f16`] Archimedes' constant (π)
+    #[deprecated(since = "1.4.0", note = "moved to `f16::PI`")]
     pub const PI: f16 = f16::PI;
-    /// [`f16`](../struct.f16.html) 1/π
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::FRAC_1_PI`](../struct.f16.html#associatedconstant.FRAC_1_PI)"
-    )]
+    /// [`f16`] 1/π
+    #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_1_PI`")]
     pub const FRAC_1_PI: f16 = f16::FRAC_1_PI;
-    /// [`f16`](../struct.f16.html) 1/√2
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::FRAC_1_SQRT_2`](../struct.f16.html#associatedconstant.FRAC_1_SQRT_2)"
-    )]
+    /// [`f16`] 1/√2
+    #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_1_SQRT_2`")]
     pub const FRAC_1_SQRT_2: f16 = f16::FRAC_1_SQRT_2;
-    /// [`f16`](../struct.f16.html) 2/π
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::FRAC_2_PI`](../struct.f16.html#associatedconstant.FRAC_2_PI)"
-    )]
+    /// [`f16`] 2/π
+    #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_2_PI`")]
     pub const FRAC_2_PI: f16 = f16::FRAC_2_PI;
-    /// [`f16`](../struct.f16.html) 2/√π
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::FRAC_2_SQRT_PI`](../struct.f16.html#associatedconstant.FRAC_2_SQRT_PI)"
-    )]
+    /// [`f16`] 2/√π
+    #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_2_SQRT_PI`")]
     pub const FRAC_2_SQRT_PI: f16 = f16::FRAC_2_SQRT_PI;
-    /// [`f16`](../struct.f16.html) π/2
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::FRAC_PI_2`](../struct.f16.html#associatedconstant.FRAC_PI_2)"
-    )]
+    /// [`f16`] π/2
+    #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_PI_2`")]
     pub const FRAC_PI_2: f16 = f16::FRAC_PI_2;
-    /// [`f16`](../struct.f16.html) π/3
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::FRAC_PI_3`](../struct.f16.html#associatedconstant.FRAC_PI_3)"
-    )]
+    /// [`f16`] π/3
+    #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_PI_3`")]
     pub const FRAC_PI_3: f16 = f16::FRAC_PI_3;
-    /// [`f16`](../struct.f16.html) π/4
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::FRAC_PI_4`](../struct.f16.html#associatedconstant.FRAC_PI_4)"
-    )]
+    /// [`f16`] π/4
+    #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_PI_4`")]
     pub const FRAC_PI_4: f16 = f16::FRAC_PI_4;
-    /// [`f16`](../struct.f16.html) π/6
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::FRAC_PI_6`](../struct.f16.html#associatedconstant.FRAC_PI_6)"
-    )]
+    /// [`f16`] π/6
+    #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_PI_6`")]
     pub const FRAC_PI_6: f16 = f16::FRAC_PI_6;
-    /// [`f16`](../struct.f16.html) π/8
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::FRAC_PI_8`](../struct.f16.html#associatedconstant.FRAC_PI_8)"
-    )]
+    /// [`f16`] π/8
+    #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_PI_8`")]
     pub const FRAC_PI_8: f16 = f16::FRAC_PI_8;
-    /// [`f16`](../struct.f16.html) 𝗅𝗇 10
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::LN_10`](../struct.f16.html#associatedconstant.LN_10)"
-    )]
+    /// [`f16`] 𝗅𝗇 10
+    #[deprecated(since = "1.4.0", note = "moved to `f16::LN_10`")]
     pub const LN_10: f16 = f16::LN_10;
-    /// [`f16`](../struct.f16.html) 𝗅𝗇 2
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::LN_2`](../struct.f16.html#associatedconstant.LN_2)"
-    )]
+    /// [`f16`] 𝗅𝗇 2
+    #[deprecated(since = "1.4.0", note = "moved to `f16::LN_2`")]
     pub const LN_2: f16 = f16::LN_2;
-    /// [`f16`](../struct.f16.html) 𝗅𝗈𝗀₁₀ℯ
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::LOG10_E`](../struct.f16.html#associatedconstant.LOG10_E)"
-    )]
+    /// [`f16`] 𝗅𝗈𝗀₁₀ℯ
+    #[deprecated(since = "1.4.0", note = "moved to `f16::LOG10_E`")]
     pub const LOG10_E: f16 = f16::LOG10_E;
-    /// [`f16`](../struct.f16.html) 𝗅𝗈𝗀₂ℯ
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::LOG2_E`](../struct.f16.html#associatedconstant.LOG2_E)"
-    )]
+    /// [`f16`] 𝗅𝗈𝗀₂ℯ
+    #[deprecated(since = "1.4.0", note = "moved to `f16::LOG2_E`")]
     pub const LOG2_E: f16 = f16::LOG2_E;
-    /// [`f16`](../struct.f16.html) √2
-    #[deprecated(
-        since = "1.4.0",
-        note = "moved to [`f16::SQRT_2`](../struct.f16.html#associatedconstant.SQRT_2)"
-    )]
+    /// [`f16`] √2
+    #[deprecated(since = "1.4.0", note = "moved to `f16::SQRT_2`")]
     pub const SQRT_2: f16 = f16::SQRT_2;
 }
 
 impl f16 {
-    /// Constructs a 16-bit floating point value from the raw bits.
+    /// Constructs a 16-bit floating point value from the raw bits
     #[inline]
     pub const fn from_bits(bits: u16) -> f16 {
         f16(bits)
     }
 
-    /// Constructs a 16-bit floating point value from a 32-bit floating point value.
+    /// Constructs a 16-bit floating point value from a 32-bit floating point value
     ///
     /// If the 32-bit value is to large to fit in 16-bits, ±∞ will result. NaN values are
     /// preserved. 32-bit subnormal values are too tiny to be represented in 16-bits and result in
@@ -940,7 +835,7 @@ impl f16 {
         f16(convert::f32_to_f16(value))
     }
 
-    /// Constructs a 16-bit floating point value from a 64-bit floating point value.
+    /// Constructs a 16-bit floating point value from a 64-bit floating point value
     ///
     /// If the 64-bit value is to large to fit in 16-bits, ±∞ will result. NaN values are
     /// preserved. 64-bit subnormal values are too tiny to be represented in 16-bits and result in
@@ -952,14 +847,14 @@ impl f16 {
         f16(convert::f64_to_f16(value))
     }
 
-    /// Converts a [`f16`](struct.f16.html) into the underlying bit representation.
+    /// Converts a [`f16`] into the underlying bit representation
     #[inline]
     pub const fn to_bits(self) -> u16 {
         self.0
     }
 
-    /// Return the memory representation of the underlying bit representation as a byte array in
-    /// little-endian byte order.
+    /// Returns the memory representation of the underlying bit representation as a byte array in
+    /// little-endian byte order
     ///
     /// # Examples
     ///
@@ -973,8 +868,8 @@ impl f16 {
         self.0.to_le_bytes()
     }
 
-    /// Return the memory representation of the underlying bit representation as a byte array in
-    /// big-endian (network) byte order.
+    /// Returns the memory representation of the underlying bit representation as a byte array in
+    /// big-endian (network) byte order
     ///
     /// # Examples
     ///
@@ -988,11 +883,12 @@ impl f16 {
         self.0.to_be_bytes()
     }
 
-    /// Return the memory representation of the underlying bit representation as a byte array in
-    /// native byte order.
+    /// Returns the memory representation of the underlying bit representation as a byte array in
+    /// native byte order
     ///
-    /// As the target platform's native endianness is used, portable code should use `to_be_bytes`
-    /// or `to_le_bytes`, as appropriate, instead.
+    /// As the target platform's native endianness is used, portable code should use
+    /// [`to_be_bytes`][Self::to_be_bytes] or [`to_le_bytes`][Self::to_le_bytes], as appropriate,
+    /// instead.
     ///
     /// # Examples
     ///
@@ -1010,7 +906,7 @@ impl f16 {
         self.0.to_ne_bytes()
     }
 
-    /// Create a floating point value from its representation as a byte array in little endian.
+    /// Creates a floating point value from its representation as a byte array in little endian
     ///
     /// # Examples
     ///
@@ -1024,7 +920,7 @@ impl f16 {
         f16::from_bits(u16::from_le_bytes(bytes))
     }
 
-    /// Create a floating point value from its representation as a byte array in big endian.
+    /// Creates a floating point value from its representation as a byte array in big endian
     ///
     /// # Examples
     ///
@@ -1038,10 +934,11 @@ impl f16 {
         f16::from_bits(u16::from_be_bytes(bytes))
     }
 
-    /// Create a floating point value from its representation as a byte array in native endian.
+    /// Creates a floating point value from its representation as a byte array in native endian
     ///
     /// As the target platform's native endianness is used, portable code likely wants to use
-    /// `from_be_bytes` or `from_le_bytes`, as appropriate instead.
+    /// [`from_be_bytes`][Self::from_be_bytes] or [`from_le_bytes`][Self::from_le_bytes], as
+    /// appropriate instead.
     ///
     /// # Examples
     ///
@@ -1059,14 +956,14 @@ impl f16 {
         f16::from_bits(u16::from_ne_bytes(bytes))
     }
 
-    /// Converts a [`f16`](struct.f16.html) into the underlying bit representation.
+    /// Converts a [`f16`] into the underlying bit representation
     #[deprecated(since = "1.2.0", note = "renamed to [`to_bits`](#method.to_bits)")]
     #[inline]
     pub fn as_bits(self) -> u16 {
         self.to_bits()
     }
 
-    /// Converts a [`f16`](struct.f16.html) value into a `f32` value.
+    /// Converts a [`f16`] value into a `f32` value
     ///
     /// This conversion is lossless as all 16-bit floating point values can be represented exactly
     /// in 32-bit floating point.
@@ -1075,7 +972,7 @@ impl f16 {
         convert::f16_to_f32(self.0)
     }
 
-    /// Converts a [`f16`](struct.f16.html) value into a `f64` value.
+    /// Converts a [`f16`] value into a `f64` value
     ///
     /// This conversion is lossless as all 16-bit floating point values can be represented exactly
     /// in 64-bit floating point.
@@ -1084,7 +981,7 @@ impl f16 {
         convert::f16_to_f64(self.0)
     }
 
-    /// Returns `true` if this value is `NaN` and `false` otherwise.
+    /// Returns `true` if this value is `NaN` and `false` otherwise
     ///
     /// # Examples
     ///
@@ -1126,7 +1023,7 @@ impl f16 {
         self.0 & 0x7FFFu16 == 0x7C00u16
     }
 
-    /// Returns `true` if this number is neither infinite nor `NaN`.
+    /// Returns `true` if this number is neither infinite nor `NaN`
     ///
     /// # Examples
     ///
@@ -1149,7 +1046,7 @@ impl f16 {
         self.0 & 0x7C00u16 != 0x7C00u16
     }
 
-    /// Returns `true` if the number is neither zero, infinite, subnormal, or `NaN`.
+    /// Returns `true` if the number is neither zero, infinite, subnormal, or `NaN`
     ///
     /// # Examples
     ///
@@ -1176,7 +1073,7 @@ impl f16 {
         exp != 0x7C00u16 && exp != 0
     }
 
-    /// Returns the floating point category of the number.
+    /// Returns the floating point category of the number
     ///
     /// If only one property is going to be tested, it is generally faster to use the specific
     /// predicate instead.
@@ -1205,11 +1102,11 @@ impl f16 {
         }
     }
 
-    /// Returns a number that represents the sign of `self`.
+    /// Returns a number that represents the sign of `self`
     ///
-    /// * `1.0` if the number is positive, `+0.0` or `INFINITY`
-    /// * `-1.0` if the number is negative, `-0.0` or `NEG_INFINITY`
-    /// * `NAN` if the number is `NAN`
+    /// * `1.0` if the number is positive, `+0.0` or [`INFINITY`][f16::INFINITY]
+    /// * `-1.0` if the number is negative, `-0.0` or [`NEG_INFINITY`][f16::NEG_INFINITY]
+    /// * [`NAN`][f16::NAN] if the number is `NaN`
     ///
     /// # Examples
     ///
@@ -1234,7 +1131,7 @@ impl f16 {
     }
 
     /// Returns `true` if and only if `self` has a positive sign, including `+0.0`, `NaNs` with a
-    /// positive sign bit and +∞.
+    /// positive sign bit and +∞
     ///
     /// # Examples
     ///
@@ -1256,7 +1153,7 @@ impl f16 {
     }
 
     /// Returns `true` if and only if `self` has a negative sign, including `-0.0`, `NaNs` with a
-    /// negative sign bit and −∞.
+    /// negative sign bit and −∞
     ///
     /// # Examples
     ///
@@ -1277,85 +1174,85 @@ impl f16 {
         self.0 & 0x8000u16 != 0
     }
 
-    /// Approximate number of [`f16`](struct.f16.html) significant digits in base 10.
+    /// Approximate number of [`f16`] significant digits in base 10
     pub const DIGITS: u32 = 3;
-    /// [`f16`](struct.f16.html)
-    /// [machine epsilon](https://en.wikipedia.org/wiki/Machine_epsilon) value.
+    /// [`f16`]
+    /// [machine epsilon](https://en.wikipedia.org/wiki/Machine_epsilon) value
     ///
     /// This is the difference between 1.0 and the next largest representable number.
     pub const EPSILON: f16 = f16(0x1400u16);
-    /// [`f16`](struct.f16.html) positive Infinity (+∞).
+    /// [`f16`] positive Infinity (+∞)
     pub const INFINITY: f16 = f16(0x7C00u16);
-    /// Number of [`f16`](struct.f16.html) significant digits in base 2.
+    /// Number of [`f16`] significant digits in base 2
     pub const MANTISSA_DIGITS: u32 = 11;
-    /// Largest finite [`f16`](struct.f16.html) value.
+    /// Largest finite [`f16`] value
     pub const MAX: f16 = f16(0x7BFF);
-    /// Maximum possible [`f16`](struct.f16.html) power of 10 exponent.
+    /// Maximum possible [`f16`] power of 10 exponent
     pub const MAX_10_EXP: i32 = 4;
-    /// Maximum possible [`f16`](struct.f16.html) power of 2 exponent.
+    /// Maximum possible [`f16`] power of 2 exponent
     pub const MAX_EXP: i32 = 16;
-    /// Smallest finite [`f16`](struct.f16.html) value.
+    /// Smallest finite [`f16`] value
     pub const MIN: f16 = f16(0xFBFF);
-    /// Minimum possible normal [`f16`](struct.f16.html) power of 10 exponent.
+    /// Minimum possible normal [`f16`] power of 10 exponent
     pub const MIN_10_EXP: i32 = -4;
-    /// One greater than the minimum possible normal [`f16`](struct.f16.html) power of 2 exponent.
+    /// One greater than the minimum possible normal [`f16`] power of 2 exponent
     pub const MIN_EXP: i32 = -13;
-    /// Smallest positive normal [`f16`](struct.f16.html) value.
+    /// Smallest positive normal [`f16`] value
     pub const MIN_POSITIVE: f16 = f16(0x0400u16);
-    /// [`f16`](struct.f16.html) Not a Number (NaN).
+    /// [`f16`] Not a Number (NaN)
     pub const NAN: f16 = f16(0x7E00u16);
-    /// [`f16`](struct.f16.html) negative infinity (-∞).
+    /// [`f16`] negative infinity (-∞)
     pub const NEG_INFINITY: f16 = f16(0xFC00u16);
-    /// The radix or base of the internal representation of [`f16`](struct.f16.html).
+    /// The radix or base of the internal representation of [`f16`]
     pub const RADIX: u32 = 2;
 
-    /// Minimum positive subnormal [`f16`](struct.f16.html) value.
+    /// Minimum positive subnormal [`f16`] value
     pub const MIN_POSITIVE_SUBNORMAL: f16 = f16(0x0001u16);
-    /// Maximum subnormal [`f16`](struct.f16.html) value.
+    /// Maximum subnormal [`f16`] value
     pub const MAX_SUBNORMAL: f16 = f16(0x03FFu16);
 
-    /// [`f16`](struct.f16.html) 1
+    /// [`f16`] 1
     pub const ONE: f16 = f16(0x3C00u16);
-    /// [`f16`](struct.f16.html) 0
+    /// [`f16`] 0
     pub const ZERO: f16 = f16(0x0000u16);
-    /// [`f16`](struct.f16.html) -0
+    /// [`f16`] -0
     pub const NEG_ZERO: f16 = f16(0x8000u16);
 
-    /// [`f16`](struct.f16.html) Euler's number (ℯ).
+    /// [`f16`] Euler's number (ℯ)
     pub const E: f16 = f16(0x4170u16);
-    /// [`f16`](struct.f16.html) Archimedes' constant (π).
+    /// [`f16`] Archimedes' constant (π)
     pub const PI: f16 = f16(0x4248u16);
-    /// [`f16`](struct.f16.html) 1/π
+    /// [`f16`] 1/π
     pub const FRAC_1_PI: f16 = f16(0x3518u16);
-    /// [`f16`](struct.f16.html) 1/√2
+    /// [`f16`] 1/√2
     pub const FRAC_1_SQRT_2: f16 = f16(0x39A8u16);
-    /// [`f16`](struct.f16.html) 2/π
+    /// [`f16`] 2/π
     pub const FRAC_2_PI: f16 = f16(0x3918u16);
-    /// [`f16`](struct.f16.html) 2/√π
+    /// [`f16`] 2/√π
     pub const FRAC_2_SQRT_PI: f16 = f16(0x3C83u16);
-    /// [`f16`](struct.f16.html) π/2
+    /// [`f16`] π/2
     pub const FRAC_PI_2: f16 = f16(0x3E48u16);
-    /// [`f16`](struct.f16.html) π/3
+    /// [`f16`] π/3
     pub const FRAC_PI_3: f16 = f16(0x3C30u16);
-    /// [`f16`](struct.f16.html) π/4
+    /// [`f16`] π/4
     pub const FRAC_PI_4: f16 = f16(0x3A48u16);
-    /// [`f16`](struct.f16.html) π/6
+    /// [`f16`] π/6
     pub const FRAC_PI_6: f16 = f16(0x3830u16);
-    /// [`f16`](struct.f16.html) π/8
+    /// [`f16`] π/8
     pub const FRAC_PI_8: f16 = f16(0x3648u16);
-    /// [`f16`](struct.f16.html) 𝗅𝗇 10
+    /// [`f16`] 𝗅𝗇 10
     pub const LN_10: f16 = f16(0x409Bu16);
-    /// [`f16`](struct.f16.html) 𝗅𝗇 2
+    /// [`f16`] 𝗅𝗇 2
     pub const LN_2: f16 = f16(0x398Cu16);
-    /// [`f16`](struct.f16.html) 𝗅𝗈𝗀₁₀ℯ
+    /// [`f16`] 𝗅𝗈𝗀₁₀ℯ
     pub const LOG10_E: f16 = f16(0x36F3u16);
-    /// [`f16`](struct.f16.html) 𝗅𝗈𝗀₁₀2
+    /// [`f16`] 𝗅𝗈𝗀₁₀2
     pub const LOG10_2: f16 = f16(0x34D1u16);
-    /// [`f16`](struct.f16.html) 𝗅𝗈𝗀₂ℯ
+    /// [`f16`] 𝗅𝗈𝗀₂ℯ
     pub const LOG2_E: f16 = f16(0x3DC5u16);
-    /// [`f16`](struct.f16.html) 𝗅𝗈𝗀₂10
+    /// [`f16`] 𝗅𝗈𝗀₂10
     pub const LOG2_10: f16 = f16(0x42A5u16);
-    /// [`f16`](struct.f16.html) √2
+    /// [`f16`] √2
     pub const SQRT_2: f16 = f16(0x3DA8u16);
 }
 
