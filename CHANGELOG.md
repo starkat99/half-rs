@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Minimum supported Rust version is now 1.48.
 - Made crate package [REUSE compliant](https://reuse.software/).
+- Docs now use intra-doc links instead of manual (and hard to maintain) links.
 
 ### Fixed
 - Fixed a number of minor lints discovered due to improved CI.
