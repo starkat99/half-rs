@@ -62,6 +62,7 @@
     feature(stdsimd, f16c_target_feature)
 )]
 #![doc(html_root_url = "https://docs.rs/half/1.7.1")]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 #[cfg(all(feature = "alloc", not(feature = "std")))]
 extern crate alloc;
@@ -70,10 +71,12 @@ mod bfloat;
 mod binary16;
 pub mod slice;
 #[cfg(any(feature = "alloc", feature = "std"))]
+#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 pub mod vec;
 
 pub use binary16::f16;
 
+#[doc(hidden)]
 #[allow(deprecated)]
 pub use binary16::consts;
 
@@ -94,6 +97,8 @@ pub mod prelude {
     };
 
     #[cfg(any(feature = "alloc", feature = "std"))]
+    #[doc(no_inline)]
+    #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
     pub use crate::vec::{HalfBitsVecExt, HalfFloatVecExt};
 }
 

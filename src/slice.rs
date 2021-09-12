@@ -175,7 +175,6 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
 
     // Because trait is sealed, we can get away with different interfaces between features
 
-    #[cfg(any(feature = "alloc", feature = "std"))]
     /// Converts all of the [`f16`] or [`bf16`] elements of `self` into [`f32`] values in a new
     /// vector
     ///
@@ -194,6 +193,8 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     ///
     /// assert_eq!(vec, vec![1., 2., 3., 4.]);
     /// ```
+    #[cfg(any(feature = "alloc", feature = "std"))]
+    #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
     fn to_f32_vec(&self) -> Vec<f32>;
 
     /// Converts all of the [`f16`] or [`bf16`] elements of `self` into [`f64`] values in a new
@@ -215,6 +216,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     /// assert_eq!(vec, vec![1., 2., 3., 4.]);
     /// ```
     #[cfg(any(feature = "alloc", feature = "std"))]
+    #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
     fn to_f64_vec(&self) -> Vec<f64>;
 }
 
