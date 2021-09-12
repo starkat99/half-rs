@@ -45,9 +45,10 @@ the `std` library.
   Without this feature detection, intrinsics are only used when compiler host target supports them.
 
 - **`num-traits`** - Enable `ToPrimitive`, `FromPrimitive`, `Num`, `Float`, `FloatCore` and
-`Bounded` trait implementations from the `num-traits` crate.
+`Bounded` trait implementations from the [`num-traits`](https://crates.io/crates/num-traits) crate.
 
-- **`bytemuck`** - Enable `Zeroable` and `Pod` trait implementations from the `bytemuck` crate.
+- **`bytemuck`** - Enable `Zeroable` and `Pod` trait implementations from the 
+[`bytemuck`](https://crates.io/crates/bytemuck) crate.
 
 ### More Documentation
 

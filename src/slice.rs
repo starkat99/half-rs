@@ -276,35 +276,6 @@ pub trait HalfBitsSliceExt: private::SealedHalfBitsSlice {
     /// // The following is also valid in Rust.
     /// let typed_buffer = int_buffer.reinterpret_cast_mut::<f16>();
     /// ```
-    ///
-    /// Because this is a reinterpret cast, the returned value must be dropped before using the
-    /// original data. For example, the following will fail to compile:
-    ///
-    /// ```compile_fail
-    /// # use half::prelude::*;
-    /// let bits = &mut [f16::PI.to_bits()];
-    ///
-    /// let numbers = bits.reinterpret_cast_mut();
-    ///
-    /// // This will fail to compile, because `numbers` is a mutable reference to the same data
-    /// bits[0] = f16::LN_2.to_bits();
-    /// numbers[0] = f16::E;
-    /// ```
-    ///
-    /// You can solve this by dropping the result before reusing, like so:
-    ///
-    /// ```rust
-    /// # use half::prelude::*;
-    /// let bits = &mut [f16::PI.to_bits()];
-    ///
-    /// // Make sure to drop the reinterpret cast before using original
-    /// let numbers = bits.reinterpret_cast_mut();
-    /// numbers[0] = f16::E;
-    /// drop(numbers); // Modern rust will detect and drop automatically as long as order is fine
-    ///
-    /// // This will now compile succesffully
-    /// bits[0] = f16::LN_2.to_bits();
-    /// ```
     fn reinterpret_cast_mut<H>(&mut self) -> &mut [H]
     where
         H: crate::private::SealedHalf;
