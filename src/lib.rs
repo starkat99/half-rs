@@ -24,7 +24,7 @@
 //! `use-intrinsics` feature to use LLVM intrinsics for hardware conversions. This crate does no
 //! checks on whether the hardware supports the feature. This feature currently only works on
 //! nightly Rust due to a compiler feature gate. When this feature is enabled and the hardware
-//! supports it, the [`prim@slice`] trait conversions will use vectorized SIMD intructions for
+//! supports it, the [`mod@slice`] trait conversions will use vectorized SIMD intructions for
 //! increased efficiency.
 //!
 //! Support for [`serde`] crate `Serialize` and `Deserialize` traits is provided when the `serde`
