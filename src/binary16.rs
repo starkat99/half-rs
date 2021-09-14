@@ -699,119 +699,79 @@ mod impl_num_traits {
     note = "all constants moved to associated constants of `f16`"
 )]
 pub mod consts {
-    //! Useful [`f16`] constants
-
     use super::f16;
 
-    /// Approximate number of [`f16`] significant digits in base 10
     #[deprecated(since = "1.4.0", note = "moved to `f16::DIGITS`")]
     pub const DIGITS: u32 = f16::DIGITS;
-    /// [`f16`]
-    /// [machine epsilon](https://en.wikipedia.org/wiki/Machine_epsilon) value
-    ///
-    /// This is the difference between 1.0 and the next largest representable number.
     #[deprecated(since = "1.4.0", note = "moved to `f16::EPSILON`")]
     pub const EPSILON: f16 = f16::EPSILON;
-    /// [`f16`] positive Infinity (+∞)
     #[deprecated(since = "1.4.0", note = "moved to `f16::INFINITY`")]
     pub const INFINITY: f16 = f16::INFINITY;
-    /// Number of [`f16`] significant digits in base 2
     #[deprecated(since = "1.4.0", note = "moved to `f16::MANTISSA_DIGITS`")]
     pub const MANTISSA_DIGITS: u32 = f16::MANTISSA_DIGITS;
-    /// Largest finite [`f16`] value
     #[deprecated(since = "1.4.0", note = "moved to `f16::MAX`")]
     pub const MAX: f16 = f16::MAX;
-    /// Maximum possible [`f16`] power of 10 exponent
     #[deprecated(since = "1.4.0", note = "moved to `f16::MAX_10_EXP`")]
     pub const MAX_10_EXP: i32 = f16::MAX_10_EXP;
-    /// Maximum possible [`f16`] power of 2 exponent
     #[deprecated(since = "1.4.0", note = "moved to `f16::MAX_EXP`")]
     pub const MAX_EXP: i32 = f16::MAX_EXP;
-    /// Smallest finite [`f16`] value
     #[deprecated(since = "1.4.0", note = "moved to `f16::MIN`")]
     pub const MIN: f16 = f16::MIN;
-    /// Minimum possible normal [`f16`] power of 10 exponent
     #[deprecated(since = "1.4.0", note = "moved to `f16::MIN_10_EXP`")]
     pub const MIN_10_EXP: i32 = f16::MIN_10_EXP;
-    /// One greater than the minimum possible normal [`f16`] power of 2 exponent
     #[deprecated(since = "1.4.0", note = "moved to `f16::MIN_EXP`")]
     pub const MIN_EXP: i32 = f16::MIN_EXP;
-    /// Smallest positive normal [`f16`] value
     #[deprecated(since = "1.4.0", note = "moved to `f16::MIN_POSITIVE`")]
     pub const MIN_POSITIVE: f16 = f16::MIN_POSITIVE;
-    /// [`f16`] Not a Number (NaN)
     #[deprecated(since = "1.4.0", note = "moved to `f16::NAN`")]
     pub const NAN: f16 = f16::NAN;
-    /// [`f16`] negative infinity (-∞)
     #[deprecated(since = "1.4.0", note = "moved to `f16::NEG_INFINITY`")]
     pub const NEG_INFINITY: f16 = f16::NEG_INFINITY;
-    /// The radix or base of the internal representation of [`f16`]
     #[deprecated(since = "1.4.0", note = "moved to `f16::RADIX`")]
     pub const RADIX: u32 = f16::RADIX;
 
-    /// Minimum positive subnormal [`f16`] value
     #[deprecated(since = "1.4.0", note = "moved to `f16::MIN_POSITIVE_SUBNORMAL`")]
     pub const MIN_POSITIVE_SUBNORMAL: f16 = f16::MIN_POSITIVE_SUBNORMAL;
-    /// Maximum subnormal [`f16`] value
     #[deprecated(since = "1.4.0", note = "moved to `f16::MAX_SUBNORMAL`")]
     pub const MAX_SUBNORMAL: f16 = f16::MAX_SUBNORMAL;
 
-    /// [`f16`] 1
     #[deprecated(since = "1.4.0", note = "moved to `f16::ONE`")]
     pub const ONE: f16 = f16::ONE;
-    /// [`f16`] 0
     #[deprecated(since = "1.4.0", note = "moved to `f16::ZERO`")]
     pub const ZERO: f16 = f16::ZERO;
-    /// [`f16`] -0
     #[deprecated(since = "1.4.0", note = "moved to `f16::NEG_ZERO`")]
     pub const NEG_ZERO: f16 = f16::NEG_ZERO;
 
-    /// [`f16`] Euler's number (ℯ)
     #[deprecated(since = "1.4.0", note = "moved to `f16::E`")]
     pub const E: f16 = f16::E;
-    /// [`f16`] Archimedes' constant (π)
     #[deprecated(since = "1.4.0", note = "moved to `f16::PI`")]
     pub const PI: f16 = f16::PI;
-    /// [`f16`] 1/π
     #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_1_PI`")]
     pub const FRAC_1_PI: f16 = f16::FRAC_1_PI;
-    /// [`f16`] 1/√2
     #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_1_SQRT_2`")]
     pub const FRAC_1_SQRT_2: f16 = f16::FRAC_1_SQRT_2;
-    /// [`f16`] 2/π
     #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_2_PI`")]
     pub const FRAC_2_PI: f16 = f16::FRAC_2_PI;
-    /// [`f16`] 2/√π
     #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_2_SQRT_PI`")]
     pub const FRAC_2_SQRT_PI: f16 = f16::FRAC_2_SQRT_PI;
-    /// [`f16`] π/2
     #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_PI_2`")]
     pub const FRAC_PI_2: f16 = f16::FRAC_PI_2;
-    /// [`f16`] π/3
     #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_PI_3`")]
     pub const FRAC_PI_3: f16 = f16::FRAC_PI_3;
-    /// [`f16`] π/4
     #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_PI_4`")]
     pub const FRAC_PI_4: f16 = f16::FRAC_PI_4;
-    /// [`f16`] π/6
     #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_PI_6`")]
     pub const FRAC_PI_6: f16 = f16::FRAC_PI_6;
-    /// [`f16`] π/8
     #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_PI_8`")]
     pub const FRAC_PI_8: f16 = f16::FRAC_PI_8;
-    /// [`f16`] 𝗅𝗇 10
     #[deprecated(since = "1.4.0", note = "moved to `f16::LN_10`")]
     pub const LN_10: f16 = f16::LN_10;
-    /// [`f16`] 𝗅𝗇 2
     #[deprecated(since = "1.4.0", note = "moved to `f16::LN_2`")]
     pub const LN_2: f16 = f16::LN_2;
-    /// [`f16`] 𝗅𝗈𝗀₁₀ℯ
     #[deprecated(since = "1.4.0", note = "moved to `f16::LOG10_E`")]
     pub const LOG10_E: f16 = f16::LOG10_E;
-    /// [`f16`] 𝗅𝗈𝗀₂ℯ
     #[deprecated(since = "1.4.0", note = "moved to `f16::LOG2_E`")]
     pub const LOG2_E: f16 = f16::LOG2_E;
-    /// [`f16`] √2
     #[deprecated(since = "1.4.0", note = "moved to `f16::SQRT_2`")]
     pub const SQRT_2: f16 = f16::SQRT_2;
 }
@@ -956,8 +916,8 @@ impl f16 {
         f16::from_bits(u16::from_ne_bytes(bytes))
     }
 
-    /// Converts a [`f16`] into the underlying bit representation
-    #[deprecated(since = "1.2.0", note = "renamed to [`to_bits`](#method.to_bits)")]
+    #[doc(hidden)]
+    #[deprecated(since = "1.2.0", note = "renamed to `to_bits`")]
     #[inline]
     pub fn as_bits(self) -> u16 {
         self.to_bits()

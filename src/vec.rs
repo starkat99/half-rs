@@ -219,9 +219,6 @@ impl HalfBitsVecExt for Vec<u16> {
     }
 }
 
-/// Converts a vector of [`u16`] elements into a vector of [`f16`] elements
-///
-/// This function merely reinterprets the contents of the vector, so it's a zero-copy operation.
 #[doc(hidden)]
 #[deprecated(
     since = "1.4.0",
@@ -232,9 +229,6 @@ pub fn from_bits(bits: Vec<u16>) -> Vec<f16> {
     bits.reinterpret_into()
 }
 
-/// Converts a vector of [`f16`] elements into a vector of [`u16`] elements
-///
-/// This function merely reinterprets the contents of the vector, so it's a zero-copy operation.
 #[doc(hidden)]
 #[deprecated(
     since = "1.4.0",

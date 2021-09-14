@@ -569,10 +569,6 @@ impl HalfBitsSliceExt for [u16] {
     }
 }
 
-/// Reinterprets a mutable slice of [`u16`] bits as a mutable slice of [`f16`] numbers
-///
-/// The transmuted slice has the same life time as the original, which prevents mutating the
-/// borrowed `mut [u16]` argument as long as the returned `mut [f16]` is borrowed.
 #[doc(hidden)]
 #[deprecated(
     since = "1.4.0",
@@ -583,10 +579,6 @@ pub fn from_bits_mut(bits: &mut [u16]) -> &mut [f16] {
     bits.reinterpret_cast_mut()
 }
 
-/// Reinterprets a mutable slice of [`f16`]( numbers as a mutable slice of [`u16`] bits.
-///
-/// The transmuted slice has the same life time as the original, which prevents mutating the
-/// borrowed `mut [f16]` argument as long as the returned `mut [u16]` is borrowed.
 #[doc(hidden)]
 #[deprecated(
     since = "1.4.0",
@@ -597,9 +589,6 @@ pub fn to_bits_mut(bits: &mut [f16]) -> &mut [u16] {
     bits.reinterpret_cast_mut()
 }
 
-/// Reinterprets a slice of [`u16`] bits as a slice of [`f16`] numbers
-///
-/// The transmuted slice has the same life time as the original.
 #[doc(hidden)]
 #[deprecated(
     since = "1.4.0",
@@ -610,9 +599,6 @@ pub fn from_bits(bits: &[u16]) -> &[f16] {
     bits.reinterpret_cast()
 }
 
-/// Reinterprets a slice of [`f16`] numbers as a slice of [`u16`] bits
-///
-/// The transmuted slice has the same life time as the original.
 #[doc(hidden)]
 #[deprecated(
     since = "1.4.0",
