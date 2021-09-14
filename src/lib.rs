@@ -70,18 +70,19 @@ extern crate alloc;
 
 mod bfloat;
 mod binary16;
+#[cfg(feature = "num-traits")]
+mod num_traits;
+
 pub mod slice;
 #[cfg(any(feature = "alloc", feature = "std"))]
 #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 pub mod vec;
 
-pub use binary16::f16;
-
+pub use bfloat::bf16;
 #[doc(hidden)]
 #[allow(deprecated)]
 pub use binary16::consts;
-
-pub use bfloat::bf16;
+pub use binary16::f16;
 
 /// A collection of the most used items and traits in this crate for easy importing.
 ///
