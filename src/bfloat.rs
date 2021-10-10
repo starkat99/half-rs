@@ -11,6 +11,8 @@ use core::{
 };
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "zerocopy")]
+use zerocopy::{AsBytes, FromBytes};
 
 pub(crate) mod convert;
 
@@ -31,6 +33,7 @@ pub(crate) mod convert;
 #[repr(transparent)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[cfg_attr(feature = "bytemuck", derive(Zeroable, Pod))]
+#[cfg_attr(feature = "zerocopy", derive(AsBytes, FromBytes))]
 pub struct bf16(u16);
 
 impl bf16 {
