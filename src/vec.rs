@@ -9,10 +9,8 @@
 //!
 //! This module is only available with the `std` or `alloc` feature.
 
-#![cfg(any(feature = "alloc", feature = "std"))]
-
 use super::{bf16, f16, slice::HalfFloatSliceExt};
-#[cfg(all(feature = "alloc", not(feature = "std")))]
+#[cfg(feature = "alloc")]
 use alloc::vec::Vec;
 use core::mem;
 
@@ -20,7 +18,7 @@ use core::mem;
 ///
 /// This trait is sealed and cannot be implemented outside of this crate.
 pub trait HalfFloatVecExt: private::SealedHalfFloatVec {
-    /// Reinterprets a vector of [`f16`]or [`bf16`] numbers as a vector of [`u16`] bits
+    /// Reinterprets a vector of [`f16`]or [`bf16`] numbers as a vector of [`u16`] bits.
     ///
     /// This is a zero-copy operation. The reinterpreted vector has the same memory location as
     /// `self`.
@@ -53,7 +51,7 @@ pub trait HalfFloatVecExt: private::SealedHalfFloatVec {
     /// ```
     fn from_f32_slice(slice: &[f32]) -> Self;
 
-    /// Converts all of the elements of a `[f64]` slice into a new [`f16`] or [`bf16`] vector
+    /// Converts all of the elements of a `[f64]` slice into a new [`f16`] or [`bf16`] vector.
     ///
     /// The conversion operation is vectorized over the slice, meaning the conversion may be more
     /// efficient than converting individual elements on some hardware that supports SIMD
@@ -75,7 +73,7 @@ pub trait HalfFloatVecExt: private::SealedHalfFloatVec {
 ///
 /// This trait is sealed and cannot be implemented outside of this crate.
 pub trait HalfBitsVecExt: private::SealedHalfBitsVec {
-    /// Reinterprets a vector of [`u16`] bits as a vector of [`f16`] or [`bf16`] numbers
+    /// Reinterprets a vector of [`u16`] bits as a vector of [`f16`] or [`bf16`] numbers.
     ///
     /// `H` is the type to cast to, and must be either the [`f16`] or [`bf16`] type.
     ///
@@ -98,7 +96,7 @@ pub trait HalfBitsVecExt: private::SealedHalfBitsVec {
 
 mod private {
     use crate::{bf16, f16};
-    #[cfg(all(feature = "alloc", not(feature = "std")))]
+    #[cfg(feature = "alloc")]
     use alloc::vec::Vec;
 
     pub trait SealedHalfFloatVec {}

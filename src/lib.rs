@@ -11,40 +11,142 @@
 //! bits for [`f16`]). See the [`bf16`] type for details.
 //!
 //! Because [`f16`] and [`bf16`] are primarily for efficient storage, floating point operations such
-//! as addition, multiplication, etc. are not implemented. Operations should be performed with
-//! [`f32`] or higher-precision types and converted to/from [`f16`] or [`bf16`] as necessary.
+//! as addition, multiplication, etc. are not implemented by hardware. While this crate does provide
+//! the appropriate trait implementations for basic operations, they each convert the value to
+//! [`f32`] before performing the operation and then back afterward. When performing complex
+//! arithmetic, manually convert to and from [`f32`] before and after to reduce repeated conversions
+//! for each operation.
 //!
-//! This crate also provides a [`mod@slice`] module for zero-copy in-place conversions of [`u16`]
-//! slices to both [`f16`] and [`bf16`], as well as efficient vectorized conversions of larger
-//! buffers of floating point values to and from these half formats.
+//! This crate also provides a [`slice`][mod@slice] module for zero-copy in-place conversions of
+//! [`u16`] slices to both [`f16`] and [`bf16`], as well as efficient vectorized conversions of
+//! larger buffers of floating point values to and from these half formats.
+//!
+//! The crate uses `#[no_std]` by default, so can be used in embedded environments without using the
+//! Rust [`std`] library. A `std` feature to enable support for the standard library is available,
+//! see the [Cargo Features](#cargo-features) section below.
 //!
 //! A [`prelude`] module is provided for easy importing of available utility traits.
 //!
-//! Some hardware architectures provide support for 16-bit floating point conversions. Enable the
-//! `use-intrinsics` feature to use LLVM intrinsics for hardware conversions. This crate does no
-//! checks on whether the hardware supports the feature. This feature currently only works on
-//! nightly Rust due to a compiler feature gate. When this feature is enabled and the hardware
-//! supports it, the [`mod@slice`] trait conversions will use vectorized SIMD intructions for
-//! increased efficiency.
+//! # Cargo Features
 //!
-//! Support for [`serde`] crate `Serialize` and `Deserialize` traits is provided when the `serde`
-//! feature is enabled. This adds a dependency on [`serde`] crate so is an optional cargo feature.
-//! Support for [`bytemuck`] crate `Zeroable` and `Pod` traits is provided with the `bytemuck`
-//! feature. Support for the [`num-traits`] crate `ToPrimitive`, `FromPrimitive`, and `AsPrimitive`
-//! traits is provided with the `num-traits` feature.
+//! This crate supports a number of optional cargo features. None of these features are enabled by
+//! default, even `std`.
 //!
-//! The crate uses `#[no_std]` by default, so can be used in embedded environments without using the
-//! Rust `std` library. A `std` feature is available, which enables additional utilities using the
-//! `std` library, such as the [`mod@vec`] module that provides zero-copy `Vec` conversions. The
-//! `alloc` feature may be used to enable the [`mod@vec`] module without adding a dependency to the
-//! `std` library.
+//! - **`use-intrinsics`** -- Use [`core::arch`] hardware intrinsics for `f16` and `bf16` conversions
+//!   if available on the compiler target. This feature currently only works on nightly Rust
+//!   until the corresponding intrinsics are stabilized.
 //!
+//!   When this feature is enabled and the hardware supports it, the functions and traits in the
+//!   [`slice`][mod@slice] module will use vectorized SIMD intructions for increased efficiency.
+//!
+//!   By default, without this feature, conversions are done only in software, which will also be
+//!   the fallback if the target does not have hardware support. Note that without the `std`
+//!   feature enabled, no runtime CPU feature detection is used, so the hardware support is only
+//!   compiled if the compiler target supports the CPU feature.
+//!
+//! - **`alloc`** -- Enable use of the [`alloc`] crate when not using the `std` library.
+//!
+//!   Among other functions, this enables the [`vec`] module, which contains zero-copy
+//!   conversions for the [`Vec`] type. This allows fast conversion between raw `Vec<u16>` bits and
+//!   `Vec<f16>` or `Vec<bf16>` arrays, and vice versa.
+//!
+//! - **`std`** -- Enable features that depend on the Rust [`std`] library. This also enables the
+//!   `alloc` feature automatically.
+//!
+//!   Enabling the `std` feature also enables runtime CPU feature detection when the
+//!   `use-intrsincis` feature is also enabled. Without this feature detection, intrinsics are only
+//!   used when compiler target supports the target feature.
+//!
+//! - **`serde`** -- Adds support for the [`serde`] crate by implementing [`Serialize`] and
+//!   [`Deserialize`] traits for both [`f16`] and [`bf16`].
+//!
+//! - **`num-traits`** -- Adds support for the [`num-traits`] crate by implementing [`ToPrimitive`],
+//!   [`FromPrimitive`], [`AsPrimitive`], [`Num`], [`Float`], [`FloatCore`], and [`Bounded`] traits
+//!   for both [`f16`] and [`bf16`].
+//!
+//! - **`bytemuck`** -- Adds support for the [`bytemuck`] crate by implementing [`Zeroable`] and
+//!   [`Pod`] traits for both [`f16`] and [`bf16`].
+//!
+//! - **`zerocopy`** -- Adds support for the [`zerocopy`] crate by implementing [`AsBytes`] and
+//!   [`FromBytes`] traits for both [`f16`] and [`bf16`].
+//!
+//! [`alloc`]: https://doc.rust-lang.org/alloc/
+//! [`std`]: https://doc.rust-lang.org/std/
 //! [`binary16`]: https://en.wikipedia.org/wiki/Half-precision_floating-point_format
 //! [`bfloat16`]: https://en.wikipedia.org/wiki/Bfloat16_floating-point_format
 //! [`serde`]: https://crates.io/crates/serde
 //! [`bytemuck`]: https://crates.io/crates/bytemuck
 //! [`num-traits`]: https://crates.io/crates/num-traits
-
+//! [`zerocopy`]: https://crates.io/crates/zerocopy
+#![cfg_attr(
+    feature = "alloc",
+    doc = "
+[`vec`]: mod@vec"
+)]
+#![cfg_attr(
+    not(feature = "alloc"),
+    doc = "
+[`vec`]: #
+[`Vec`]: https://docs.rust-lang.org/stable/alloc/vec/struct.Vec.html"
+)]
+#![cfg_attr(
+    feature = "serde",
+    doc = "
+[`Serialize`]: serde::Serialize
+[`Deserialize`]: serde::Deserialize"
+)]
+#![cfg_attr(
+    not(feature = "serde"),
+    doc = "
+[`Serialize`]: https://docs.rs/serde/*/serde/trait.Serialize.html
+[`Deserialize`]: https://docs.rs/serde/*/serde/trait.Deserialize.html"
+)]
+#![cfg_attr(
+    feature = "num-traits",
+    doc = "
+[`ToPrimitive`]: ::num_traits::ToPrimitive
+[`FromPrimitive`]: ::num_traits::FromPrimitive
+[`AsPrimitive`]: ::num_traits::AsPrimitive
+[`Num`]: ::num_traits::Num
+[`Float`]: ::num_traits::Float
+[`FloatCore`]: ::num_traits::float::FloatCore
+[`Bounded`]: ::num_traits::Bounded"
+)]
+#![cfg_attr(
+    not(feature = "num-traits"),
+    doc = "
+[`ToPrimitive`]: https://docs.rs/num-traits/*/num_traits/cast/trait.ToPrimitive.html
+[`FromPrimitive`]: https://docs.rs/num-traits/*/num_traits/cast/trait.FromPrimitive.html
+[`AsPrimitive`]: https://docs.rs/num-traits/*/num_traits/cast/trait.AsPrimitive.html
+[`Num`]: https://docs.rs/num-traits/*/num_traits/trait.Num.html
+[`Float`]: https://docs.rs/num-traits/*/num_traits/float/trait.Float.html
+[`FloatCore`]: https://docs.rs/num-traits/*/num_traits/float/trait.FloatCore.html
+[`Bounded`]: https://docs.rs/num-traits/*/num_traits/bounds/trait.Bounded.html"
+)]
+#![cfg_attr(
+    feature = "bytemuck",
+    doc = "
+[`Zeroable`]: bytemuck::Zeroable
+[`Pod`]: bytemuck::Pod"
+)]
+#![cfg_attr(
+    not(feature = "bytemuck"),
+    doc = "
+[`Zeroable`]: https://docs.rs/bytemuck/*/bytemuck/trait.Zeroable.html
+[`Pod`]: https://docs.rs/bytemuck/*bytemuck/trait.Pod.html"
+)]
+#![cfg_attr(
+    feature = "zerocopy",
+    doc = "
+[`AsBytes`]: zerocopy::AsBytes
+[`FromBytes`]: zerocopy::FromBytes"
+)]
+#![cfg_attr(
+    not(feature = "zerocopy"),
+    doc = "
+[`AsBytes`]: https://docs.rs/zerocopy/*/zerocopy/trait.AsBytes.html
+[`FromBytes`]: https://docs.rs/zerocopy/*/zerocopy/trait.FromBytes.html"
+)]
 #![warn(
     missing_docs,
     missing_copy_implementations,
@@ -65,7 +167,7 @@
 #![doc(test(attr(deny(warnings), allow(unused))))]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
-#[cfg(all(feature = "alloc", not(feature = "std")))]
+#[cfg(feature = "alloc")]
 extern crate alloc;
 
 mod bfloat;
@@ -74,7 +176,7 @@ mod binary16;
 mod num_traits;
 
 pub mod slice;
-#[cfg(any(feature = "alloc", feature = "std"))]
+#[cfg(feature = "alloc")]
 #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 pub mod vec;
 
@@ -98,14 +200,14 @@ pub mod prelude {
         slice::{HalfBitsSliceExt, HalfFloatSliceExt},
     };
 
-    #[cfg(any(feature = "alloc", feature = "std"))]
+    #[cfg(feature = "alloc")]
     #[doc(no_inline)]
     #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
     pub use crate::vec::{HalfBitsVecExt, HalfFloatVecExt};
 }
 
 // Keep this module private to crate
-pub(crate) mod private {
+mod private {
     use crate::{bf16, f16};
 
     pub trait SealedHalf {}

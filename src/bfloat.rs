@@ -16,7 +16,7 @@ use zerocopy::{AsBytes, FromBytes};
 
 pub(crate) mod convert;
 
-/// A 16-bit floating point type implementing the [`bfloat16`] format
+/// A 16-bit floating point type implementing the [`bfloat16`] format.
 ///
 /// The [`bfloat16`] floating point format is a truncated 16-bit version of the IEEE 754 standard
 /// `binary32`, a.k.a [`f32`]. [`bf16`] has approximately the same dynamic range as [`f32`] by
@@ -37,13 +37,13 @@ pub(crate) mod convert;
 pub struct bf16(u16);
 
 impl bf16 {
-    /// Constructs a [`bf16`] value from the raw bits
+    /// Constructs a [`bf16`] value from the raw bits.
     #[inline]
     pub const fn from_bits(bits: u16) -> bf16 {
         bf16(bits)
     }
 
-    /// Constructs a [`bf16`] value from a 32-bit floating point value
+    /// Constructs a [`bf16`] value from a 32-bit floating point value.
     ///
     /// If the 32-bit value is too large to fit, ±∞ will result. NaN values are preserved.
     /// Subnormal values that are too tiny to be represented will result in ±0. All other values
@@ -53,7 +53,7 @@ impl bf16 {
         bf16(convert::f32_to_bf16(value))
     }
 
-    /// Constructs a [`bf16`] value from a 64-bit floating point value
+    /// Constructs a [`bf16`] value from a 64-bit floating point value.
     ///
     /// If the 64-bit value is to large to fit, ±∞ will result. NaN values are preserved.
     /// 64-bit subnormal values are too tiny to be represented and result in ±0. Exponents that
@@ -64,14 +64,14 @@ impl bf16 {
         bf16(convert::f64_to_bf16(value))
     }
 
-    /// Converts a [`bf16`] into the underlying bit representation
+    /// Converts a [`bf16`] into the underlying bit representation.
     #[inline]
     pub const fn to_bits(self) -> u16 {
         self.0
     }
 
     /// Returns the memory representation of the underlying bit representation as a byte array in
-    /// little-endian byte order
+    /// little-endian byte order.
     ///
     /// # Examples
     ///
@@ -86,7 +86,7 @@ impl bf16 {
     }
 
     /// Returns the memory representation of the underlying bit representation as a byte array in
-    /// big-endian (network) byte order
+    /// big-endian (network) byte order.
     ///
     /// # Examples
     ///
@@ -101,7 +101,7 @@ impl bf16 {
     }
 
     /// Returns the memory representation of the underlying bit representation as a byte array in
-    /// native byte order
+    /// native byte order.
     ///
     /// As the target platform's native endianness is used, portable code should use
     /// [`to_be_bytes`][bf16::to_be_bytes] or [`to_le_bytes`][bf16::to_le_bytes], as appropriate,
@@ -123,7 +123,7 @@ impl bf16 {
         self.0.to_ne_bytes()
     }
 
-    /// Creates a floating point value from its representation as a byte array in little endian
+    /// Creates a floating point value from its representation as a byte array in little endian.
     ///
     /// # Examples
     ///
@@ -137,7 +137,7 @@ impl bf16 {
         bf16::from_bits(u16::from_le_bytes(bytes))
     }
 
-    /// Creates a floating point value from its representation as a byte array in big endian
+    /// Creates a floating point value from its representation as a byte array in big endian.
     ///
     /// # Examples
     ///
@@ -151,7 +151,7 @@ impl bf16 {
         bf16::from_bits(u16::from_be_bytes(bytes))
     }
 
-    /// Creates a floating point value from its representation as a byte array in native endian
+    /// Creates a floating point value from its representation as a byte array in native endian.
     ///
     /// As the target platform's native endianness is used, portable code likely wants to use
     /// [`from_be_bytes`][bf16::from_be_bytes] or [`from_le_bytes`][bf16::from_le_bytes], as
@@ -173,7 +173,7 @@ impl bf16 {
         bf16::from_bits(u16::from_ne_bytes(bytes))
     }
 
-    /// Converts a [`bf16`] value into an [`f32`] value
+    /// Converts a [`bf16`] value into an [`f32`] value.
     ///
     /// This conversion is lossless as all values can be represented exactly in [`f32`].
     #[inline]
@@ -181,7 +181,7 @@ impl bf16 {
         convert::bf16_to_f32(self.0)
     }
 
-    /// Converts a [`bf16`] value into an [`f64`] value
+    /// Converts a [`bf16`] value into an [`f64`] value.
     ///
     /// This conversion is lossless as all values can be represented exactly in [`f64`].
     #[inline]
@@ -189,7 +189,7 @@ impl bf16 {
         convert::bf16_to_f64(self.0)
     }
 
-    /// Returns `true` if this value is NaN and `false` otherwise
+    /// Returns `true` if this value is NaN and `false` otherwise.
     ///
     /// # Examples
     ///
@@ -207,7 +207,7 @@ impl bf16 {
         self.0 & 0x7FFFu16 > 0x7F80u16
     }
 
-    /// Returns `true` if this value is ±∞ and `false` otherwise
+    /// Returns `true` if this value is ±∞ and `false` otherwise.
     ///
     /// # Examples
     ///
@@ -230,7 +230,7 @@ impl bf16 {
         self.0 & 0x7FFFu16 == 0x7F80u16
     }
 
-    /// Returns `true` if this number is neither infinite nor NaN
+    /// Returns `true` if this number is neither infinite nor NaN.
     ///
     /// # Examples
     ///
@@ -253,7 +253,7 @@ impl bf16 {
         self.0 & 0x7F80u16 != 0x7F80u16
     }
 
-    /// Returns `true` if the number is neither zero, infinite, subnormal, or NaN
+    /// Returns `true` if the number is neither zero, infinite, subnormal, or NaN.
     ///
     /// # Examples
     ///
@@ -280,7 +280,7 @@ impl bf16 {
         exp != 0x7F80u16 && exp != 0
     }
 
-    /// Returns the floating point category of the number
+    /// Returns the floating point category of the number.
     ///
     /// If only one property is going to be tested, it is generally faster to use the specific
     /// predicate instead.
@@ -309,7 +309,7 @@ impl bf16 {
         }
     }
 
-    /// Returns a number that represents the sign of `self`
+    /// Returns a number that represents the sign of `self`.
     ///
     /// * 1.0 if the number is positive, +0.0 or [`INFINITY`][bf16::INFINITY]
     /// * −1.0 if the number is negative, −0.0` or [`NEG_INFINITY`][bf16::NEG_INFINITY]
@@ -338,7 +338,7 @@ impl bf16 {
     }
 
     /// Returns `true` if and only if `self` has a positive sign, including +0.0, NaNs with a
-    /// positive sign bit and +∞
+    /// positive sign bit and +∞.
     ///
     /// # Examples
     ///
@@ -360,7 +360,7 @@ impl bf16 {
     }
 
     /// Returns `true` if and only if `self` has a negative sign, including −0.0, NaNs with a
-    /// negative sign bit and −∞
+    /// negative sign bit and −∞.
     ///
     /// # Examples
     ///

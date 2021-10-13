@@ -23,32 +23,35 @@ See the [crate documentation](https://docs.rs/half/) for more details.
 ### Optional Features
 
 - **`serde`** - Implement `Serialize` and `Deserialize` traits for `f16` and `bf16`. This adds a
-dependency on the [`serde`](https://crates.io/crates/serde) crate.
+  dependency on the [`serde`](https://crates.io/crates/serde) crate.
 
 - **`use-intrinsics`** - Use hardware intrinsics for `f16` and `bf16` conversions if available on
-the compiler host target. By default, without this feature, conversions are done only in software,
-which will be the fallback if the host target does not have hardware support. **Available only on
-Rust nightly channel.**
+  the compiler host target. By default, without this feature, conversions are done only in software,
+  which will be the fallback if the host target does not have hardware support. **Available only on
+  Rust nightly channel.**
 
 - **`alloc`** - Enable use of the [`alloc`](https://doc.rust-lang.org/alloc/) crate when not using
-the `std` library.
+  the `std` library.
 
   This enables the `vec` module, which contains zero-copy conversions for the `Vec` type. This
   allows fast conversion between raw `Vec<u16>` bits and `Vec<f16>` or `Vec<bf16>` arrays, and vice
   versa.
 
 - **`std`** - Enable features that depend on the Rust `std` library, including everything in the
-`alloc` feature.
+  `alloc` feature.
 
   Enabling the `std` feature enables runtime CPU feature detection when the `use-intrsincis` feature
   is also enabled.
   Without this feature detection, intrinsics are only used when compiler host target supports them.
 
 - **`num-traits`** - Enable `ToPrimitive`, `FromPrimitive`, `Num`, `Float`, `FloatCore` and
-`Bounded` trait implementations from the [`num-traits`](https://crates.io/crates/num-traits) crate.
+  `Bounded` trait implementations from the [`num-traits`](https://crates.io/crates/num-traits) crate.
 
 - **`bytemuck`** - Enable `Zeroable` and `Pod` trait implementations from the
-[`bytemuck`](https://crates.io/crates/bytemuck) crate.
+  [`bytemuck`](https://crates.io/crates/bytemuck) crate.
+
+- **`zerocopy`** - Enable `AsBytes` and `FromBytes` trait implementations from the 
+  [`zerocopy`](https://crates.io/crates/zerocopy) crate.
 
 ### More Documentation
 
