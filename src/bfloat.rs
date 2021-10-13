@@ -81,7 +81,7 @@ impl bf16 {
     /// assert_eq!(bytes, [0x48, 0x41]);
     /// ```
     #[inline]
-    pub fn to_le_bytes(self) -> [u8; 2] {
+    pub const fn to_le_bytes(self) -> [u8; 2] {
         self.0.to_le_bytes()
     }
 
@@ -96,7 +96,7 @@ impl bf16 {
     /// assert_eq!(bytes, [0x41, 0x48]);
     /// ```
     #[inline]
-    pub fn to_be_bytes(self) -> [u8; 2] {
+    pub const fn to_be_bytes(self) -> [u8; 2] {
         self.0.to_be_bytes()
     }
 
@@ -119,7 +119,7 @@ impl bf16 {
     /// });
     /// ```
     #[inline]
-    pub fn to_ne_bytes(self) -> [u8; 2] {
+    pub const fn to_ne_bytes(self) -> [u8; 2] {
         self.0.to_ne_bytes()
     }
 
@@ -133,7 +133,7 @@ impl bf16 {
     /// assert_eq!(value, bf16::from_f32(12.5));
     /// ```
     #[inline]
-    pub fn from_le_bytes(bytes: [u8; 2]) -> bf16 {
+    pub const fn from_le_bytes(bytes: [u8; 2]) -> bf16 {
         bf16::from_bits(u16::from_le_bytes(bytes))
     }
 
@@ -147,7 +147,7 @@ impl bf16 {
     /// assert_eq!(value, bf16::from_f32(12.5));
     /// ```
     #[inline]
-    pub fn from_be_bytes(bytes: [u8; 2]) -> bf16 {
+    pub const fn from_be_bytes(bytes: [u8; 2]) -> bf16 {
         bf16::from_bits(u16::from_be_bytes(bytes))
     }
 
@@ -169,7 +169,7 @@ impl bf16 {
     /// assert_eq!(value, bf16::from_f32(12.5));
     /// ```
     #[inline]
-    pub fn from_ne_bytes(bytes: [u8; 2]) -> bf16 {
+    pub const fn from_ne_bytes(bytes: [u8; 2]) -> bf16 {
         bf16::from_bits(u16::from_ne_bytes(bytes))
     }
 
@@ -275,7 +275,7 @@ impl bf16 {
     /// assert!(!lower_than_min.is_normal());
     /// ```
     #[inline]
-    pub fn is_normal(self) -> bool {
+    pub const fn is_normal(self) -> bool {
         let exp = self.0 & 0x7F80u16;
         exp != 0x7F80u16 && exp != 0
     }
@@ -297,7 +297,7 @@ impl bf16 {
     /// assert_eq!(num.classify(), FpCategory::Normal);
     /// assert_eq!(inf.classify(), FpCategory::Infinite);
     /// ```
-    pub fn classify(self) -> FpCategory {
+    pub const fn classify(self) -> FpCategory {
         let exp = self.0 & 0x7F80u16;
         let man = self.0 & 0x007Fu16;
         match (exp, man) {
@@ -327,13 +327,13 @@ impl bf16 {
     ///
     /// assert!(bf16::NAN.signum().is_nan());
     /// ```
-    pub fn signum(self) -> bf16 {
+    pub const fn signum(self) -> bf16 {
         if self.is_nan() {
             self
         } else if self.0 & 0x8000u16 != 0 {
-            bf16::from_f32(-1.0)
+            Self::NEG_ONE
         } else {
-            bf16::from_f32(1.0)
+            Self::ONE
         }
     }
 
@@ -424,6 +424,8 @@ impl bf16 {
     pub const ZERO: bf16 = bf16(0x0000u16);
     /// [`bf16`] -0
     pub const NEG_ZERO: bf16 = bf16(0x8000u16);
+    /// [`bf16`] -1
+    pub const NEG_ONE: bf16 = bf16(0xBF80u16);
 
     /// [`bf16`] Euler's number (ℯ)
     pub const E: bf16 = bf16(0x402Eu16);
@@ -745,13 +747,18 @@ mod test {
         let one = bf16::from_f32(1.0);
         let zero = bf16::from_f32(0.0);
         let neg_zero = bf16::from_f32(-0.0);
+        let neg_one = bf16::from_f32(-1.0);
         let inf = bf16::from_f32(core::f32::INFINITY);
         let neg_inf = bf16::from_f32(core::f32::NEG_INFINITY);
         let nan = bf16::from_f32(core::f32::NAN);
 
         assert_eq!(bf16::ONE, one);
         assert_eq!(bf16::ZERO, zero);
+        assert!(zero.is_sign_positive());
         assert_eq!(bf16::NEG_ZERO, neg_zero);
+        assert!(neg_zero.is_sign_negative());
+        assert_eq!(bf16::NEG_ONE, neg_one);
+        assert!(neg_one.is_sign_negative());
         assert_eq!(bf16::INFINITY, inf);
         assert_eq!(bf16::NEG_INFINITY, neg_inf);
         assert!(nan.is_nan());

@@ -13,6 +13,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Docs now use intra-doc links instead of manual (and hard to maintain) links.
 - Added optional implementations of `zerocopy` traits `AsBytes` and `FromBytes`
   under `zerocopy` cargo feature.
+- Added new associated const `NEG_ONE` to both `f16` and `bf16`.
+- The following methods on both `f16` and `bf16` are now `const`:
+  - `to_le_bytes`
+  - `to_be_bytes`
+  - `to_ne_bytes`
+  - `from_le_bytes`
+  - `from_be_bytes`
+  - `from_ne_bytes`
+  - `is_normal`
+  - `classify`
+  - `signum`
 
 ### Fixed
 - Fixed a number of minor lints discovered due to improved CI.
