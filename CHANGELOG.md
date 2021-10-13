@@ -8,9 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Now always implement `Add`, `Div`, `Mul`, `Neg`, `Rem`, and `Sub`. Previously, were only
   implemented under the `num-traits` feature. Keep in mind they still convert to `f32` and back
   in the implementation.
-- Minimum supported Rust version is now 1.48.
+- Minimum supported Rust version is now 1.51.
 - Made crate package [REUSE compliant](https://reuse.software/).
 - Docs now use intra-doc links instead of manual (and hard to maintain) links.
+- Added optional implementations of `zerocopy` traits `AsBytes` and `FromBytes`
+  under `zerocopy` cargo feature.
 
 ### Fixed
 - Fixed a number of minor lints discovered due to improved CI.
