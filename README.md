@@ -2,8 +2,8 @@
 [![Crates.io](https://img.shields.io/crates/v/half.svg)](https://crates.io/crates/half/) [![Documentation](https://docs.rs/half/badge.svg)](https://docs.rs/half/) ![Crates.io](https://img.shields.io/crates/l/half) [![Build status](https://github.com/starkat99/half-rs/actions/workflows/rust.yml/badge.svg?branch=master)](https://github.com/starkat99/half-rs/actions/workflows/rust.yml)
 
 This crate implements a half-precision floating point `f16` type for Rust implementing the IEEE
-754-2008 standard [`binary16`](https://en.wikipedia.org/wiki/Half-precision_floating-point_format) 
-a.k.a `half` format, as well as a `bf16` type implementing the 
+754-2008 standard [`binary16`](https://en.wikipedia.org/wiki/Half-precision_floating-point_format)
+a.k.a `half` format, as well as a `bf16` type implementing the
 [`bfloat16`](https://en.wikipedia.org/wiki/Bfloat16_floating-point_format) format.
 
 ## Usage
@@ -15,7 +15,7 @@ not implement them, all math operations should be done as an `f32` type.
 This crate provides [`no_std`](https://rust-embedded.github.io/book/intro/no-std.html) support by
 default so can easily be used in embedded code where a smaller float format is most useful.
 
-*Requires Rust 1.48 or greater.* If you need support for older versions of Rust, use versions 1.7.1
+*Requires Rust 1.51 or greater.* If you need support for older versions of Rust, use versions 1.7.1
 and earlier of this crate.
 
 See the [crate documentation](https://docs.rs/half/) for more details.
@@ -47,7 +47,7 @@ the `std` library.
 - **`num-traits`** - Enable `ToPrimitive`, `FromPrimitive`, `Num`, `Float`, `FloatCore` and
 `Bounded` trait implementations from the [`num-traits`](https://crates.io/crates/num-traits) crate.
 
-- **`bytemuck`** - Enable `Zeroable` and `Pod` trait implementations from the 
+- **`bytemuck`** - Enable `Zeroable` and `Pod` trait implementations from the
 [`bytemuck`](https://crates.io/crates/bytemuck) crate.
 
 ### More Documentation
