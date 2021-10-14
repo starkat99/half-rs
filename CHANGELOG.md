@@ -4,6 +4,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.8.0] - 2021-10-13 <a name="1.8.0"></a>
 ### Changed
 - Now always implement `Add`, `Div`, `Mul`, `Neg`, `Rem`, and `Sub`. Previously, these were only
   implemented under the `num-traits` feature. Keep in mind they still convert to `f32` and back
@@ -12,7 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Made crate package [REUSE compliant](https://reuse.software/).
 - Docs now use intra-doc links instead of manual (and hard to maintain) links.
 - Added optional implementations of `zerocopy` traits `AsBytes` and `FromBytes`
-  under `zerocopy` cargo feature.
+  under `zerocopy` cargo feature. By [@samcrow].
 - Added new associated const `NEG_ONE` to both `f16` and `bf16`.
 - The following methods on both `f16` and `bf16` are now `const`:
   - `to_le_bytes`
@@ -200,9 +202,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [@zserik]: https://github.com/zserik
 [@bzm3r]: https://github.com/bzm3r
 [@charles-r-earp]: https://github.com/charles-r-earp
+[@samcrow]: https://github.com/samcrow
 
 
-[Unreleased]: https://github.com/starkat99/half-rs/compare/v1.7.1...HEAD
+[Unreleased]: https://github.com/starkat99/half-rs/compare/v1.8.0...HEAD
+[1.8.0]: https://github.com/starkat99/half-rs/compare/v1.7.1...v1.8.0
 [1.7.1]: https://github.com/starkat99/half-rs/compare/v1.7.0...v1.7.1
 [1.7.0]: https://github.com/starkat99/half-rs/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/starkat99/half-rs/compare/v1.5.0...v1.6.0
