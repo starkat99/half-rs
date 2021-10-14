@@ -7,15 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [1.8.0] - 2021-10-13 <a name="1.8.0"></a>
 ### Changed
-- Now always implement `Add`, `Div`, `Mul`, `Neg`, `Rem`, and `Sub`. Previously, these were only
-  implemented under the `num-traits` feature. Keep in mind they still convert to `f32` and back
-  in the implementation. Also implemented `Product` and `Sum` traits with the same caveat.
+- Now always implements `Add`, `Div`, `Mul`, `Neg`, `Rem`, and `Sub` traits. 
+  Previously, these were only implemented under the `num-traits` feature. Keep in mind they still
+  convert to `f32` and back in the implementation.
 - Minimum supported Rust version is now 1.51.
 - Made crate package [REUSE compliant](https://reuse.software/).
 - Docs now use intra-doc links instead of manual (and hard to maintain) links.
-- Added optional implementations of `zerocopy` traits `AsBytes` and `FromBytes`
-  under `zerocopy` cargo feature. By [@samcrow].
-- Added new associated const `NEG_ONE` to both `f16` and `bf16`.
 - The following methods on both `f16` and `bf16` are now `const`:
   - `to_le_bytes`
   - `to_be_bytes`
@@ -26,6 +23,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - `is_normal`
   - `classify`
   - `signum`
+
+### Added
+- Added optional implementations of `zerocopy` traits `AsBytes` and `FromBytes`
+  under `zerocopy` cargo feature. By [@samcrow].
+- Implemented the `core::iter::Product` and `core::iter::Sum` traits, with the same caveat as above
+  about converting to `f32` and back under the hood.
+- Added new associated const `NEG_ONE` to both `f16` and `bf16`.
 - Added the following new methods on both `f16` and `bf16`:
   - `copysign`
   - `max`
