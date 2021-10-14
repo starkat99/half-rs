@@ -5,6 +5,7 @@ use core::{
     fmt::{
         Binary, Debug, Display, Error, Formatter, LowerExp, LowerHex, Octal, UpperExp, UpperHex,
     },
+    iter::{Product, Sum},
     num::{FpCategory, ParseFloatError},
     ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign},
     str::FromStr,
@@ -1098,6 +1099,34 @@ impl RemAssign<&f16> for f16 {
     #[inline]
     fn rem_assign(&mut self, rhs: &f16) {
         *self = (*self).rem(rhs);
+    }
+}
+
+impl Product for f16 {
+    #[inline]
+    fn product<I: Iterator<Item = Self>>(iter: I) -> Self {
+        f16::from_f32(iter.map(|f| f.to_f32()).product())
+    }
+}
+
+impl<'a> Product<&'a f16> for f16 {
+    #[inline]
+    fn product<I: Iterator<Item = &'a f16>>(iter: I) -> Self {
+        f16::from_f32(iter.map(|f| f.to_f32()).product())
+    }
+}
+
+impl Sum for f16 {
+    #[inline]
+    fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
+        f16::from_f32(iter.map(|f| f.to_f32()).sum())
+    }
+}
+
+impl<'a> Sum<&'a f16> for f16 {
+    #[inline]
+    fn sum<I: Iterator<Item = &'a f16>>(iter: I) -> Self {
+        f16::from_f32(iter.map(|f| f.to_f32()).product())
     }
 }
 
