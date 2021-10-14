@@ -10,7 +10,8 @@ a.k.a `half` format, as well as a `bf16` type implementing the
 
 The `f16` and `bf16` types provides conversion operations as a normal Rust floating point type, but
 since they are primarily leveraged for minimal floating point storage and most major hardware does
-not implement them, all math operations should be done as an `f32` type.
+not implement them, all math operations are done as an `f32` type under the hood. Complex arithmetic
+should manually convert to and from `f32` for better performance.
 
 This crate provides [`no_std`](https://rust-embedded.github.io/book/intro/no-std.html) support by
 default so can easily be used in embedded code where a smaller float format is most useful.
