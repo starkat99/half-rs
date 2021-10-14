@@ -5,7 +5,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Changed
-- Now always implement `Add`, `Div`, `Mul`, `Neg`, `Rem`, and `Sub`. Previously, were only
+- Now always implement `Add`, `Div`, `Mul`, `Neg`, `Rem`, and `Sub`. Previously, these were only
   implemented under the `num-traits` feature. Keep in mind they still convert to `f32` and back
   in the implementation.
 - Minimum supported Rust version is now 1.51.
@@ -24,6 +24,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - `is_normal`
   - `classify`
   - `signum`
+- Added the following new methods on both `f16` and `bf16`:
+  - `copysign`
+  - `max`
+  - `min`
+  - `clamp`
 
 ### Fixed
 - Fixed a number of minor lints discovered due to improved CI.

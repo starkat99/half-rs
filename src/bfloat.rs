@@ -381,6 +381,101 @@ impl bf16 {
         self.0 & 0x8000u16 != 0
     }
 
+    /// Returns a number composed of the magnitude of `self` and the sign of `sign`.
+    ///
+    /// Equal to `self` if the sign of `self` and `sign` are the same, otherwise equal to `-self`.
+    /// If `self` is NaN, then NaN with the sign of `sign` is returned.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use half::prelude::*;
+    /// let f = bf16::from_f32(3.5);
+    ///
+    /// assert_eq!(f.copysign(bf16::from_f32(0.42)), bf16::from_f32(3.5));
+    /// assert_eq!(f.copysign(bf16::from_f32(-0.42)), bf16::from_f32(-3.5));
+    /// assert_eq!((-f).copysign(bf16::from_f32(0.42)), bf16::from_f32(3.5));
+    /// assert_eq!((-f).copysign(bf16::from_f32(-0.42)), bf16::from_f32(-3.5));
+    ///
+    /// assert!(bf16::NAN.copysign(bf16::from_f32(1.0)).is_nan());
+    /// ```
+    pub const fn copysign(self, sign: bf16) -> bf16 {
+        bf16((sign.0 & 0x8000u16) | (self.0 & 0x7FFFu16))
+    }
+
+    /// Returns the maximum of the two numbers.
+    ///
+    /// If one of the arguments is NaN, then the other argument is returned.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use half::prelude::*;
+    /// let x = bf16::from_f32(1.0);
+    /// let y = bf16::from_f32(2.0);
+    ///
+    /// assert_eq!(x.max(y), y);
+    /// ```
+    pub fn max(self, other: bf16) -> bf16 {
+        if other > self && !other.is_nan() {
+            other
+        } else {
+            self
+        }
+    }
+
+    /// Returns the minimum of the two numbers.
+    ///
+    /// If one of the arguments is NaN, then the other argument is returned.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use half::prelude::*;
+    /// let x = bf16::from_f32(1.0);
+    /// let y = bf16::from_f32(2.0);
+    ///
+    /// assert_eq!(x.min(y), x);
+    /// ```
+    pub fn min(self, other: bf16) -> bf16 {
+        if other < self && !other.is_nan() {
+            other
+        } else {
+            self
+        }
+    }
+
+    /// Restrict a value to a certain interval unless it is NaN.
+    ///
+    /// Returns `max` if `self` is greater than `max`, and `min` if `self` is less than `min`.
+    /// Otherwise this returns `self`.
+    ///
+    /// Note that this function returns NaN if the initial value was NaN as well.
+    ///
+    /// # Panics
+    /// Panics if `min > max`, `min` is NaN, or `max` is NaN.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use half::prelude::*;
+    /// assert!(bf16::from_f32(-3.0).clamp(bf16::from_f32(-2.0), bf16::from_f32(1.0)) == bf16::from_f32(-2.0));
+    /// assert!(bf16::from_f32(0.0).clamp(bf16::from_f32(-2.0), bf16::from_f32(1.0)) == bf16::from_f32(0.0));
+    /// assert!(bf16::from_f32(2.0).clamp(bf16::from_f32(-2.0), bf16::from_f32(1.0)) == bf16::from_f32(1.0));
+    /// assert!(bf16::NAN.clamp(bf16::from_f32(-2.0), bf16::from_f32(1.0)).is_nan());
+    /// ```
+    pub fn clamp(self, min: bf16, max: bf16) -> bf16 {
+        assert!(min <= max);
+        let mut x = self;
+        if x < min {
+            x = min;
+        }
+        if x > max {
+            x = max;
+        }
+        x
+    }
+
     /// Approximate number of [`bf16`] significant digits in base 10
     pub const DIGITS: u32 = 2;
     /// [`bf16`]
