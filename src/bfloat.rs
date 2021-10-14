@@ -6,7 +6,7 @@ use core::{
         Binary, Debug, Display, Error, Formatter, LowerExp, LowerHex, Octal, UpperExp, UpperHex,
     },
     num::{FpCategory, ParseFloatError},
-    ops::{Add, Div, Mul, Neg, Rem, Sub},
+    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign},
     str::FromStr,
 };
 #[cfg(feature = "serde")]
@@ -399,6 +399,7 @@ impl bf16 {
     ///
     /// assert!(bf16::NAN.copysign(bf16::from_f32(1.0)).is_nan());
     /// ```
+    #[inline]
     pub const fn copysign(self, sign: bf16) -> bf16 {
         bf16((sign.0 & 0x8000u16) | (self.0 & 0x7FFFu16))
     }
@@ -416,6 +417,7 @@ impl bf16 {
     ///
     /// assert_eq!(x.max(y), y);
     /// ```
+    #[inline]
     pub fn max(self, other: bf16) -> bf16 {
         if other > self && !other.is_nan() {
             other
@@ -437,6 +439,7 @@ impl bf16 {
     ///
     /// assert_eq!(x.min(y), x);
     /// ```
+    #[inline]
     pub fn min(self, other: bf16) -> bf16 {
         if other < self && !other.is_nan() {
             other
@@ -464,6 +467,7 @@ impl bf16 {
     /// assert!(bf16::from_f32(2.0).clamp(bf16::from_f32(-2.0), bf16::from_f32(1.0)) == bf16::from_f32(1.0));
     /// assert!(bf16::NAN.clamp(bf16::from_f32(-2.0), bf16::from_f32(1.0)).is_nan());
     /// ```
+    #[inline]
     pub fn clamp(self, min: bf16, max: bf16) -> bf16 {
         assert!(min <= max);
         let mut x = self;
@@ -760,11 +764,93 @@ impl Add for bf16 {
     }
 }
 
+impl Add<&bf16> for bf16 {
+    type Output = <bf16 as Add<bf16>>::Output;
+
+    #[inline]
+    fn add(self, rhs: &bf16) -> Self::Output {
+        self.add(*rhs)
+    }
+}
+
+impl Add<&bf16> for &bf16 {
+    type Output = <bf16 as Add<bf16>>::Output;
+
+    #[inline]
+    fn add(self, rhs: &bf16) -> Self::Output {
+        (*self).add(*rhs)
+    }
+}
+
+impl Add<bf16> for &bf16 {
+    type Output = <bf16 as Add<bf16>>::Output;
+
+    #[inline]
+    fn add(self, rhs: bf16) -> Self::Output {
+        (*self).add(rhs)
+    }
+}
+
+impl AddAssign for bf16 {
+    #[inline]
+    fn add_assign(&mut self, rhs: Self) {
+        *self = (*self).add(rhs);
+    }
+}
+
+impl AddAssign<&bf16> for bf16 {
+    #[inline]
+    fn add_assign(&mut self, rhs: &bf16) {
+        *self = (*self).add(rhs);
+    }
+}
+
 impl Sub for bf16 {
     type Output = Self;
 
     fn sub(self, rhs: Self) -> Self::Output {
         Self::from_f32(Self::to_f32(self) - Self::to_f32(rhs))
+    }
+}
+
+impl Sub<&bf16> for bf16 {
+    type Output = <bf16 as Sub<bf16>>::Output;
+
+    #[inline]
+    fn sub(self, rhs: &bf16) -> Self::Output {
+        self.sub(*rhs)
+    }
+}
+
+impl Sub<&bf16> for &bf16 {
+    type Output = <bf16 as Sub<bf16>>::Output;
+
+    #[inline]
+    fn sub(self, rhs: &bf16) -> Self::Output {
+        (*self).sub(*rhs)
+    }
+}
+
+impl Sub<bf16> for &bf16 {
+    type Output = <bf16 as Sub<bf16>>::Output;
+
+    #[inline]
+    fn sub(self, rhs: bf16) -> Self::Output {
+        (*self).sub(rhs)
+    }
+}
+
+impl SubAssign for bf16 {
+    #[inline]
+    fn sub_assign(&mut self, rhs: Self) {
+        *self = (*self).sub(rhs);
+    }
+}
+
+impl SubAssign<&bf16> for bf16 {
+    #[inline]
+    fn sub_assign(&mut self, rhs: &bf16) {
+        *self = (*self).sub(rhs);
     }
 }
 
@@ -776,6 +862,47 @@ impl Mul for bf16 {
     }
 }
 
+impl Mul<&bf16> for bf16 {
+    type Output = <bf16 as Mul<bf16>>::Output;
+
+    #[inline]
+    fn mul(self, rhs: &bf16) -> Self::Output {
+        self.mul(*rhs)
+    }
+}
+
+impl Mul<&bf16> for &bf16 {
+    type Output = <bf16 as Mul<bf16>>::Output;
+
+    #[inline]
+    fn mul(self, rhs: &bf16) -> Self::Output {
+        (*self).mul(*rhs)
+    }
+}
+
+impl Mul<bf16> for &bf16 {
+    type Output = <bf16 as Mul<bf16>>::Output;
+
+    #[inline]
+    fn mul(self, rhs: bf16) -> Self::Output {
+        (*self).mul(rhs)
+    }
+}
+
+impl MulAssign for bf16 {
+    #[inline]
+    fn mul_assign(&mut self, rhs: Self) {
+        *self = (*self).mul(rhs);
+    }
+}
+
+impl MulAssign<&bf16> for bf16 {
+    #[inline]
+    fn mul_assign(&mut self, rhs: &bf16) {
+        *self = (*self).mul(rhs);
+    }
+}
+
 impl Div for bf16 {
     type Output = Self;
 
@@ -784,11 +911,93 @@ impl Div for bf16 {
     }
 }
 
+impl Div<&bf16> for bf16 {
+    type Output = <bf16 as Div<bf16>>::Output;
+
+    #[inline]
+    fn div(self, rhs: &bf16) -> Self::Output {
+        self.div(*rhs)
+    }
+}
+
+impl Div<&bf16> for &bf16 {
+    type Output = <bf16 as Div<bf16>>::Output;
+
+    #[inline]
+    fn div(self, rhs: &bf16) -> Self::Output {
+        (*self).div(*rhs)
+    }
+}
+
+impl Div<bf16> for &bf16 {
+    type Output = <bf16 as Div<bf16>>::Output;
+
+    #[inline]
+    fn div(self, rhs: bf16) -> Self::Output {
+        (*self).div(rhs)
+    }
+}
+
+impl DivAssign for bf16 {
+    #[inline]
+    fn div_assign(&mut self, rhs: Self) {
+        *self = (*self).div(rhs);
+    }
+}
+
+impl DivAssign<&bf16> for bf16 {
+    #[inline]
+    fn div_assign(&mut self, rhs: &bf16) {
+        *self = (*self).div(rhs);
+    }
+}
+
 impl Rem for bf16 {
     type Output = Self;
 
     fn rem(self, rhs: Self) -> Self::Output {
         Self::from_f32(Self::to_f32(self) % Self::to_f32(rhs))
+    }
+}
+
+impl Rem<&bf16> for bf16 {
+    type Output = <bf16 as Rem<bf16>>::Output;
+
+    #[inline]
+    fn rem(self, rhs: &bf16) -> Self::Output {
+        self.rem(*rhs)
+    }
+}
+
+impl Rem<&bf16> for &bf16 {
+    type Output = <bf16 as Rem<bf16>>::Output;
+
+    #[inline]
+    fn rem(self, rhs: &bf16) -> Self::Output {
+        (*self).rem(*rhs)
+    }
+}
+
+impl Rem<bf16> for &bf16 {
+    type Output = <bf16 as Rem<bf16>>::Output;
+
+    #[inline]
+    fn rem(self, rhs: bf16) -> Self::Output {
+        (*self).rem(rhs)
+    }
+}
+
+impl RemAssign for bf16 {
+    #[inline]
+    fn rem_assign(&mut self, rhs: Self) {
+        *self = (*self).rem(rhs);
+    }
+}
+
+impl RemAssign<&bf16> for bf16 {
+    #[inline]
+    fn rem_assign(&mut self, rhs: &bf16) {
+        *self = (*self).rem(rhs);
     }
 }
 
