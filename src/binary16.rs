@@ -137,6 +137,22 @@ impl f16 {
         f16(convert::f32_to_f16(value))
     }
 
+    /// Constructs a 16-bit floating point value from a 32-bit floating point value.
+    ///
+    /// This function is identical to [`from_f32`][Self::from_f32] except it never uses hardware
+    /// intrinsics, which allows it to be `const`. [`from_f32`][Self::from_f32] should be preferred
+    /// in any non-`const` context.
+    ///
+    /// If the 32-bit value is to large to fit in 16-bits, ±∞ will result. NaN values are
+    /// preserved. 32-bit subnormal values are too tiny to be represented in 16-bits and result in
+    /// ±0. Exponents that underflow the minimum 16-bit exponent will result in 16-bit subnormals
+    /// or ±0. All other values are truncated and rounded to the nearest representable 16-bit
+    /// value.
+    #[inline]
+    pub const fn from_f32_const(value: f32) -> f16 {
+        f16(convert::f32_to_f16_fallback(value))
+    }
+
     /// Constructs a 16-bit floating point value from a 64-bit floating point value.
     ///
     /// If the 64-bit value is to large to fit in 16-bits, ±∞ will result. NaN values are
@@ -147,6 +163,22 @@ impl f16 {
     #[inline]
     pub fn from_f64(value: f64) -> f16 {
         f16(convert::f64_to_f16(value))
+    }
+
+    /// Constructs a 16-bit floating point value from a 64-bit floating point value.
+    ///
+    /// This function is identical to [`from_f64`][Self::from_f64] except it never uses hardware
+    /// intrinsics, which allows it to be `const`. [`from_f64`][Self::from_f64] should be preferred
+    /// in any non-`const` context.
+    ///
+    /// If the 64-bit value is to large to fit in 16-bits, ±∞ will result. NaN values are
+    /// preserved. 64-bit subnormal values are too tiny to be represented in 16-bits and result in
+    /// ±0. Exponents that underflow the minimum 16-bit exponent will result in 16-bit subnormals
+    /// or ±0. All other values are truncated and rounded to the nearest representable 16-bit
+    /// value.
+    #[inline]
+    pub const fn from_f64_const(value: f64) -> f16 {
+        f16(convert::f64_to_f16_fallback(value))
     }
 
     /// Converts a [`f16`] into the underlying bit representation.
@@ -274,6 +306,19 @@ impl f16 {
         convert::f16_to_f32(self.0)
     }
 
+    /// Converts a [`f16`] value into a `f32` value.
+    ///
+    /// This function is identical to [`to_f32`][Self::to_f32] except it never uses hardware
+    /// intrinsics, which allows it to be `const`. [`to_f32`][Self::to_f32] should be preferred
+    /// in any non-`const` context.
+    ///
+    /// This conversion is lossless as all 16-bit floating point values can be represented exactly
+    /// in 32-bit floating point.
+    #[inline]
+    pub const fn to_f32_const(self) -> f32 {
+        convert::f16_to_f32_fallback(self.0)
+    }
+
     /// Converts a [`f16`] value into a `f64` value.
     ///
     /// This conversion is lossless as all 16-bit floating point values can be represented exactly
@@ -281,6 +326,19 @@ impl f16 {
     #[inline]
     pub fn to_f64(self) -> f64 {
         convert::f16_to_f64(self.0)
+    }
+
+    /// Converts a [`f16`] value into a `f64` value.
+    ///
+    /// This function is identical to [`to_f64`][Self::to_f64] except it never uses hardware
+    /// intrinsics, which allows it to be `const`. [`to_f64`][Self::to_f64] should be preferred
+    /// in any non-`const` context.
+    ///
+    /// This conversion is lossless as all 16-bit floating point values can be represented exactly
+    /// in 64-bit floating point.
+    #[inline]
+    pub const fn to_f64_const(self) -> f64 {
+        convert::f16_to_f64_fallback(self.0)
     }
 
     /// Returns `true` if this value is `NaN` and `false` otherwise.

@@ -51,6 +51,20 @@ impl bf16 {
     /// are truncated and rounded to the nearest representable value.
     #[inline]
     pub fn from_f32(value: f32) -> bf16 {
+        Self::from_f32_const(value)
+    }
+
+    /// Constructs a [`bf16`] value from a 32-bit floating point value.
+    ///
+    /// This function is identical to [`from_f32`][Self::from_f32] except it never uses hardware
+    /// intrinsics, which allows it to be `const`. [`from_f32`][Self::from_f32] should be preferred
+    /// in any non-`const` context.
+    ///
+    /// If the 32-bit value is too large to fit, ±∞ will result. NaN values are preserved.
+    /// Subnormal values that are too tiny to be represented will result in ±0. All other values
+    /// are truncated and rounded to the nearest representable value.
+    #[inline]
+    pub const fn from_f32_const(value: f32) -> bf16 {
         bf16(convert::f32_to_bf16(value))
     }
 
@@ -62,6 +76,21 @@ impl bf16 {
     /// truncated and rounded to the nearest representable value.
     #[inline]
     pub fn from_f64(value: f64) -> bf16 {
+        Self::from_f64_const(value)
+    }
+
+    /// Constructs a [`bf16`] value from a 64-bit floating point value.
+    ///
+    /// This function is identical to [`from_f64`][Self::from_f64] except it never uses hardware
+    /// intrinsics, which allows it to be `const`. [`from_f64`][Self::from_f64] should be preferred
+    /// in any non-`const` context.
+    ///
+    /// If the 64-bit value is to large to fit, ±∞ will result. NaN values are preserved.
+    /// 64-bit subnormal values are too tiny to be represented and result in ±0. Exponents that
+    /// underflow the minimum exponent will result in subnormals or ±0. All other values are
+    /// truncated and rounded to the nearest representable value.
+    #[inline]
+    pub const fn from_f64_const(value: f64) -> bf16 {
         bf16(convert::f64_to_bf16(value))
     }
 
@@ -179,6 +208,18 @@ impl bf16 {
     /// This conversion is lossless as all values can be represented exactly in [`f32`].
     #[inline]
     pub fn to_f32(self) -> f32 {
+        self.to_f32_const()
+    }
+
+    /// Converts a [`bf16`] value into an [`f32`] value.
+    ///
+    /// This function is identical to [`to_f32`][Self::to_f32] except it never uses hardware
+    /// intrinsics, which allows it to be `const`. [`to_f32`][Self::to_f32] should be preferred
+    /// in any non-`const` context.
+    ///
+    /// This conversion is lossless as all values can be represented exactly in [`f32`].
+    #[inline]
+    pub const fn to_f32_const(self) -> f32 {
         convert::bf16_to_f32(self.0)
     }
 
@@ -187,6 +228,18 @@ impl bf16 {
     /// This conversion is lossless as all values can be represented exactly in [`f64`].
     #[inline]
     pub fn to_f64(self) -> f64 {
+        self.to_f64_const()
+    }
+
+    /// Converts a [`bf16`] value into an [`f64`] value.
+    ///
+    /// This function is identical to [`to_f64`][Self::to_f64] except it never uses hardware
+    /// intrinsics, which allows it to be `const`. [`to_f64`][Self::to_f64] should be preferred
+    /// in any non-`const` context.
+    ///
+    /// This conversion is lossless as all values can be represented exactly in [`f64`].
+    #[inline]
+    pub const fn to_f64_const(self) -> f64 {
         convert::bf16_to_f64(self.0)
     }
 

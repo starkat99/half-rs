@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Migrated to Rust Edition 2021.
 - Minimum supported Rust version is now 1.56.
 
+### Added
+- Added `const` conversion methods to both `f16` and `bf16`. These methods never use hardware
+  intrinsics, unlike the current conversion methods, which is why they are separated into new
+  methods. The following `const` methods were added:
+  - `from_f32_const`
+  - `from_f64_const`
+  - `to_f32_const`
+  - `to_f64_const`
+
 ## [1.8.1] - 2021-10-21 <a name="1.8.1"></a>
 ### Changed
 - Now uses cargo resolver version 2 to prevent dev-dependencies from enabling `std` feature on
