@@ -4,6 +4,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Now uses cargo resolver version 2 to prevent dev dependencies from enabling `std` feature on
+  optional dependencies.
+
+### Fixed
+- Fixed compile failure when `std` feature is not enabled and `num-traits` is enabled under new
+  resolver. Now properly uses `libm` num-traits feature.
 
 ## [1.8.0] - 2021-10-13 <a name="1.8.0"></a>
 ### Changed

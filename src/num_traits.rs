@@ -2,8 +2,7 @@ use crate::{bf16, f16};
 use core::cmp::Ordering;
 use core::{num::FpCategory, ops::Div};
 use num_traits::{
-    float::FloatCore, AsPrimitive, Bounded, Float, FloatConst, FromPrimitive, Num, NumCast, One,
-    ToPrimitive, Zero,
+    AsPrimitive, Bounded, FloatConst, FromPrimitive, Num, NumCast, One, ToPrimitive, Zero,
 };
 
 impl ToPrimitive for f16 {
@@ -127,7 +126,7 @@ impl NumCast for f16 {
     }
 }
 
-impl FloatCore for f16 {
+impl num_traits::float::FloatCore for f16 {
     #[inline]
     fn infinity() -> Self {
         Self::INFINITY
@@ -288,11 +287,11 @@ impl FloatCore for f16 {
 
     #[inline]
     fn integer_decode(self) -> (u64, i16, i8) {
-        FloatCore::integer_decode(self.to_f32())
+        num_traits::float::FloatCore::integer_decode(self.to_f32())
     }
 }
 
-impl Float for f16 {
+impl num_traits::float::Float for f16 {
     #[inline]
     fn nan() -> Self {
         Self::NAN
@@ -470,12 +469,12 @@ impl Float for f16 {
 
     #[inline]
     fn max(self, other: Self) -> Self {
-        FloatCore::max(self, other)
+        self.max(other)
     }
 
     #[inline]
     fn min(self, other: Self) -> Self {
-        FloatCore::min(self, other)
+        self.min(other)
     }
 
     #[inline]
@@ -576,7 +575,7 @@ impl Float for f16 {
 
     #[inline]
     fn integer_decode(self) -> (u64, i16, i8) {
-        Float::integer_decode(self.to_f32())
+        num_traits::float::Float::integer_decode(self.to_f32())
     }
 }
 
@@ -854,7 +853,7 @@ impl NumCast for bf16 {
     }
 }
 
-impl FloatCore for bf16 {
+impl num_traits::float::FloatCore for bf16 {
     #[inline]
     fn infinity() -> Self {
         Self::INFINITY
@@ -1015,11 +1014,11 @@ impl FloatCore for bf16 {
 
     #[inline]
     fn integer_decode(self) -> (u64, i16, i8) {
-        FloatCore::integer_decode(self.to_f32())
+        num_traits::float::FloatCore::integer_decode(self.to_f32())
     }
 }
 
-impl Float for bf16 {
+impl num_traits::float::Float for bf16 {
     #[inline]
     fn nan() -> Self {
         Self::NAN
@@ -1197,12 +1196,12 @@ impl Float for bf16 {
 
     #[inline]
     fn max(self, other: Self) -> Self {
-        FloatCore::max(self, other)
+        self.max(other)
     }
 
     #[inline]
     fn min(self, other: Self) -> Self {
-        FloatCore::min(self, other)
+        self.min(other)
     }
 
     #[inline]
@@ -1303,7 +1302,7 @@ impl Float for bf16 {
 
     #[inline]
     fn integer_decode(self) -> (u64, i16, i8) {
-        Float::integer_decode(self.to_f32())
+        num_traits::float::Float::integer_decode(self.to_f32())
     }
 }
 
