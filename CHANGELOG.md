@@ -17,7 +17,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - `to_f32_const`
   - `to_f64_const`
 
-## [1.8.1] - 2021-10-21 <a name="1.8.1"></a>
+## [1.8.2] - 2021-10-22 <a name="1.8.2"></a>
+### Fixed
+- Remove cargo resolver=2 from manifest to resolve errors in older versions of Rust that still
+  worked with 1.8.0. Going forward, MSRV increases will be major version increases. Fixes [#48].
+
+## [1.8.1] - 2021-10-21 - **Yanked** <a name="1.8.1"></a>
+### ***Yanked***
+*Not recommended due to introducing compilation error in Rust versions that worked with 1.8.0.*
 ### Changed
 - Now uses cargo resolver version 2 to prevent dev-dependencies from enabling `std` feature on
   optional dependencies.
@@ -218,6 +225,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#23]: https://github.com/starkat99/half-rs/issues/23
 [#24]: https://github.com/starkat99/half-rs/issues/24
 [#37]: https://github.com/starkat99/half-rs/issues/37
+[#48]: https://github.com/starkat99/half-rs/issues/48
 
 [@tspiteri]: https://github.com/tspiteri
 [@PSeitz]: https://github.com/PSeitz
@@ -230,7 +238,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [@samcrow]: https://github.com/samcrow
 
 
-[Unreleased]: https://github.com/starkat99/half-rs/compare/v1.8.1...HEAD
+[Unreleased]: https://github.com/starkat99/half-rs/compare/v1.8.2...HEAD
+[1.8.2]: https://github.com/starkat99/half-rs/compare/v1.8.1...v1.8.2
 [1.8.1]: https://github.com/starkat99/half-rs/compare/v1.8.0...v1.8.1
 [1.8.0]: https://github.com/starkat99/half-rs/compare/v1.7.1...v1.8.0
 [1.7.1]: https://github.com/starkat99/half-rs/compare/v1.7.0...v1.7.1
