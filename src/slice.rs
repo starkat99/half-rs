@@ -568,46 +568,6 @@ impl HalfBitsSliceExt for [u16] {
     }
 }
 
-#[doc(hidden)]
-#[deprecated(
-    since = "1.4.0",
-    note = "use `HalfBitsSliceExt::reinterpret_cast_mut` instead"
-)]
-#[inline]
-pub fn from_bits_mut(bits: &mut [u16]) -> &mut [f16] {
-    bits.reinterpret_cast_mut()
-}
-
-#[doc(hidden)]
-#[deprecated(
-    since = "1.4.0",
-    note = "use `HalfFloatSliceExt::reinterpret_cast_mut` instead"
-)]
-#[inline]
-pub fn to_bits_mut(bits: &mut [f16]) -> &mut [u16] {
-    bits.reinterpret_cast_mut()
-}
-
-#[doc(hidden)]
-#[deprecated(
-    since = "1.4.0",
-    note = "use `HalfBitsSliceExt::reinterpret_cast` instead"
-)]
-#[inline]
-pub fn from_bits(bits: &[u16]) -> &[f16] {
-    bits.reinterpret_cast()
-}
-
-#[doc(hidden)]
-#[deprecated(
-    since = "1.4.0",
-    note = "use `HalfFloatSliceExt::reinterpret_cast` instead"
-)]
-#[inline]
-pub fn to_bits(bits: &[f16]) -> &[u16] {
-    bits.reinterpret_cast()
-}
-
 #[allow(clippy::float_cmp)]
 #[cfg(test)]
 mod test {

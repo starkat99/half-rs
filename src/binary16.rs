@@ -35,89 +35,6 @@ pub(crate) mod convert;
 #[cfg_attr(feature = "zerocopy", derive(AsBytes, FromBytes))]
 pub struct f16(u16);
 
-#[doc(hidden)]
-#[deprecated(
-    since = "1.4.0",
-    note = "all constants moved to associated constants of `f16`"
-)]
-pub mod consts {
-    use super::f16;
-
-    #[deprecated(since = "1.4.0", note = "moved to `f16::DIGITS`")]
-    pub const DIGITS: u32 = f16::DIGITS;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::EPSILON`")]
-    pub const EPSILON: f16 = f16::EPSILON;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::INFINITY`")]
-    pub const INFINITY: f16 = f16::INFINITY;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::MANTISSA_DIGITS`")]
-    pub const MANTISSA_DIGITS: u32 = f16::MANTISSA_DIGITS;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::MAX`")]
-    pub const MAX: f16 = f16::MAX;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::MAX_10_EXP`")]
-    pub const MAX_10_EXP: i32 = f16::MAX_10_EXP;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::MAX_EXP`")]
-    pub const MAX_EXP: i32 = f16::MAX_EXP;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::MIN`")]
-    pub const MIN: f16 = f16::MIN;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::MIN_10_EXP`")]
-    pub const MIN_10_EXP: i32 = f16::MIN_10_EXP;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::MIN_EXP`")]
-    pub const MIN_EXP: i32 = f16::MIN_EXP;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::MIN_POSITIVE`")]
-    pub const MIN_POSITIVE: f16 = f16::MIN_POSITIVE;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::NAN`")]
-    pub const NAN: f16 = f16::NAN;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::NEG_INFINITY`")]
-    pub const NEG_INFINITY: f16 = f16::NEG_INFINITY;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::RADIX`")]
-    pub const RADIX: u32 = f16::RADIX;
-
-    #[deprecated(since = "1.4.0", note = "moved to `f16::MIN_POSITIVE_SUBNORMAL`")]
-    pub const MIN_POSITIVE_SUBNORMAL: f16 = f16::MIN_POSITIVE_SUBNORMAL;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::MAX_SUBNORMAL`")]
-    pub const MAX_SUBNORMAL: f16 = f16::MAX_SUBNORMAL;
-
-    #[deprecated(since = "1.4.0", note = "moved to `f16::ONE`")]
-    pub const ONE: f16 = f16::ONE;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::ZERO`")]
-    pub const ZERO: f16 = f16::ZERO;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::NEG_ZERO`")]
-    pub const NEG_ZERO: f16 = f16::NEG_ZERO;
-
-    #[deprecated(since = "1.4.0", note = "moved to `f16::E`")]
-    pub const E: f16 = f16::E;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::PI`")]
-    pub const PI: f16 = f16::PI;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_1_PI`")]
-    pub const FRAC_1_PI: f16 = f16::FRAC_1_PI;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_1_SQRT_2`")]
-    pub const FRAC_1_SQRT_2: f16 = f16::FRAC_1_SQRT_2;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_2_PI`")]
-    pub const FRAC_2_PI: f16 = f16::FRAC_2_PI;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_2_SQRT_PI`")]
-    pub const FRAC_2_SQRT_PI: f16 = f16::FRAC_2_SQRT_PI;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_PI_2`")]
-    pub const FRAC_PI_2: f16 = f16::FRAC_PI_2;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_PI_3`")]
-    pub const FRAC_PI_3: f16 = f16::FRAC_PI_3;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_PI_4`")]
-    pub const FRAC_PI_4: f16 = f16::FRAC_PI_4;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_PI_6`")]
-    pub const FRAC_PI_6: f16 = f16::FRAC_PI_6;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::FRAC_PI_8`")]
-    pub const FRAC_PI_8: f16 = f16::FRAC_PI_8;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::LN_10`")]
-    pub const LN_10: f16 = f16::LN_10;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::LN_2`")]
-    pub const LN_2: f16 = f16::LN_2;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::LOG10_E`")]
-    pub const LOG10_E: f16 = f16::LOG10_E;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::LOG2_E`")]
-    pub const LOG2_E: f16 = f16::LOG2_E;
-    #[deprecated(since = "1.4.0", note = "moved to `f16::SQRT_2`")]
-    pub const SQRT_2: f16 = f16::SQRT_2;
-}
-
 impl f16 {
     /// Constructs a 16-bit floating point value from the raw bits.
     #[inline]
@@ -288,13 +205,6 @@ impl f16 {
     #[inline]
     pub const fn from_ne_bytes(bytes: [u8; 2]) -> f16 {
         f16::from_bits(u16::from_ne_bytes(bytes))
-    }
-
-    #[doc(hidden)]
-    #[deprecated(since = "1.2.0", note = "renamed to `to_bits`")]
-    #[inline]
-    pub fn as_bits(self) -> u16 {
-        self.to_bits()
     }
 
     /// Converts a [`f16`] value into a `f32` value.

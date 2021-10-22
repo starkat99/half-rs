@@ -5,8 +5,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Changed
+- **Breaking Change** Minimum supported Rust version is now 1.56.
+- **Breaking Change** `std` is now enabled as a default cargo feature. Disable default features to
+  continue using `no_std` support.
 - Migrated to Rust Edition 2021.
-- Minimum supported Rust version is now 1.56.
 
 ### Added
 - Added `const` conversion methods to both `f16` and `bf16`. These methods never use hardware
@@ -16,6 +18,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - `from_f64_const`
   - `to_f32_const`
   - `to_f64_const`
+
+### Removed
+- **Breaking Change** The deprecated `serialize` feature has been removed. Use `serde` feature
+  instead.
+- **Breaking Change** The deprecated `consts` module has been removed. Use associated constants on
+  `f16` instead.
+- **Breaking Change** The following deprecated functions have been removed:
+  - `f16::as_bits`
+  - `slice::from_bits_mut`
+  - `slice::to_bits_mut`
+  - `slice::from_bits`
+  - `slice::to_bits`
+  - `vec::from_bits`
+  - `vec::to_bits`
 
 ## [1.8.2] - 2021-10-22 <a name="1.8.2"></a>
 ### Fixed

@@ -181,9 +181,6 @@ pub mod slice;
 pub mod vec;
 
 pub use bfloat::bf16;
-#[doc(hidden)]
-#[allow(deprecated)]
-pub use binary16::consts;
 pub use binary16::f16;
 
 /// A collection of the most used items and traits in this crate for easy importing.

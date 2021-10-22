@@ -16,8 +16,8 @@ should manually convert to and from `f32` for better performance.
 This crate provides [`no_std`](https://rust-embedded.github.io/book/intro/no-std.html) support by
 default so can easily be used in embedded code where a smaller float format is most useful.
 
-*Requires Rust 1.56 or greater.* If you need support for older versions of Rust, use versions 1.8
-and earlier of this crate.
+*Requires Rust 1.56 or greater.* If you need support for older versions of Rust, use 1.x versions of
+this crate.
 
 See the [crate documentation](https://docs.rs/half/) for more details.
 

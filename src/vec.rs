@@ -217,26 +217,6 @@ impl HalfBitsVecExt for Vec<u16> {
     }
 }
 
-#[doc(hidden)]
-#[deprecated(
-    since = "1.4.0",
-    note = "use `HalfBitsVecExt::reinterpret_into` instead"
-)]
-#[inline]
-pub fn from_bits(bits: Vec<u16>) -> Vec<f16> {
-    bits.reinterpret_into()
-}
-
-#[doc(hidden)]
-#[deprecated(
-    since = "1.4.0",
-    note = "use `HalfFloatVecExt::reinterpret_into` instead"
-)]
-#[inline]
-pub fn to_bits(numbers: Vec<f16>) -> Vec<u16> {
-    numbers.reinterpret_into()
-}
-
 #[cfg(test)]
 mod test {
     use super::{HalfBitsVecExt, HalfFloatVecExt};
