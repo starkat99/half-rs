@@ -30,7 +30,7 @@ jobs:
           - stable
           - beta
           - nightly
-          - 1.56.0
+          - 1.58.1
 
     steps:
     - name: Checkout
