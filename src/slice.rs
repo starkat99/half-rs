@@ -526,6 +526,7 @@ impl HalfFloatSliceExt for [bf16] {
 
     #[cfg(any(feature = "alloc", feature = "std"))]
     #[inline]
+    #[allow(clippy::uninit_vec)]
     fn to_f32_vec(&self) -> Vec<f32> {
         let mut vec = Vec::with_capacity(self.len());
         // SAFETY: convert will initialize every value in the vector without reading them,
@@ -538,6 +539,7 @@ impl HalfFloatSliceExt for [bf16] {
 
     #[cfg(any(feature = "alloc", feature = "std"))]
     #[inline]
+    #[allow(clippy::uninit_vec)]
     fn to_f64_vec(&self) -> Vec<f64> {
         let mut vec = Vec::with_capacity(self.len());
         // SAFETY: convert will initialize every value in the vector without reading them,

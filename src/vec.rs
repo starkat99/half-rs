@@ -132,6 +132,7 @@ impl HalfFloatVecExt for Vec<f16> {
         unsafe { Vec::from_raw_parts(pointer, length, capacity) }
     }
 
+    #[allow(clippy::uninit_vec)]
     fn from_f32_slice(slice: &[f32]) -> Self {
         let mut vec = Vec::with_capacity(slice.len());
         // SAFETY: convert will initialize every value in the vector without reading them,
@@ -142,6 +143,7 @@ impl HalfFloatVecExt for Vec<f16> {
         vec
     }
 
+    #[allow(clippy::uninit_vec)]
     fn from_f64_slice(slice: &[f64]) -> Self {
         let mut vec = Vec::with_capacity(slice.len());
         // SAFETY: convert will initialize every value in the vector without reading them,
@@ -174,6 +176,7 @@ impl HalfFloatVecExt for Vec<bf16> {
         unsafe { Vec::from_raw_parts(pointer, length, capacity) }
     }
 
+    #[allow(clippy::uninit_vec)]
     fn from_f32_slice(slice: &[f32]) -> Self {
         let mut vec = Vec::with_capacity(slice.len());
         // SAFETY: convert will initialize every value in the vector without reading them,
@@ -184,6 +187,7 @@ impl HalfFloatVecExt for Vec<bf16> {
         vec
     }
 
+    #[allow(clippy::uninit_vec)]
     fn from_f64_slice(slice: &[f64]) -> Self {
         let mut vec = Vec::with_capacity(slice.len());
         // SAFETY: convert will initialize every value in the vector without reading them,
