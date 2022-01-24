@@ -40,6 +40,7 @@ pub struct bf16(u16);
 impl bf16 {
     /// Constructs a [`bf16`] value from the raw bits.
     #[inline]
+    #[must_use]
     pub const fn from_bits(bits: u16) -> bf16 {
         bf16(bits)
     }
@@ -50,6 +51,7 @@ impl bf16 {
     /// Subnormal values that are too tiny to be represented will result in ±0. All other values
     /// are truncated and rounded to the nearest representable value.
     #[inline]
+    #[must_use]
     pub fn from_f32(value: f32) -> bf16 {
         Self::from_f32_const(value)
     }
@@ -64,6 +66,7 @@ impl bf16 {
     /// Subnormal values that are too tiny to be represented will result in ±0. All other values
     /// are truncated and rounded to the nearest representable value.
     #[inline]
+    #[must_use]
     pub const fn from_f32_const(value: f32) -> bf16 {
         bf16(convert::f32_to_bf16(value))
     }
@@ -75,6 +78,7 @@ impl bf16 {
     /// underflow the minimum exponent will result in subnormals or ±0. All other values are
     /// truncated and rounded to the nearest representable value.
     #[inline]
+    #[must_use]
     pub fn from_f64(value: f64) -> bf16 {
         Self::from_f64_const(value)
     }
@@ -90,12 +94,14 @@ impl bf16 {
     /// underflow the minimum exponent will result in subnormals or ±0. All other values are
     /// truncated and rounded to the nearest representable value.
     #[inline]
+    #[must_use]
     pub const fn from_f64_const(value: f64) -> bf16 {
         bf16(convert::f64_to_bf16(value))
     }
 
     /// Converts a [`bf16`] into the underlying bit representation.
     #[inline]
+    #[must_use]
     pub const fn to_bits(self) -> u16 {
         self.0
     }
@@ -111,6 +117,7 @@ impl bf16 {
     /// assert_eq!(bytes, [0x48, 0x41]);
     /// ```
     #[inline]
+    #[must_use]
     pub const fn to_le_bytes(self) -> [u8; 2] {
         self.0.to_le_bytes()
     }
@@ -126,6 +133,7 @@ impl bf16 {
     /// assert_eq!(bytes, [0x41, 0x48]);
     /// ```
     #[inline]
+    #[must_use]
     pub const fn to_be_bytes(self) -> [u8; 2] {
         self.0.to_be_bytes()
     }
@@ -149,6 +157,7 @@ impl bf16 {
     /// });
     /// ```
     #[inline]
+    #[must_use]
     pub const fn to_ne_bytes(self) -> [u8; 2] {
         self.0.to_ne_bytes()
     }
@@ -163,6 +172,7 @@ impl bf16 {
     /// assert_eq!(value, bf16::from_f32(12.5));
     /// ```
     #[inline]
+    #[must_use]
     pub const fn from_le_bytes(bytes: [u8; 2]) -> bf16 {
         bf16::from_bits(u16::from_le_bytes(bytes))
     }
@@ -177,6 +187,7 @@ impl bf16 {
     /// assert_eq!(value, bf16::from_f32(12.5));
     /// ```
     #[inline]
+    #[must_use]
     pub const fn from_be_bytes(bytes: [u8; 2]) -> bf16 {
         bf16::from_bits(u16::from_be_bytes(bytes))
     }
@@ -199,6 +210,7 @@ impl bf16 {
     /// assert_eq!(value, bf16::from_f32(12.5));
     /// ```
     #[inline]
+    #[must_use]
     pub const fn from_ne_bytes(bytes: [u8; 2]) -> bf16 {
         bf16::from_bits(u16::from_ne_bytes(bytes))
     }
@@ -207,6 +219,7 @@ impl bf16 {
     ///
     /// This conversion is lossless as all values can be represented exactly in [`f32`].
     #[inline]
+    #[must_use]
     pub fn to_f32(self) -> f32 {
         self.to_f32_const()
     }
@@ -219,6 +232,7 @@ impl bf16 {
     ///
     /// This conversion is lossless as all values can be represented exactly in [`f32`].
     #[inline]
+    #[must_use]
     pub const fn to_f32_const(self) -> f32 {
         convert::bf16_to_f32(self.0)
     }
@@ -227,6 +241,7 @@ impl bf16 {
     ///
     /// This conversion is lossless as all values can be represented exactly in [`f64`].
     #[inline]
+    #[must_use]
     pub fn to_f64(self) -> f64 {
         self.to_f64_const()
     }
@@ -239,6 +254,7 @@ impl bf16 {
     ///
     /// This conversion is lossless as all values can be represented exactly in [`f64`].
     #[inline]
+    #[must_use]
     pub const fn to_f64_const(self) -> f64 {
         convert::bf16_to_f64(self.0)
     }
@@ -257,6 +273,7 @@ impl bf16 {
     /// assert!(!f.is_nan());
     /// ```
     #[inline]
+    #[must_use]
     pub const fn is_nan(self) -> bool {
         self.0 & 0x7FFFu16 > 0x7F80u16
     }
@@ -280,6 +297,7 @@ impl bf16 {
     /// assert!(neg_inf.is_infinite());
     /// ```
     #[inline]
+    #[must_use]
     pub const fn is_infinite(self) -> bool {
         self.0 & 0x7FFFu16 == 0x7F80u16
     }
@@ -303,6 +321,7 @@ impl bf16 {
     /// assert!(!neg_inf.is_finite());
     /// ```
     #[inline]
+    #[must_use]
     pub const fn is_finite(self) -> bool {
         self.0 & 0x7F80u16 != 0x7F80u16
     }
@@ -329,6 +348,7 @@ impl bf16 {
     /// assert!(!lower_than_min.is_normal());
     /// ```
     #[inline]
+    #[must_use]
     pub const fn is_normal(self) -> bool {
         let exp = self.0 & 0x7F80u16;
         exp != 0x7F80u16 && exp != 0
@@ -351,6 +371,7 @@ impl bf16 {
     /// assert_eq!(num.classify(), FpCategory::Normal);
     /// assert_eq!(inf.classify(), FpCategory::Infinite);
     /// ```
+    #[must_use]
     pub const fn classify(self) -> FpCategory {
         let exp = self.0 & 0x7F80u16;
         let man = self.0 & 0x007Fu16;
@@ -381,6 +402,7 @@ impl bf16 {
     ///
     /// assert!(bf16::NAN.signum().is_nan());
     /// ```
+    #[must_use]
     pub const fn signum(self) -> bf16 {
         if self.is_nan() {
             self
@@ -409,6 +431,7 @@ impl bf16 {
     /// assert!(nan.is_sign_positive() != nan.is_sign_negative());
     /// ```
     #[inline]
+    #[must_use]
     pub const fn is_sign_positive(self) -> bool {
         self.0 & 0x8000u16 == 0
     }
@@ -431,6 +454,7 @@ impl bf16 {
     /// assert!(nan.is_sign_positive() != nan.is_sign_negative());
     /// ```
     #[inline]
+    #[must_use]
     pub const fn is_sign_negative(self) -> bool {
         self.0 & 0x8000u16 != 0
     }
@@ -454,6 +478,7 @@ impl bf16 {
     /// assert!(bf16::NAN.copysign(bf16::from_f32(1.0)).is_nan());
     /// ```
     #[inline]
+    #[must_use]
     pub const fn copysign(self, sign: bf16) -> bf16 {
         bf16((sign.0 & 0x8000u16) | (self.0 & 0x7FFFu16))
     }
@@ -472,6 +497,7 @@ impl bf16 {
     /// assert_eq!(x.max(y), y);
     /// ```
     #[inline]
+    #[must_use]
     pub fn max(self, other: bf16) -> bf16 {
         if other > self && !other.is_nan() {
             other
@@ -494,6 +520,7 @@ impl bf16 {
     /// assert_eq!(x.min(y), x);
     /// ```
     #[inline]
+    #[must_use]
     pub fn min(self, other: bf16) -> bf16 {
         if other < self && !other.is_nan() {
             other
@@ -522,6 +549,7 @@ impl bf16 {
     /// assert!(bf16::NAN.clamp(bf16::from_f32(-2.0), bf16::from_f32(1.0)).is_nan());
     /// ```
     #[inline]
+    #[must_use]
     pub fn clamp(self, min: bf16, max: bf16) -> bf16 {
         assert!(min <= max);
         let mut x = self;

@@ -30,6 +30,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     ///
     /// assert_eq!(int_buffer, [float_buffer[0].to_bits(), float_buffer[1].to_bits(), float_buffer[2].to_bits()]);
     /// ```
+    #[must_use]
     fn reinterpret_cast(&self) -> &[u16];
 
     /// Reinterprets a mutable slice of [`f16`] or [`bf16`] numbers as a mutable slice of [`u16`].
@@ -56,6 +57,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     /// // Note that we need to drop int_buffer before using float_buffer again or we will get a borrow error.
     /// assert_eq!(float_buffer, [f16::from_f32(0.), f16::from_f32(2.), f16::from_f32(3.)]);
     /// ```
+    #[must_use]
     fn reinterpret_cast_mut(&mut self) -> &mut [u16];
 
     /// Converts all of the elements of a `[f32]` slice into [`f16`] or [`bf16`] values in `self`.
@@ -194,6 +196,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     /// ```
     #[cfg(any(feature = "alloc", feature = "std"))]
     #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
+    #[must_use]
     fn to_f32_vec(&self) -> Vec<f32>;
 
     /// Converts all of the [`f16`] or [`bf16`] elements of `self` into [`f64`] values in a new
@@ -216,6 +219,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     /// ```
     #[cfg(feature = "alloc")]
     #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
+    #[must_use]
     fn to_f64_vec(&self) -> Vec<f64>;
 }
 
@@ -243,6 +247,7 @@ pub trait HalfBitsSliceExt: private::SealedHalfBitsSlice {
     /// // The following is also valid in Rust.
     /// let typed_buffer = int_buffer.reinterpret_cast::<f16>();
     /// ```
+    #[must_use]
     fn reinterpret_cast<H>(&self) -> &[H]
     where
         H: crate::private::SealedHalf;
@@ -277,6 +282,7 @@ pub trait HalfBitsSliceExt: private::SealedHalfBitsSlice {
     /// // The following is also valid in Rust.
     /// let typed_buffer = int_buffer.reinterpret_cast_mut::<f16>();
     /// ```
+    #[must_use]
     fn reinterpret_cast_mut<H>(&mut self) -> &mut [H]
     where
         H: crate::private::SealedHalf;

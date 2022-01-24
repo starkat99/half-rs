@@ -32,6 +32,7 @@ pub trait HalfFloatVecExt: private::SealedHalfFloatVec {
     ///
     /// assert_eq!(int_buffer, [f16::from_f32(1.).to_bits(), f16::from_f32(2.).to_bits(), f16::from_f32(3.).to_bits()]);
     /// ```
+    #[must_use]
     fn reinterpret_into(self) -> Vec<u16>;
 
     /// Converts all of the elements of a `[f32]` slice into a new [`f16`] or [`bf16`] vector.
@@ -49,6 +50,7 @@ pub trait HalfFloatVecExt: private::SealedHalfFloatVec {
     ///
     /// assert_eq!(vec, vec![f16::from_f32(1.), f16::from_f32(2.), f16::from_f32(3.), f16::from_f32(4.)]);
     /// ```
+    #[must_use]
     fn from_f32_slice(slice: &[f32]) -> Self;
 
     /// Converts all of the elements of a `[f64]` slice into a new [`f16`] or [`bf16`] vector.
@@ -66,6 +68,7 @@ pub trait HalfFloatVecExt: private::SealedHalfFloatVec {
     ///
     /// assert_eq!(vec, vec![f16::from_f64(1.), f16::from_f64(2.), f16::from_f64(3.), f16::from_f64(4.)]);
     /// ```
+    #[must_use]
     fn from_f64_slice(slice: &[f64]) -> Self;
 }
 
@@ -89,6 +92,7 @@ pub trait HalfBitsVecExt: private::SealedHalfBitsVec {
     ///
     /// assert_eq!(float_buffer, [f16::from_f32(1.), f16::from_f32(2.), f16::from_f32(3.)]);
     /// ```
+    #[must_use]
     fn reinterpret_into<H>(self) -> Vec<H>
     where
         H: crate::private::SealedHalf;

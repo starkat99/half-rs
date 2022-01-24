@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - **Breaking Change** `std` is now enabled as a default cargo feature. Disable default features to
   continue using `no_std` support.
 - Migrated to Rust Edition 2021.
+- Added `#[must_use]` attributes to functions, as appropriate.
 
 ### Added
 - Added `const` conversion methods to both `f16` and `bf16`. These methods never use hardware
