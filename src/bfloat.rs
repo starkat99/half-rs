@@ -838,6 +838,15 @@ impl Neg for bf16 {
     }
 }
 
+impl Neg for &bf16 {
+    type Output = <bf16 as Neg>::Output;
+
+    #[inline]
+    fn neg(self) -> Self::Output {
+        Neg::neg(*self)
+    }
+}
+
 impl Add for bf16 {
     type Output = Self;
 
