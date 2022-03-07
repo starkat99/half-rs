@@ -699,6 +699,13 @@ macro_rules! impl_as_primitive_to_f16 {
     };
 }
 
+impl AsPrimitive<f16> for f16 {
+    #[inline]
+    fn as_(self) -> f16 {
+        self
+    }
+}
+
 impl_as_primitive_to_f16!(i64, to_f32);
 impl_as_primitive_to_f16!(u64, to_f32);
 impl_as_primitive_to_f16!(i8, to_f32);
@@ -707,6 +714,8 @@ impl_as_primitive_to_f16!(i16, to_f32);
 impl_as_primitive_to_f16!(u16, to_f32);
 impl_as_primitive_to_f16!(i32, to_f32);
 impl_as_primitive_to_f16!(u32, to_f32);
+impl_as_primitive_to_f16!(isize, to_f32);
+impl_as_primitive_to_f16!(usize, to_f32);
 impl_as_primitive_to_f16!(f32, to_f32);
 impl_as_primitive_to_f16!(f64, to_f64);
 
@@ -729,6 +738,8 @@ impl_as_primitive_f16_from!(i16, from_f32);
 impl_as_primitive_f16_from!(u16, from_f32);
 impl_as_primitive_f16_from!(i32, from_f32);
 impl_as_primitive_f16_from!(u32, from_f32);
+impl_as_primitive_f16_from!(isize, from_f32);
+impl_as_primitive_f16_from!(usize, from_f32);
 impl_as_primitive_f16_from!(f32, from_f32);
 impl_as_primitive_f16_from!(f64, from_f64);
 
@@ -1416,6 +1427,13 @@ impl Bounded for bf16 {
     }
 }
 
+impl AsPrimitive<bf16> for bf16 {
+    #[inline]
+    fn as_(self) -> bf16 {
+        self
+    }
+}
+
 macro_rules! impl_as_primitive_to_bf16 {
     ($ty:ty, $meth:ident) => {
         impl AsPrimitive<$ty> for bf16 {
@@ -1435,6 +1453,8 @@ impl_as_primitive_to_bf16!(i16, to_f32);
 impl_as_primitive_to_bf16!(u16, to_f32);
 impl_as_primitive_to_bf16!(i32, to_f32);
 impl_as_primitive_to_bf16!(u32, to_f32);
+impl_as_primitive_to_bf16!(isize, to_f32);
+impl_as_primitive_to_bf16!(usize, to_f32);
 impl_as_primitive_to_bf16!(f32, to_f32);
 impl_as_primitive_to_bf16!(f64, to_f64);
 
@@ -1457,5 +1477,7 @@ impl_as_primitive_bf16_from!(i16, from_f32);
 impl_as_primitive_bf16_from!(u16, from_f32);
 impl_as_primitive_bf16_from!(i32, from_f32);
 impl_as_primitive_bf16_from!(u32, from_f32);
+impl_as_primitive_bf16_from!(isize, from_f32);
+impl_as_primitive_bf16_from!(usize, from_f32);
 impl_as_primitive_bf16_from!(f32, from_f32);
 impl_as_primitive_bf16_from!(f64, from_f64);
