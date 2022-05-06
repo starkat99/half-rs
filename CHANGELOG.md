@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - `from_f64_const`
   - `to_f32_const`
   - `to_f64_const`
+- Added `Neg` trait support for borrowed values `&f16` and `&bf16`. By [@pthariensflame].
+- Added `AsPrimitive` implementations from and to self, `usize`, and `isize`. By [@kali].
 
 ### Removed
 - **Breaking Change** The deprecated `serialize` feature has been removed. Use `serde` feature
@@ -253,6 +255,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [@bzm3r]: https://github.com/bzm3r
 [@charles-r-earp]: https://github.com/charles-r-earp
 [@samcrow]: https://github.com/samcrow
+[@pthariensflame]: https://github.com/pthariensflame
+[@kali]: https://github.com/kali
 
 
 [Unreleased]: https://github.com/starkat99/half-rs/compare/v1.8.2...HEAD
