@@ -55,3 +55,24 @@ jobs:
       with:
         command: make
         args: ci-flow
+
+  miri:
+    name: Miri
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+          components: miri
+      - name: Run Miri
+        uses: actions-rs/cargo@v1
+        with:
+          command: miri
+          args: test
+        env:
+          MIRIFLAGS: -Zmiri-strict-provenance
