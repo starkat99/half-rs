@@ -311,7 +311,7 @@ impl HalfFloatSliceExt for [f16] {
 
     #[inline]
     fn reinterpret_cast_mut(&mut self) -> &mut [u16] {
-        let pointer = self.as_ptr() as *mut u16;
+        let pointer = self.as_mut_ptr().cast::<u16>();
         let length = self.len();
         // SAFETY: We are reconstructing full length of original slice, using its same lifetime,
         // and the size of elements are identical
@@ -465,7 +465,7 @@ impl HalfFloatSliceExt for [bf16] {
 
     #[inline]
     fn reinterpret_cast_mut(&mut self) -> &mut [u16] {
-        let pointer = self.as_ptr() as *mut u16;
+        let pointer = self.as_mut_ptr().cast::<u16>();
         let length = self.len();
         // SAFETY: We are reconstructing full length of original slice, using its same lifetime,
         // and the size of elements are identical
