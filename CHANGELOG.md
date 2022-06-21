@@ -4,12 +4,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.0.0] - 2022-06-21 <a name="2.0.0"></a>
 ### Changed
-- **Breaking Change** Minimum supported Rust version is now 1.56.
+- **Breaking Change** Minimum supported Rust version is now 1.58.
 - **Breaking Change** `std` is now enabled as a default cargo feature. Disable default features to
   continue using `no_std` support.
 - Migrated to Rust Edition 2021.
 - Added `#[must_use]` attributes to functions, as appropriate.
+
+### Fixed
+- Fix a soundness bug with `slice::as_ptr` not correctly using mutable reference. By [@Nilstrieb].
 
 ### Added
 - Added `const` conversion methods to both `f16` and `bf16`. These methods never use hardware
@@ -23,8 +28,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added `AsPrimitive` implementations from and to self, `usize`, and `isize`. By [@kali].
 
 ### Removed
-- **Breaking Change** The deprecated `serialize` feature has been removed. Use `serde` feature
-  instead.
+- **Breaking Change** The deprecated `serialize` cargo feature has been removed. Use `serde` cargo
+  feature instead.
 - **Breaking Change** The deprecated `consts` module has been removed. Use associated constants on
   `f16` instead.
 - **Breaking Change** The following deprecated functions have been removed:
@@ -257,9 +262,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [@samcrow]: https://github.com/samcrow
 [@pthariensflame]: https://github.com/pthariensflame
 [@kali]: https://github.com/kali
+[@Nilstrieb]: https://github.com/Nilstrieb
 
 
-[Unreleased]: https://github.com/starkat99/half-rs/compare/v1.8.2...HEAD
+[Unreleased]: https://github.com/starkat99/half-rs/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/starkat99/half-rs/compare/v1.8.2...v2.0.0
 [1.8.2]: https://github.com/starkat99/half-rs/compare/v1.8.1...v1.8.2
 [1.8.1]: https://github.com/starkat99/half-rs/compare/v1.8.0...v1.8.1
 [1.8.0]: https://github.com/starkat99/half-rs/compare/v1.7.1...v1.8.0
