@@ -1,28 +1,22 @@
-//! Contains utility functions and traits to convert between slices of `u16` bits and `f16` or
-//! `bf16` numbers.
+//! Contains utility functions and traits to convert between slices of [`u16`] bits and [`f16`] or
+//! [`bf16`] numbers.
 //!
 //! The utility [`HalfBitsSliceExt`] sealed extension trait is implemented for `[u16]` slices,
 //! while the utility [`HalfFloatSliceExt`] sealed extension trait is implemented for both `[f16]`
 //! and `[bf16]` slices. These traits provide efficient conversions and reinterpret casting of
-//! larger buffers of floating point values, and are automatically included in the [`prelude`]
-//! module.
-//!
-//! [`HalfBitsSliceExt`]: trait.HalfBitsSliceExt.html
-//! [`HalfFloatSliceExt`]: trait.HalfFloatSliceExt.html
-//! [`prelude`]: ../prelude/index.html
+//! larger buffers of floating point values, and are automatically included in the
+//! [`prelude`][crate::prelude] module.
 
 use crate::{bf16, binary16::convert, f16};
-use core::slice;
-
-#[cfg(all(feature = "alloc", not(feature = "std")))]
+#[cfg(feature = "alloc")]
 use alloc::vec::Vec;
+use core::slice;
 
 /// Extensions to `[f16]` and `[bf16]` slices to support conversion and reinterpret operations.
 ///
 /// This trait is sealed and cannot be implemented outside of this crate.
 pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
-    /// Reinterpret a slice of [`f16`](../struct.f16.html) or [`bf16`](../struct.bf16.html)
-    /// numbers as a slice of `u16` bits.
+    /// Reinterprets a slice of [`f16`] or [`bf16`] numbers as a slice of [`u16`] bits.
     ///
     /// This is a zero-copy operation. The reinterpreted slice has the same lifetime and memory
     /// location as `self`.
@@ -36,10 +30,11 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     ///
     /// assert_eq!(int_buffer, [float_buffer[0].to_bits(), float_buffer[1].to_bits(), float_buffer[2].to_bits()]);
     /// ```
+    #[must_use]
     fn reinterpret_cast(&self) -> &[u16];
 
-    /// Reinterpret a mutable slice of [`f16`](../struct.f16.html) or
-    /// [`bf16`](../struct.bf16.html) numbers as a mutable slice of `u16` bits.
+    /// Reinterprets a mutable slice of [`f16`] or [`bf16`] numbers as a mutable slice of [`u16`].
+    /// bits
     ///
     /// This is a zero-copy operation. The transmuted slice has the same lifetime as the original,
     /// which prevents mutating `self` as long as the returned `&mut [u16]` is borrowed.
@@ -62,17 +57,17 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     /// // Note that we need to drop int_buffer before using float_buffer again or we will get a borrow error.
     /// assert_eq!(float_buffer, [f16::from_f32(0.), f16::from_f32(2.), f16::from_f32(3.)]);
     /// ```
+    #[must_use]
     fn reinterpret_cast_mut(&mut self) -> &mut [u16];
 
-    /// Convert all of the elements of a `[f32]` slice into [`f16`](../struct.f16.html) or
-    /// [`bf16`](../struct.bf16.html) values in `self`.
+    /// Converts all of the elements of a `[f32]` slice into [`f16`] or [`bf16`] values in `self`.
     ///
     /// The length of `src` must be the same as `self`.
     ///
     /// The conversion operation is vectorized over the slice, meaning the conversion may be more
     /// efficient than converting individual elements on some hardware that supports SIMD
-    /// conversions. See [crate documentation](../index.html) for more information on hardware
-    /// conversion support.
+    /// conversions. See [crate documentation](crate) for more information on hardware conversion
+    /// support.
     ///
     /// # Panics
     ///
@@ -94,15 +89,14 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     /// ```
     fn convert_from_f32_slice(&mut self, src: &[f32]);
 
-    /// Convert all of the elements of a `[f64]` slice into [`f16`](../struct.f16.html) or
-    /// [`bf16`](../struct.bf16.html) values in `self`.
+    /// Converts all of the elements of a `[f64]` slice into [`f16`] or [`bf16`] values in `self`.
     ///
     /// The length of `src` must be the same as `self`.
     ///
     /// The conversion operation is vectorized over the slice, meaning the conversion may be more
     /// efficient than converting individual elements on some hardware that supports SIMD
-    /// conversions. See [crate documentation](../index.html) for more information on hardware
-    /// conversion support.
+    /// conversions. See [crate documentation](crate) for more information on hardware conversion
+    /// support.
     ///
     /// # Panics
     ///
@@ -124,15 +118,14 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     /// ```
     fn convert_from_f64_slice(&mut self, src: &[f64]);
 
-    /// Convert all of the [`f16`](../struct.f16.html) or [`bf16`](../struct.bf16.html)
-    /// elements of `self` into `f32` values in `dst`.
+    /// Converts all of the [`f16`] or [`bf16`] elements of `self` into [`f32`] values in `dst`.
     ///
     /// The length of `src` must be the same as `self`.
     ///
     /// The conversion operation is vectorized over the slice, meaning the conversion may be more
     /// efficient than converting individual elements on some hardware that supports SIMD
-    /// conversions. See [crate documentation](../index.html) for more information on hardware
-    /// conversion support.
+    /// conversions. See [crate documentation](crate) for more information on hardware conversion
+    /// support.
     ///
     /// # Panics
     ///
@@ -153,15 +146,14 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     /// ```
     fn convert_to_f32_slice(&self, dst: &mut [f32]);
 
-    /// Convert all of the [`f16`](../struct.f16.html) or [`bf16`](../struct.bf16.html)
-    /// elements of `self` into `f64` values in `dst`.
+    /// Converts all of the [`f16`] or [`bf16`] elements of `self` into [`f64`] values in `dst`.
     ///
     /// The length of `src` must be the same as `self`.
     ///
     /// The conversion operation is vectorized over the slice, meaning the conversion may be more
     /// efficient than converting individual elements on some hardware that supports SIMD
-    /// conversions. See [crate documentation](../index.html) for more information on hardware
-    /// conversion support.
+    /// conversions. See [crate documentation](crate) for more information on hardware conversion
+    /// support.
     ///
     /// # Panics
     ///
@@ -182,16 +174,15 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     /// ```
     fn convert_to_f64_slice(&self, dst: &mut [f64]);
 
-    // Because trait is sealed, we can get away with different interfaces between features
+    // Because trait is sealed, we can get away with different interfaces between features.
 
-    #[cfg(any(feature = "alloc", feature = "std"))]
-    /// Convert all of the [`f16`](../struct.f16.html) or [`bf16`](../struct.bf16.html)
-    /// elements of `self` into `f32` values in a new vector.
+    /// Converts all of the [`f16`] or [`bf16`] elements of `self` into [`f32`] values in a new
+    /// vector
     ///
     /// The conversion operation is vectorized over the slice, meaning the conversion may be more
     /// efficient than converting individual elements on some hardware that supports SIMD
-    /// conversions. See [crate documentation](../index.html) for more information on hardware
-    /// conversion support.
+    /// conversions. See [crate documentation](crate) for more information on hardware conversion
+    /// support.
     ///
     /// This method is only available with the `std` or `alloc` feature.
     ///
@@ -203,15 +194,18 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     ///
     /// assert_eq!(vec, vec![1., 2., 3., 4.]);
     /// ```
+    #[cfg(any(feature = "alloc", feature = "std"))]
+    #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
+    #[must_use]
     fn to_f32_vec(&self) -> Vec<f32>;
 
-    /// Convert all of the [`f16`](../struct.f16.html) or [`bf16`](../struct.bf16.html)
-    /// elements of `self` into `f64` values in a new vector.
+    /// Converts all of the [`f16`] or [`bf16`] elements of `self` into [`f64`] values in a new
+    /// vector.
     ///
     /// The conversion operation is vectorized over the slice, meaning the conversion may be more
     /// efficient than converting individual elements on some hardware that supports SIMD
-    /// conversions. See [crate documentation](../index.html) for more information on hardware
-    /// conversion support.
+    /// conversions. See [crate documentation](crate) for more information on hardware conversion
+    /// support.
     ///
     /// This method is only available with the `std` or `alloc` feature.
     ///
@@ -223,7 +217,9 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     ///
     /// assert_eq!(vec, vec![1., 2., 3., 4.]);
     /// ```
-    #[cfg(any(feature = "alloc", feature = "std"))]
+    #[cfg(feature = "alloc")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
+    #[must_use]
     fn to_f64_vec(&self) -> Vec<f64>;
 }
 
@@ -231,11 +227,9 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
 ///
 /// This trait is sealed and cannot be implemented outside of this crate.
 pub trait HalfBitsSliceExt: private::SealedHalfBitsSlice {
-    /// Reinterpret a slice of `u16` bits as a slice of [`f16`](../struct.f16.html) or
-    /// [`bf16`](../struct.bf16.html) numbers.
+    /// Reinterprets a slice of [`u16`] bits as a slice of [`f16`] or [`bf16`] numbers.
     ///
-    /// `H` is the type to cast to, and must be either the [`f16`](../struct.f16.html) or
-    /// [`bf16`](../struct.bf16.html) type.
+    /// `H` is the type to cast to, and must be either the [`f16`] or [`bf16`] type.
     ///
     /// This is a zero-copy operation. The reinterpreted slice has the same lifetime and memory
     /// location as `self`.
@@ -253,15 +247,15 @@ pub trait HalfBitsSliceExt: private::SealedHalfBitsSlice {
     /// // The following is also valid in Rust.
     /// let typed_buffer = int_buffer.reinterpret_cast::<f16>();
     /// ```
+    #[must_use]
     fn reinterpret_cast<H>(&self) -> &[H]
     where
         H: crate::private::SealedHalf;
 
-    /// Reinterpret a mutable slice of `u16` bits as a mutable slice of [`f16`](../struct.f16.html)
-    /// or [`bf16`](../struct.bf16.html)  numbers.
+    /// Reinterprets a mutable slice of [`u16`] bits as a mutable slice of [`f16`] or [`bf16`]
+    /// numbers.
     ///
-    /// `H` is the type to cast to, and must be either the [`f16`](../struct.f16.html) or
-    /// [`bf16`](../struct.bf16.html) type.
+    /// `H` is the type to cast to, and must be either the [`f16`] or [`bf16`] type.
     ///
     /// This is a zero-copy operation. The transmuted slice has the same lifetime as the original,
     /// which prevents mutating `self` as long as the returned `&mut [f16]` is borrowed.
@@ -288,6 +282,7 @@ pub trait HalfBitsSliceExt: private::SealedHalfBitsSlice {
     /// // The following is also valid in Rust.
     /// let typed_buffer = int_buffer.reinterpret_cast_mut::<f16>();
     /// ```
+    #[must_use]
     fn reinterpret_cast_mut<H>(&mut self) -> &mut [H]
     where
         H: crate::private::SealedHalf;
@@ -316,7 +311,7 @@ impl HalfFloatSliceExt for [f16] {
 
     #[inline]
     fn reinterpret_cast_mut(&mut self) -> &mut [u16] {
-        let pointer = self.as_ptr() as *mut u16;
+        let pointer = self.as_mut_ptr().cast::<u16>();
         let length = self.len();
         // SAFETY: We are reconstructing full length of original slice, using its same lifetime,
         // and the size of elements are identical
@@ -433,6 +428,7 @@ impl HalfFloatSliceExt for [f16] {
 
     #[cfg(any(feature = "alloc", feature = "std"))]
     #[inline]
+    #[allow(clippy::uninit_vec)]
     fn to_f32_vec(&self) -> Vec<f32> {
         let mut vec = Vec::with_capacity(self.len());
         // SAFETY: convert will initialize every value in the vector without reading them,
@@ -445,6 +441,7 @@ impl HalfFloatSliceExt for [f16] {
 
     #[cfg(any(feature = "alloc", feature = "std"))]
     #[inline]
+    #[allow(clippy::uninit_vec)]
     fn to_f64_vec(&self) -> Vec<f64> {
         let mut vec = Vec::with_capacity(self.len());
         // SAFETY: convert will initialize every value in the vector without reading them,
@@ -468,7 +465,7 @@ impl HalfFloatSliceExt for [bf16] {
 
     #[inline]
     fn reinterpret_cast_mut(&mut self) -> &mut [u16] {
-        let pointer = self.as_ptr() as *mut u16;
+        let pointer = self.as_mut_ptr().cast::<u16>();
         let length = self.len();
         // SAFETY: We are reconstructing full length of original slice, using its same lifetime,
         // and the size of elements are identical
@@ -529,6 +526,7 @@ impl HalfFloatSliceExt for [bf16] {
 
     #[cfg(any(feature = "alloc", feature = "std"))]
     #[inline]
+    #[allow(clippy::uninit_vec)]
     fn to_f32_vec(&self) -> Vec<f32> {
         let mut vec = Vec::with_capacity(self.len());
         // SAFETY: convert will initialize every value in the vector without reading them,
@@ -541,6 +539,7 @@ impl HalfFloatSliceExt for [bf16] {
 
     #[cfg(any(feature = "alloc", feature = "std"))]
     #[inline]
+    #[allow(clippy::uninit_vec)]
     fn to_f64_vec(&self) -> Vec<f64> {
         let mut vec = Vec::with_capacity(self.len());
         // SAFETY: convert will initialize every value in the vector without reading them,
@@ -579,58 +578,7 @@ impl HalfBitsSliceExt for [u16] {
     }
 }
 
-/// Reinterpret a mutable slice of `u16` bits as a mutable slice of [`f16`](../struct.f16.html)
-/// numbers.
-///
-/// The transmuted slice has the same life time as the original, which prevents mutating the borrowed
-/// `mut [u16]` argument as long as the returned `mut [f16]` is borrowed.
-#[deprecated(
-    since = "1.4.0",
-    note = "use [`HalfBitsSliceExt::reinterpret_cast_mut`](trait.HalfBitsSliceExt.html#tymethod.reinterpret_cast_mut) instead"
-)]
-#[inline]
-pub fn from_bits_mut(bits: &mut [u16]) -> &mut [f16] {
-    bits.reinterpret_cast_mut()
-}
-
-/// Reinterpret a mutable slice of [`f16`](../struct.f16.html) numbers as a mutable slice of `u16`
-/// bits.
-///
-///The transmuted slice has the same life time as the original, which prevents mutating the
-/// borrowed `mut [f16]` argument as long as the returned `mut [u16]` is borrowed.
-#[deprecated(
-    since = "1.4.0",
-    note = "use [`HalfFloatSliceExt::reinterpret_cast_mut`](trait.HalfFloatSliceExt.html#tymethod.reinterpret_cast_mut) instead"
-)]
-#[inline]
-pub fn to_bits_mut(bits: &mut [f16]) -> &mut [u16] {
-    bits.reinterpret_cast_mut()
-}
-
-/// Reinterpret a slice of `u16` bits as a slice of [`f16`](../struct.f16.html) numbers.
-///
-/// The transmuted slice has the same life time as the original.
-#[deprecated(
-    since = "1.4.0",
-    note = "use [`HalfBitsSliceExt::reinterpret_cast`](trait.HalfBitsSliceExt.html#tymethod.reinterpret_cast) instead"
-)]
-#[inline]
-pub fn from_bits(bits: &[u16]) -> &[f16] {
-    bits.reinterpret_cast()
-}
-
-/// Reinterpret a slice of [`f16`](../struct.f16.html) numbers as a slice of `u16` bits.
-///
-/// The transmuted slice has the same life time as the original.
-#[deprecated(
-    since = "1.4.0",
-    note = "use [`HalfFloatSliceExt::reinterpret_cast`](trait.HalfFloatSliceExt.html#tymethod.reinterpret_cast) instead"
-)]
-#[inline]
-pub fn to_bits(bits: &[f16]) -> &[u16] {
-    bits.reinterpret_cast()
-}
-
+#[allow(clippy::float_cmp)]
 #[cfg(test)]
 mod test {
     use super::{HalfBitsSliceExt, HalfFloatSliceExt};
@@ -662,7 +610,6 @@ mod test {
 
         {
             // would not compile without these braces
-            // TODO: add automated test to check that it does not compile without braces
             let numbers = bits.reinterpret_cast_mut();
             numbers[0] = f16::E;
         }
@@ -699,7 +646,6 @@ mod test {
 
         {
             // would not compile without these braces
-            // TODO: add automated test to check that it does not compile without braces
             let numbers = bits.reinterpret_cast_mut();
             numbers[0] = bf16::E;
         }

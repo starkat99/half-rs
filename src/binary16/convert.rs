@@ -1,5 +1,7 @@
 #![allow(dead_code, unused_imports)]
 
+use core::mem;
+
 macro_rules! convert_fn {
     (fn $name:ident($var:ident : $vartype:ty) -> $restype:ty {
             if feature("f16c") { $f16c:expr }
@@ -141,9 +143,10 @@ convert_fn! {
 // which can be simplified into
 //     (mantissa & round_bit) != 0 && (mantissa & (3 * round_bit - 1)) != 0
 
-fn f32_to_f16_fallback(value: f32) -> u16 {
+pub(crate) const fn f32_to_f16_fallback(value: f32) -> u16 {
+    // TODO: Replace mem::transmute with to_bits() once to_bits is const-stabilized
     // Convert to raw bytes
-    let x = value.to_bits();
+    let x: u32 = unsafe { mem::transmute(value) };
 
     // Extract IEEE754 components
     let sign = x & 0x8000_0000u32;
@@ -200,10 +203,11 @@ fn f32_to_f16_fallback(value: f32) -> u16 {
     }
 }
 
-fn f64_to_f16_fallback(value: f64) -> u16 {
+pub(crate) const fn f64_to_f16_fallback(value: f64) -> u16 {
     // Convert to raw bytes, truncating the last 32-bits of mantissa; that precision will always
     // be lost on half-precision.
-    let val = value.to_bits();
+    // TODO: Replace mem::transmute with to_bits() once to_bits is const-stabilized
+    let val: u64 = unsafe { mem::transmute(value) };
     let x = (val >> 32) as u32;
 
     // Extract IEEE754 components
@@ -266,10 +270,11 @@ fn f64_to_f16_fallback(value: f64) -> u16 {
     }
 }
 
-fn f16_to_f32_fallback(i: u16) -> f32 {
+pub(crate) const fn f16_to_f32_fallback(i: u16) -> f32 {
     // Check for signed zero
+    // TODO: Replace mem::transmute with from_bits() once from_bits is const-stabilized
     if i & 0x7FFFu16 == 0 {
-        return f32::from_bits((i as u32) << 16);
+        return unsafe { mem::transmute((i as u32) << 16) };
     }
 
     let half_sign = (i & 0x8000u16) as u32;
@@ -280,10 +285,12 @@ fn f16_to_f32_fallback(i: u16) -> f32 {
     if half_exp == 0x7C00u32 {
         // Check for signed infinity if mantissa is zero
         if half_man == 0 {
-            return f32::from_bits((half_sign << 16) | 0x7F80_0000u32);
+            return unsafe { mem::transmute((half_sign << 16) | 0x7F80_0000u32) };
         } else {
             // NaN, keep current mantissa but also set most significiant mantissa bit
-            return f32::from_bits((half_sign << 16) | 0x7FC0_0000u32 | (half_man << 13));
+            return unsafe {
+                mem::transmute((half_sign << 16) | 0x7FC0_0000u32 | (half_man << 13))
+            };
         }
     }
 
@@ -300,19 +307,20 @@ fn f16_to_f32_fallback(i: u16) -> f32 {
         // Rebias and adjust exponent
         let exp = (127 - 15 - e) << 23;
         let man = (half_man << (14 + e)) & 0x7F_FF_FFu32;
-        return f32::from_bits(sign | exp | man);
+        return unsafe { mem::transmute(sign | exp | man) };
     }
 
     // Rebias exponent for a normalized normal
     let exp = ((unbiased_exp + 127) as u32) << 23;
     let man = (half_man & 0x03FFu32) << 13;
-    f32::from_bits(sign | exp | man)
+    unsafe { mem::transmute(sign | exp | man) }
 }
 
-fn f16_to_f64_fallback(i: u16) -> f64 {
+pub(crate) const fn f16_to_f64_fallback(i: u16) -> f64 {
     // Check for signed zero
+    // TODO: Replace mem::transmute with from_bits() once from_bits is const-stabilized
     if i & 0x7FFFu16 == 0 {
-        return f64::from_bits((i as u64) << 48);
+        return unsafe { mem::transmute((i as u64) << 48) };
     }
 
     let half_sign = (i & 0x8000u16) as u64;
@@ -323,10 +331,12 @@ fn f16_to_f64_fallback(i: u16) -> f64 {
     if half_exp == 0x7C00u64 {
         // Check for signed infinity if mantissa is zero
         if half_man == 0 {
-            return f64::from_bits((half_sign << 48) | 0x7FF0_0000_0000_0000u64);
+            return unsafe { mem::transmute((half_sign << 48) | 0x7FF0_0000_0000_0000u64) };
         } else {
             // NaN, keep current mantissa but also set most significiant mantissa bit
-            return f64::from_bits((half_sign << 48) | 0x7FF8_0000_0000_0000u64 | (half_man << 42));
+            return unsafe {
+                mem::transmute((half_sign << 48) | 0x7FF8_0000_0000_0000u64 | (half_man << 42))
+            };
         }
     }
 
@@ -343,13 +353,13 @@ fn f16_to_f64_fallback(i: u16) -> f64 {
         // Rebias and adjust exponent
         let exp = ((1023 - 15 - e) as u64) << 52;
         let man = (half_man << (43 + e)) & 0xF_FFFF_FFFF_FFFFu64;
-        return f64::from_bits(sign | exp | man);
+        return unsafe { mem::transmute(sign | exp | man) };
     }
 
     // Rebias exponent for a normalized normal
     let exp = ((unbiased_exp + 1023) as u64) << 52;
     let man = (half_man & 0x03FFu64) << 42;
-    f64::from_bits(sign | exp | man)
+    unsafe { mem::transmute(sign | exp | man) }
 }
 
 #[inline]

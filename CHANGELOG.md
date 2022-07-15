@@ -5,6 +5,92 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.0.0] - 2022-06-21 <a name="2.0.0"></a>
+### Changed
+- **Breaking Change** Minimum supported Rust version is now 1.58.
+- **Breaking Change** `std` is now enabled as a default cargo feature. Disable default features to
+  continue using `no_std` support.
+- Migrated to Rust Edition 2021.
+- Added `#[must_use]` attributes to functions, as appropriate.
+
+### Fixed
+- Fix a soundness bug with `slice::as_ptr` not correctly using mutable reference. By [@Nilstrieb].
+
+### Added
+- Added `const` conversion methods to both `f16` and `bf16`. These methods never use hardware
+  intrinsics, unlike the current conversion methods, which is why they are separated into new
+  methods. The following `const` methods were added:
+  - `from_f32_const`
+  - `from_f64_const`
+  - `to_f32_const`
+  - `to_f64_const`
+- Added `Neg` trait support for borrowed values `&f16` and `&bf16`. By [@pthariensflame].
+- Added `AsPrimitive` implementations from and to self, `usize`, and `isize`. By [@kali].
+
+### Removed
+- **Breaking Change** The deprecated `serialize` cargo feature has been removed. Use `serde` cargo
+  feature instead.
+- **Breaking Change** The deprecated `consts` module has been removed. Use associated constants on
+  `f16` instead.
+- **Breaking Change** The following deprecated functions have been removed:
+  - `f16::as_bits`
+  - `slice::from_bits_mut`
+  - `slice::to_bits_mut`
+  - `slice::from_bits`
+  - `slice::to_bits`
+  - `vec::from_bits`
+  - `vec::to_bits`
+
+## [1.8.2] - 2021-10-22 <a name="1.8.2"></a>
+### Fixed
+- Remove cargo resolver=2 from manifest to resolve errors in older versions of Rust that still
+  worked with 1.8.0. Going forward, MSRV increases will be major version increases. Fixes [#48].
+
+## [1.8.1] - 2021-10-21 - **Yanked** <a name="1.8.1"></a>
+### ***Yanked***
+*Not recommended due to introducing compilation error in Rust versions that worked with 1.8.0.*
+### Changed
+- Now uses cargo resolver version 2 to prevent dev-dependencies from enabling `std` feature on
+  optional dependencies.
+
+### Fixed
+- Fixed compile failure when `std` feature is not enabled and `num-traits` is enabled under new
+  resolver. Now properly uses `libm` num-traits feature.
+
+## [1.8.0] - 2021-10-13 <a name="1.8.0"></a>
+### Changed
+- Now always implements `Add`, `Div`, `Mul`, `Neg`, `Rem`, and `Sub` traits. 
+  Previously, these were only implemented under the `num-traits` feature. Keep in mind they still
+  convert to `f32` and back in the implementation.
+- Minimum supported Rust version is now 1.51.
+- Made crate package [REUSE compliant](https://reuse.software/).
+- Docs now use intra-doc links instead of manual (and hard to maintain) links.
+- The following methods on both `f16` and `bf16` are now `const`:
+  - `to_le_bytes`
+  - `to_be_bytes`
+  - `to_ne_bytes`
+  - `from_le_bytes`
+  - `from_be_bytes`
+  - `from_ne_bytes`
+  - `is_normal`
+  - `classify`
+  - `signum`
+
+### Added
+- Added optional implementations of `zerocopy` traits `AsBytes` and `FromBytes`
+  under `zerocopy` cargo feature. By [@samcrow].
+- Implemented the `core::iter::Product` and `core::iter::Sum` traits, with the same caveat as above
+  about converting to `f32` and back under the hood.
+- Added new associated const `NEG_ONE` to both `f16` and `bf16`.
+- Added the following new methods on both `f16` and `bf16`:
+  - `copysign`
+  - `max`
+  - `min`
+  - `clamp`
+
+### Fixed
+- Fixed a number of minor lints discovered due to improved CI.
+
 ## [1.7.1] - 2021-01-17 <a name="1.7.1"></a>
 ### Fixed
 - Docs.rs now generates docs for `bytemuck` and `num-traits` optional features.
@@ -163,6 +249,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#23]: https://github.com/starkat99/half-rs/issues/23
 [#24]: https://github.com/starkat99/half-rs/issues/24
 [#37]: https://github.com/starkat99/half-rs/issues/37
+[#48]: https://github.com/starkat99/half-rs/issues/48
 
 [@tspiteri]: https://github.com/tspiteri
 [@PSeitz]: https://github.com/PSeitz
@@ -172,9 +259,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [@zserik]: https://github.com/zserik
 [@bzm3r]: https://github.com/bzm3r
 [@charles-r-earp]: https://github.com/charles-r-earp
+[@samcrow]: https://github.com/samcrow
+[@pthariensflame]: https://github.com/pthariensflame
+[@kali]: https://github.com/kali
+[@Nilstrieb]: https://github.com/Nilstrieb
 
 
-[Unreleased]: https://github.com/starkat99/half-rs/compare/v1.7.1...HEAD
+[Unreleased]: https://github.com/starkat99/half-rs/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/starkat99/half-rs/compare/v1.8.2...v2.0.0
+[1.8.2]: https://github.com/starkat99/half-rs/compare/v1.8.1...v1.8.2
+[1.8.1]: https://github.com/starkat99/half-rs/compare/v1.8.0...v1.8.1
+[1.8.0]: https://github.com/starkat99/half-rs/compare/v1.7.1...v1.8.0
 [1.7.1]: https://github.com/starkat99/half-rs/compare/v1.7.0...v1.7.1
 [1.7.0]: https://github.com/starkat99/half-rs/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/starkat99/half-rs/compare/v1.5.0...v1.6.0
