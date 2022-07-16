@@ -1,3 +1,4 @@
+use crate::leading_zeros::leading_zeros_u16;
 use core::mem;
 
 pub(crate) const fn f32_to_bf16(value: f32) -> u16 {
@@ -129,7 +130,7 @@ pub(crate) const fn bf16_to_f64(i: u16) -> f64 {
     // Check for subnormals, which will be normalized by adjusting exponent
     if half_exp == 0 {
         // Calculate how much to adjust the exponent by
-        let e = (half_man as u16).leading_zeros() - 9;
+        let e = leading_zeros_u16(half_man as u16) - 9;
 
         // Rebias and adjust exponent
         let exp = ((1023 - 127 - e) as u64) << 52;
