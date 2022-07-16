@@ -1,19 +1,37 @@
-
-
 // https://doc.rust-lang.org/std/primitive.u16.html#method.leading_zeros
 
-
-#[cfg(not(any(all(target_arch = "spirv", not(all(target_feature = "IntegerFunctions2INTEL", target_feature = "SPV_INTEL_shader_integer_functions2"))))))]
+#[cfg(not(any(all(
+    target_arch = "spirv",
+    not(all(
+        target_feature = "IntegerFunctions2INTEL",
+        target_feature = "SPV_INTEL_shader_integer_functions2"
+    ))
+))))]
 pub(crate) const fn leading_zeros_u16(x: u16) -> u32 {
     x.leading_zeros()
 }
 
-#[cfg(all(target_arch = "spirv", not(all(target_feature = "IntegerFunctions2INTEL", target_feature = "SPV_INTEL_shader_integer_functions2"))))]
+#[cfg(all(
+    target_arch = "spirv",
+    not(all(
+        target_feature = "IntegerFunctions2INTEL",
+        target_feature = "SPV_INTEL_shader_integer_functions2"
+    ))
+))]
 pub(crate) const fn leading_zeros_u16(x: u16) -> u32 {
     leading_zeros_u16_fallback(x)
 }
 
-#[cfg(any(test, all(target_arch = "spirv", not(all(target_feature = "IntegerFunctions2INTEL", target_feature = "SPV_INTEL_shader_integer_functions2")))))]
+#[cfg(any(
+    test,
+    all(
+        target_arch = "spirv",
+        not(all(
+            target_feature = "IntegerFunctions2INTEL",
+            target_feature = "SPV_INTEL_shader_integer_functions2"
+        ))
+    )
+))]
 const fn leading_zeros_u16_fallback(mut x: u16) -> u32 {
     use crunchy::unroll;
     let mut c = 0;
