@@ -575,6 +575,82 @@ impl f16 {
         x
     }
 
+    /// Returns the ordering between `self` and `other`.
+    ///
+    /// Unlike the standard partial comparison between floating point numbers,
+    /// this comparison always produces an ordering in accordance to
+    /// the `totalOrder` predicate as defined in the IEEE 754 (2008 revision)
+    /// floating point standard. The values are ordered in the following sequence:
+    ///
+    /// - negative quiet NaN
+    /// - negative signaling NaN
+    /// - negative infinity
+    /// - negative numbers
+    /// - negative subnormal numbers
+    /// - negative zero
+    /// - positive zero
+    /// - positive subnormal numbers
+    /// - positive numbers
+    /// - positive infinity
+    /// - positive signaling NaN
+    /// - positive quiet NaN.
+    ///
+    /// The ordering established by this function does not always agree with the
+    /// [`PartialOrd`] and [`PartialEq`] implementations of `f16`. For example,
+    /// they consider negative and positive zero equal, while `total_cmp`
+    /// doesn't.
+    ///
+    /// The interpretation of the signaling NaN bit follows the definition in
+    /// the IEEE 754 standard, which may not match the interpretation by some of
+    /// the older, non-conformant (e.g. MIPS) hardware implementations.
+    ///
+    /// # Examples
+    /// ```
+    /// # use half::f16;
+    /// let mut v: Vec<f16> = vec![];
+    /// v.push(f16::ONE);
+    /// v.push(f16::INFINITY);
+    /// v.push(f16::NEG_INFINITY);
+    /// v.push(f16::NAN);
+    /// v.push(f16::MAX_SUBNORMAL);
+    /// v.push(-f16::MAX_SUBNORMAL);
+    /// v.push(f16::ZERO);
+    /// v.push(f16::NEG_ZERO);
+    /// v.push(f16::NEG_ONE);
+    /// v.push(f16::MIN_POSITIVE);
+    ///
+    /// v.sort_by(|a, b| a.total_cmp(&b));
+    ///
+    /// assert!(v
+    ///     .into_iter()
+    ///     .zip(
+    ///         [
+    ///             f16::NEG_INFINITY,
+    ///             f16::NEG_ONE,
+    ///             -f16::MAX_SUBNORMAL,
+    ///             f16::NEG_ZERO,
+    ///             f16::ZERO,
+    ///             f16::MAX_SUBNORMAL,
+    ///             f16::MIN_POSITIVE,
+    ///             f16::ONE,
+    ///             f16::INFINITY,
+    ///             f16::NAN
+    ///         ]
+    ///         .iter()
+    ///     )
+    ///     .all(|(a, b)| a.to_bits() == b.to_bits()));
+    /// ```
+    // Implementation based on: https://doc.rust-lang.org/std/primitive.f32.html#method.total_cmp
+    #[inline]
+    #[must_use]
+    pub fn total_cmp(&self, other: &Self) -> Ordering {
+        let mut left = self.to_bits() as i16;
+        let mut right = other.to_bits() as i16;
+        left ^= (((left >> 15) as u16) >> 1) as i16;
+        right ^= (((right >> 15) as u16) >> 1) as i16;
+        left.cmp(&right)
+    }
+
     /// Approximate number of [`f16`] significant digits in base 10
     pub const DIGITS: u32 = 3;
     /// [`f16`]
