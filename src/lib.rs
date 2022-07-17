@@ -150,10 +150,10 @@
 #![warn(
     missing_docs,
     missing_copy_implementations,
-    missing_debug_implementations,
     trivial_numeric_casts,
     future_incompatible
 )]
+#![cfg_attr(not(target_arch = "spirv"), warn(missing_debug_implementations))]
 #![allow(clippy::verbose_bit_mask, clippy::cast_lossless)]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(
@@ -172,9 +172,11 @@ extern crate alloc;
 
 mod bfloat;
 mod binary16;
+mod leading_zeros;
 #[cfg(feature = "num-traits")]
 mod num_traits;
 
+#[cfg(not(target_arch = "spirv"))]
 pub mod slice;
 #[cfg(feature = "alloc")]
 #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
@@ -192,10 +194,11 @@ pub use binary16::f16;
 /// ```
 pub mod prelude {
     #[doc(no_inline)]
-    pub use crate::{
-        bf16, f16,
-        slice::{HalfBitsSliceExt, HalfFloatSliceExt},
-    };
+    pub use crate::{bf16, f16};
+
+    #[cfg(not(target_arch = "spirv"))]
+    #[doc(no_inline)]
+    pub use crate::slice::{HalfBitsSliceExt, HalfFloatSliceExt};
 
     #[cfg(feature = "alloc")]
     #[doc(no_inline)]
