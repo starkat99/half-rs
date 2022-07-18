@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Add support for target_arch `spirv`. Some traits and functions are unavailble on this
   architecture. By [@charles-r-earp].
+- Add `total_cmp` method to both float types. Closes [#55], by [@joseluis].
 
 ## [2.0.0] - 2022-06-21 <a name="2.0.0"></a>
 ### Changed
@@ -253,6 +254,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#24]: https://github.com/starkat99/half-rs/issues/24
 [#37]: https://github.com/starkat99/half-rs/issues/37
 [#48]: https://github.com/starkat99/half-rs/issues/48
+[#55]: https://github.com/starkat99/half-rs/issues/55
 
 [@tspiteri]: https://github.com/tspiteri
 [@PSeitz]: https://github.com/PSeitz
@@ -266,6 +268,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [@pthariensflame]: https://github.com/pthariensflame
 [@kali]: https://github.com/kali
 [@Nilstrieb]: https://github.com/Nilstrieb
+[@joseluis]: https://github.com/joseluis
 
 
 [Unreleased]: https://github.com/starkat99/half-rs/compare/v2.0.0...HEAD
