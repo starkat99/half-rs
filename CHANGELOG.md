@@ -4,6 +4,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.1.0] - 2022-07-18 <a name="2.1.0"></a>
 ### Added
 - Add support for target_arch `spirv`. Some traits and functions are unavailble on this
   architecture. By [@charles-r-earp].
@@ -271,7 +273,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [@joseluis]: https://github.com/joseluis
 
 
-[Unreleased]: https://github.com/starkat99/half-rs/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/starkat99/half-rs/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/starkat99/half-rs/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/starkat99/half-rs/compare/v1.8.2...v2.0.0
 [1.8.2]: https://github.com/starkat99/half-rs/compare/v1.8.1...v1.8.2
 [1.8.1]: https://github.com/starkat99/half-rs/compare/v1.8.0...v1.8.1
