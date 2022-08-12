@@ -2,7 +2,7 @@ use crate::{bf16, f16};
 use core::cmp::Ordering;
 use core::{num::FpCategory, ops::Div};
 use num_traits::{
-    AsPrimitive, Bounded, FloatConst, FromPrimitive, Num, NumCast, One, ToPrimitive, Zero,
+    AsPrimitive, Bounded, FloatConst, FromPrimitive, Num, NumCast, One, ToPrimitive, Zero, Coerced
 };
 
 impl ToPrimitive for f16 {
@@ -1481,3 +1481,64 @@ impl_as_primitive_bf16_from!(isize, from_f32);
 impl_as_primitive_bf16_from!(usize, from_f32);
 impl_as_primitive_bf16_from!(f32, from_f32);
 impl_as_primitive_bf16_from!(f64, from_f64);
+
+macro_rules! macro_impl_coerce {
+    ($($ty:ty)*) => {
+        $(
+            impl Coerced<f16> for $ty where Self: Coerced<f32> {
+                fn coerce_into(self) -> f16 {
+                    f16::from_f32(self.coerce_into())
+                }
+                fn coerce_from(other: f16) -> Self {
+                    <$ty>::coerce_from(other.to_f32())
+                }
+            }
+
+            impl Coerced<bf16> for $ty where Self: Coerced<f32> {
+                fn coerce_into(self) -> bf16 {
+                    bf16::from_f32(self.coerce_into())
+                }
+                fn coerce_from(other: bf16) -> Self {
+                    <$ty>::coerce_from(other.to_f32())
+                }
+            }
+        )*
+    }
+}
+
+macro_rules! macro_impl_coerce_half {
+    ($($ty:ty)*) => {
+        $(
+impl Coerced<$ty> for $ty {
+    fn coerce_into(self) -> $ty {
+        self
+    }
+    fn coerce_from(other: $ty) -> Self {
+        other
+    }
+}
+
+impl Coerced<f32> for $ty {
+    fn coerce_into(self) -> f32 {
+        self.to_f32()
+    }
+    fn coerce_from(other: f32) -> Self {
+        <$ty>::from_f32(other)
+    }
+}
+
+impl Coerced<f64> for $ty {
+    fn coerce_into(self) -> f64 {
+        self.to_f64()
+    }
+    fn coerce_from(other: f64) -> Self {
+        <$ty>::from_f64(other)
+    }
+}
+)*
+}
+}
+
+macro_impl_coerce_half!(f16 bf16);
+
+macro_impl_coerce!(f32 f64 i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 usize);
