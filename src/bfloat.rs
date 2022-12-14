@@ -1296,9 +1296,9 @@ impl<'de> serde::de::Visitor<'de> for Visitor {
     where
         E: serde::de::Error,
     {
-        Ok(v.parse().map_err(|_| {
+        v.parse().map_err(|_| {
             serde::de::Error::invalid_value(serde::de::Unexpected::Str(v), &"a float string")
-        })?)
+        })
     }
 
     fn visit_f32<E>(self, v: f32) -> Result<Self::Value, E>
