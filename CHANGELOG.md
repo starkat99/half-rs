@@ -4,6 +4,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Add `serialize_as_f32` and `serialize_as_string` functions when `serde` cargo feature is enabled.
+  They allowing customizing the serialization by using 
+  `#[serde(serialize_with="f16::serialize_as_f32")]` attribute in serde derive macros.
+- Deserialize now supports deserializing from `f32`, `f64`, and string values in addition to its
+  previous default deserialization.
 
 ## [2.1.0] - 2022-07-18 <a name="2.1.0"></a>
 ### Added

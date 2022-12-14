@@ -27,6 +27,22 @@
 //!
 //! A [`prelude`] module is provided for easy importing of available utility traits.
 //!
+//! # Serialization
+//!
+//! When the `serde` feature is enabled, [`f16`] and [`bf16`] will be serialized as a newtype of
+//! [`u16`] by default. In binary formats this is ideal, as it will generally use just two bytes for
+//! storage. For string formats like JSON, however, this isn't as useful, and due to design
+//! limitations of serde, it's not possible for the default `Serialize` implementation to support
+//! different serialization for different formats.
+//!
+//! Instead, it's up to the containter type of the floats to control how it is serialized. This can
+//! easily be controlled when using the derive macros using `#[serde(serialize_with="")]`
+//! attributes. For both [`f16`] and [`bf16`] a `serialize_as_f32` and `serialize_as_string` are
+//! provided for use with this attribute.
+//!
+//! Deserialization of both float types supports deserializing from the default serialization,
+//! strings, and `f32`/`f64` values, so no additional work is required.
+//!
 //! # Cargo Features
 //!
 //! This crate supports a number of optional cargo features. None of these features are enabled by
