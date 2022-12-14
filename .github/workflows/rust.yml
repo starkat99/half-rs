@@ -34,7 +34,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Install Rust toolchain
       uses: actions-rs/toolchain@v1
@@ -45,7 +45,7 @@ jobs:
         components: clippy,rustfmt
 
     - name: Cache Dependencies
-      uses: Swatinem/rust-cache@v1
+      uses: Swatinem/rust-cache@v2
 
     - name: Install Cargo Make
       uses: davidB/rust-cargo-make@v1
