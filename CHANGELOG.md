@@ -7,9 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Add `serialize_as_f32` and `serialize_as_string` functions when `serde` cargo feature is enabled.
   They allowing customizing the serialization by using 
-  `#[serde(serialize_with="f16::serialize_as_f32")]` attribute in serde derive macros.
+  `#[serde(serialize_with="f16::serialize_as_f32")]` attribute in serde derive macros. Closes [#60].
 - Deserialize now supports deserializing from `f32`, `f64`, and string values in addition to its
-  previous default deserialization.
+  previous default deserialization. Closes [#60].
 
 ## [2.1.0] - 2022-07-18 <a name="2.1.0"></a>
 ### Added
@@ -263,6 +263,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#37]: https://github.com/starkat99/half-rs/issues/37
 [#48]: https://github.com/starkat99/half-rs/issues/48
 [#55]: https://github.com/starkat99/half-rs/issues/55
+[#60]: https://github.com/starkat99/half-rs/issues/60
 
 [@tspiteri]: https://github.com/tspiteri
 [@PSeitz]: https://github.com/PSeitz
