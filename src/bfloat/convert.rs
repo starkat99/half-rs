@@ -1,6 +1,7 @@
 use crate::leading_zeros::leading_zeros_u16;
 use core::mem;
 
+#[inline]
 pub(crate) const fn f32_to_bf16(value: f32) -> u16 {
     // TODO: Replace mem::transmute with to_bits() once to_bits is const-stabilized
     // Convert to raw bytes
@@ -21,6 +22,7 @@ pub(crate) const fn f32_to_bf16(value: f32) -> u16 {
     }
 }
 
+#[inline]
 pub(crate) const fn f64_to_bf16(value: f64) -> u16 {
     // TODO: Replace mem::transmute with to_bits() once to_bits is const-stabilized
     // Convert to raw bytes, truncating the last 32-bits of mantissa; that precision will always
@@ -88,6 +90,7 @@ pub(crate) const fn f64_to_bf16(value: f64) -> u16 {
     }
 }
 
+#[inline]
 pub(crate) const fn bf16_to_f32(i: u16) -> f32 {
     // TODO: Replace mem::transmute with from_bits() once from_bits is const-stabilized
     // If NaN, keep current mantissa but also set most significiant mantissa bit
@@ -98,6 +101,7 @@ pub(crate) const fn bf16_to_f32(i: u16) -> f32 {
     }
 }
 
+#[inline]
 pub(crate) const fn bf16_to_f64(i: u16) -> f64 {
     // TODO: Replace mem::transmute with from_bits() once from_bits is const-stabilized
     // Check for signed zero
