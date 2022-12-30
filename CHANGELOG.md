@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Deserialize now supports deserializing from `f32`, `f64`, and string values in addition to its
   previous default deserialization. Closes [#60].
 
+### Fixed
+- Add `#[inline]` on fallback functions, which improved conversion execution on non-nightly rust 
+  by up to 50%. By [@Shnatsel].
+
 ## [2.1.0] - 2022-07-18 <a name="2.1.0"></a>
 ### Added
 - Add support for target_arch `spirv`. Some traits and functions are unavailble on this
@@ -278,6 +282,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [@kali]: https://github.com/kali
 [@Nilstrieb]: https://github.com/Nilstrieb
 [@joseluis]: https://github.com/joseluis
+[@Shnatsel]: https://github.com/Shnatsel
 
 
 [Unreleased]: https://github.com/starkat99/half-rs/compare/v2.1.0...HEAD
