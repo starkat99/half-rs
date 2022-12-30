@@ -143,6 +143,7 @@ convert_fn! {
 // which can be simplified into
 //     (mantissa & round_bit) != 0 && (mantissa & (3 * round_bit - 1)) != 0
 
+#[inline]
 pub(crate) const fn f32_to_f16_fallback(value: f32) -> u16 {
     // TODO: Replace mem::transmute with to_bits() once to_bits is const-stabilized
     // Convert to raw bytes
@@ -203,6 +204,7 @@ pub(crate) const fn f32_to_f16_fallback(value: f32) -> u16 {
     }
 }
 
+#[inline]
 pub(crate) const fn f64_to_f16_fallback(value: f64) -> u16 {
     // Convert to raw bytes, truncating the last 32-bits of mantissa; that precision will always
     // be lost on half-precision.
@@ -270,6 +272,7 @@ pub(crate) const fn f64_to_f16_fallback(value: f64) -> u16 {
     }
 }
 
+#[inline]
 pub(crate) const fn f16_to_f32_fallback(i: u16) -> f32 {
     // Check for signed zero
     // TODO: Replace mem::transmute with from_bits() once from_bits is const-stabilized
@@ -316,6 +319,7 @@ pub(crate) const fn f16_to_f32_fallback(i: u16) -> f32 {
     unsafe { mem::transmute(sign | exp | man) }
 }
 
+#[inline]
 pub(crate) const fn f16_to_f64_fallback(i: u16) -> f64 {
     // Check for signed zero
     // TODO: Replace mem::transmute with from_bits() once from_bits is const-stabilized
