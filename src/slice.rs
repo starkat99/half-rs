@@ -328,6 +328,7 @@ impl HalfFloatSliceExt for [f16] {
         let mut chunks = src.chunks_exact(4);
         let mut chunk_count = 0usize; // Not using .enumerate() because we need this value for remainder
         for chunk in &mut chunks {
+            let chunk: &[f32; 4] = chunk.try_into().unwrap();
             let vec = convert::f32x4_to_f16x4(chunk);
             let dst_idx = chunk_count * 4;
             self[dst_idx..dst_idx + 4].copy_from_slice(vec.reinterpret_cast());
@@ -355,6 +356,7 @@ impl HalfFloatSliceExt for [f16] {
         let mut chunks = src.chunks_exact(4);
         let mut chunk_count = 0usize; // Not using .enumerate() because we need this value for remainder
         for chunk in &mut chunks {
+            let chunk: &[f64; 4] = chunk.try_into().unwrap();
             let vec = convert::f64x4_to_f16x4(chunk);
             let dst_idx = chunk_count * 4;
             self[dst_idx..dst_idx + 4].copy_from_slice(vec.reinterpret_cast());
@@ -382,7 +384,9 @@ impl HalfFloatSliceExt for [f16] {
         let mut chunks = self.chunks_exact(4);
         let mut chunk_count = 0usize; // Not using .enumerate() because we need this value for remainder
         for chunk in &mut chunks {
-            let vec = convert::f16x4_to_f32x4(chunk.reinterpret_cast());
+            let chunk = chunk.reinterpret_cast();
+            let chunk: &[u16; 4] = chunk.try_into().unwrap();
+            let vec = convert::f16x4_to_f32x4(chunk);
             let dst_idx = chunk_count * 4;
             dst[dst_idx..dst_idx + 4].copy_from_slice(&vec);
             chunk_count += 1;
@@ -409,7 +413,9 @@ impl HalfFloatSliceExt for [f16] {
         let mut chunks = self.chunks_exact(4);
         let mut chunk_count = 0usize; // Not using .enumerate() because we need this value for remainder
         for chunk in &mut chunks {
-            let vec = convert::f16x4_to_f64x4(chunk.reinterpret_cast());
+            let chunk = chunk.reinterpret_cast();
+            let chunk: &[u16; 4] = chunk.try_into().unwrap();
+            let vec = convert::f16x4_to_f64x4(chunk);
             let dst_idx = chunk_count * 4;
             dst[dst_idx..dst_idx + 4].copy_from_slice(&vec);
             chunk_count += 1;
