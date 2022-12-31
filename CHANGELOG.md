@@ -4,6 +4,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.2.0] - 2022-12-30 <a name="2.2.0"></a>
 ### Added
 - Add `serialize_as_f32` and `serialize_as_string` functions when `serde` cargo feature is enabled.
   They allowing customizing the serialization by using 
@@ -285,7 +287,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [@Shnatsel]: https://github.com/Shnatsel
 
 
-[Unreleased]: https://github.com/starkat99/half-rs/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/starkat99/half-rs/compare/v2.2.0...HEAD
+[2.2.0]: https://github.com/starkat99/half-rs/compare/v2.0.0...v2.2.0
 [2.1.0]: https://github.com/starkat99/half-rs/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/starkat99/half-rs/compare/v1.8.2...v2.0.0
 [1.8.2]: https://github.com/starkat99/half-rs/compare/v1.8.1...v1.8.2
