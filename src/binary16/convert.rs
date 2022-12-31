@@ -88,7 +88,7 @@ convert_fn! {
 // detection once at beginning of convert slice method, rather than per chunk
 
 convert_fn! {
-    fn f32x4_to_f16x4(f: &[f32]) -> [u16; 4] {
+    fn f32x4_to_f16x4(f: &[f32; 4]) -> [u16; 4] {
         if feature("f16c") {
             unsafe { x86::f32x4_to_f16x4_x86_f16c(f) }
         } else {
@@ -98,7 +98,7 @@ convert_fn! {
 }
 
 convert_fn! {
-    fn f16x4_to_f32x4(i: &[u16]) -> [f32; 4] {
+    fn f16x4_to_f32x4(i: &[u16; 4]) -> [f32; 4] {
         if feature("f16c") {
             unsafe { x86::f16x4_to_f32x4_x86_f16c(i) }
         } else {
@@ -108,7 +108,7 @@ convert_fn! {
 }
 
 convert_fn! {
-    fn f64x4_to_f16x4(f: &[f64]) -> [u16; 4] {
+    fn f64x4_to_f16x4(f: &[f64; 4]) -> [u16; 4] {
         if feature("f16c") {
             unsafe { x86::f64x4_to_f16x4_x86_f16c(f) }
         } else {
@@ -118,7 +118,7 @@ convert_fn! {
 }
 
 convert_fn! {
-    fn f16x4_to_f64x4(i: &[u16]) -> [f64; 4] {
+    fn f16x4_to_f64x4(i: &[u16; 4]) -> [f64; 4] {
         if feature("f16c") {
             unsafe { x86::f16x4_to_f64x4_x86_f16c(i) }
         } else {
@@ -367,9 +367,7 @@ pub(crate) const fn f16_to_f64_fallback(i: u16) -> f64 {
 }
 
 #[inline]
-fn f16x4_to_f32x4_fallback(v: &[u16]) -> [f32; 4] {
-    debug_assert!(v.len() >= 4);
-
+fn f16x4_to_f32x4_fallback(v: &[u16; 4]) -> [f32; 4] {
     [
         f16_to_f32_fallback(v[0]),
         f16_to_f32_fallback(v[1]),
@@ -379,9 +377,7 @@ fn f16x4_to_f32x4_fallback(v: &[u16]) -> [f32; 4] {
 }
 
 #[inline]
-fn f32x4_to_f16x4_fallback(v: &[f32]) -> [u16; 4] {
-    debug_assert!(v.len() >= 4);
-
+fn f32x4_to_f16x4_fallback(v: &[f32; 4]) -> [u16; 4] {
     [
         f32_to_f16_fallback(v[0]),
         f32_to_f16_fallback(v[1]),
@@ -391,9 +387,7 @@ fn f32x4_to_f16x4_fallback(v: &[f32]) -> [u16; 4] {
 }
 
 #[inline]
-fn f16x4_to_f64x4_fallback(v: &[u16]) -> [f64; 4] {
-    debug_assert!(v.len() >= 4);
-
+fn f16x4_to_f64x4_fallback(v: &[u16; 4]) -> [f64; 4] {
     [
         f16_to_f64_fallback(v[0]),
         f16_to_f64_fallback(v[1]),
@@ -403,9 +397,7 @@ fn f16x4_to_f64x4_fallback(v: &[u16]) -> [f64; 4] {
 }
 
 #[inline]
-fn f64x4_to_f16x4_fallback(v: &[f64]) -> [u16; 4] {
-    debug_assert!(v.len() >= 4);
-
+fn f64x4_to_f16x4_fallback(v: &[f64; 4]) -> [u16; 4] {
     [
         f64_to_f16_fallback(v[0]),
         f64_to_f16_fallback(v[1]),
@@ -449,9 +441,7 @@ mod x86 {
 
     #[target_feature(enable = "f16c")]
     #[inline]
-    pub(super) unsafe fn f16x4_to_f32x4_x86_f16c(v: &[u16]) -> [f32; 4] {
-        debug_assert!(v.len() >= 4);
-
+    pub(super) unsafe fn f16x4_to_f32x4_x86_f16c(v: &[u16; 4]) -> [f32; 4] {
         let mut vec = MaybeUninit::<__m128i>::zeroed();
         ptr::copy_nonoverlapping(v.as_ptr(), vec.as_mut_ptr().cast(), 4);
         let retval = _mm_cvtph_ps(vec.assume_init());
@@ -460,9 +450,7 @@ mod x86 {
 
     #[target_feature(enable = "f16c")]
     #[inline]
-    pub(super) unsafe fn f32x4_to_f16x4_x86_f16c(v: &[f32]) -> [u16; 4] {
-        debug_assert!(v.len() >= 4);
-
+    pub(super) unsafe fn f32x4_to_f16x4_x86_f16c(v: &[f32; 4]) -> [u16; 4] {
         let mut vec = MaybeUninit::<__m128>::uninit();
         ptr::copy_nonoverlapping(v.as_ptr(), vec.as_mut_ptr().cast(), 4);
         let retval = _mm_cvtps_ph(vec.assume_init(), _MM_FROUND_TO_NEAREST_INT);
@@ -471,9 +459,7 @@ mod x86 {
 
     #[target_feature(enable = "f16c")]
     #[inline]
-    pub(super) unsafe fn f16x4_to_f64x4_x86_f16c(v: &[u16]) -> [f64; 4] {
-        debug_assert!(v.len() >= 4);
-
+    pub(super) unsafe fn f16x4_to_f64x4_x86_f16c(v: &[u16; 4]) -> [f64; 4] {
         let mut vec = MaybeUninit::<__m128i>::zeroed();
         ptr::copy_nonoverlapping(v.as_ptr(), vec.as_mut_ptr().cast(), 4);
         let retval = _mm_cvtph_ps(vec.assume_init());
@@ -490,9 +476,7 @@ mod x86 {
 
     #[target_feature(enable = "f16c")]
     #[inline]
-    pub(super) unsafe fn f64x4_to_f16x4_x86_f16c(v: &[f64]) -> [u16; 4] {
-        debug_assert!(v.len() >= 4);
-
+    pub(super) unsafe fn f64x4_to_f16x4_x86_f16c(v: &[f64; 4]) -> [u16; 4] {
         // Let compiler vectorize this regular cast for now.
         // TODO: investigate auto-detecting sse2/avx convert features
         let v = [v[0] as f32, v[1] as f32, v[2] as f32, v[3] as f32];
