@@ -368,7 +368,7 @@ pub(crate) const fn f16_to_f64_fallback(i: u16) -> f64 {
 
 #[inline]
 fn f16x4_to_f32x4_fallback(v: &[u16]) -> [f32; 4] {
-    debug_assert!(v.len() >= 4);
+    assert!(v.len() >= 4); // removes bounds checks below
 
     [
         f16_to_f32_fallback(v[0]),
@@ -380,7 +380,7 @@ fn f16x4_to_f32x4_fallback(v: &[u16]) -> [f32; 4] {
 
 #[inline]
 fn f32x4_to_f16x4_fallback(v: &[f32]) -> [u16; 4] {
-    debug_assert!(v.len() >= 4);
+    assert!(v.len() >= 4); // removes bounds checks below
 
     [
         f32_to_f16_fallback(v[0]),
@@ -392,7 +392,7 @@ fn f32x4_to_f16x4_fallback(v: &[f32]) -> [u16; 4] {
 
 #[inline]
 fn f16x4_to_f64x4_fallback(v: &[u16]) -> [f64; 4] {
-    debug_assert!(v.len() >= 4);
+    assert!(v.len() >= 4); // removes bounds checks below
 
     [
         f16_to_f64_fallback(v[0]),
@@ -404,7 +404,7 @@ fn f16x4_to_f64x4_fallback(v: &[u16]) -> [f64; 4] {
 
 #[inline]
 fn f64x4_to_f16x4_fallback(v: &[f64]) -> [u16; 4] {
-    debug_assert!(v.len() >= 4);
+    assert!(v.len() >= 4); // removes bounds checks below
 
     [
         f64_to_f16_fallback(v[0]),
