@@ -325,25 +325,7 @@ impl HalfFloatSliceExt for [f16] {
             "destination and source slices have different lengths"
         );
 
-        let mut chunks = src.chunks_exact(4);
-        let mut chunk_count = 0usize; // Not using .enumerate() because we need this value for remainder
-        for chunk in &mut chunks {
-            let chunk: &[f32; 4] = chunk.try_into().unwrap();
-            let vec = convert::f32x4_to_f16x4(chunk);
-            let dst_idx = chunk_count * 4;
-            self[dst_idx..dst_idx + 4].copy_from_slice(vec.reinterpret_cast());
-            chunk_count += 1;
-        }
-
-        // Process remainder
-        if !chunks.remainder().is_empty() {
-            let mut buf = [0f32; 4];
-            buf[..chunks.remainder().len()].copy_from_slice(chunks.remainder());
-            let vec = convert::f32x4_to_f16x4(&buf);
-            let dst_idx = chunk_count * 4;
-            self[dst_idx..dst_idx + chunks.remainder().len()]
-                .copy_from_slice(vec[..chunks.remainder().len()].reinterpret_cast());
-        }
+        convert::f32_to_f16_slice(src, self.reinterpret_cast_mut())
     }
 
     fn convert_from_f64_slice(&mut self, src: &[f64]) {
@@ -353,25 +335,7 @@ impl HalfFloatSliceExt for [f16] {
             "destination and source slices have different lengths"
         );
 
-        let mut chunks = src.chunks_exact(4);
-        let mut chunk_count = 0usize; // Not using .enumerate() because we need this value for remainder
-        for chunk in &mut chunks {
-            let chunk: &[f64; 4] = chunk.try_into().unwrap();
-            let vec = convert::f64x4_to_f16x4(chunk);
-            let dst_idx = chunk_count * 4;
-            self[dst_idx..dst_idx + 4].copy_from_slice(vec.reinterpret_cast());
-            chunk_count += 1;
-        }
-
-        // Process remainder
-        if !chunks.remainder().is_empty() {
-            let mut buf = [0f64; 4];
-            buf[..chunks.remainder().len()].copy_from_slice(chunks.remainder());
-            let vec = convert::f64x4_to_f16x4(&buf);
-            let dst_idx = chunk_count * 4;
-            self[dst_idx..dst_idx + chunks.remainder().len()]
-                .copy_from_slice(vec[..chunks.remainder().len()].reinterpret_cast());
-        }
+        convert::f64_to_f16_slice(src, self.reinterpret_cast_mut())
     }
 
     fn convert_to_f32_slice(&self, dst: &mut [f32]) {
@@ -381,26 +345,7 @@ impl HalfFloatSliceExt for [f16] {
             "destination and source slices have different lengths"
         );
 
-        let mut chunks = self.chunks_exact(4);
-        let mut chunk_count = 0usize; // Not using .enumerate() because we need this value for remainder
-        for chunk in &mut chunks {
-            let chunk = chunk.reinterpret_cast();
-            let chunk: &[u16; 4] = chunk.try_into().unwrap();
-            let vec = convert::f16x4_to_f32x4(chunk);
-            let dst_idx = chunk_count * 4;
-            dst[dst_idx..dst_idx + 4].copy_from_slice(&vec);
-            chunk_count += 1;
-        }
-
-        // Process remainder
-        if !chunks.remainder().is_empty() {
-            let mut buf = [0u16; 4];
-            buf[..chunks.remainder().len()].copy_from_slice(chunks.remainder().reinterpret_cast());
-            let vec = convert::f16x4_to_f32x4(&buf);
-            let dst_idx = chunk_count * 4;
-            dst[dst_idx..dst_idx + chunks.remainder().len()]
-                .copy_from_slice(&vec[..chunks.remainder().len()]);
-        }
+        convert::f16_to_f32_slice(self.reinterpret_cast(), dst)
     }
 
     fn convert_to_f64_slice(&self, dst: &mut [f64]) {
@@ -410,26 +355,7 @@ impl HalfFloatSliceExt for [f16] {
             "destination and source slices have different lengths"
         );
 
-        let mut chunks = self.chunks_exact(4);
-        let mut chunk_count = 0usize; // Not using .enumerate() because we need this value for remainder
-        for chunk in &mut chunks {
-            let chunk = chunk.reinterpret_cast();
-            let chunk: &[u16; 4] = chunk.try_into().unwrap();
-            let vec = convert::f16x4_to_f64x4(chunk);
-            let dst_idx = chunk_count * 4;
-            dst[dst_idx..dst_idx + 4].copy_from_slice(&vec);
-            chunk_count += 1;
-        }
-
-        // Process remainder
-        if !chunks.remainder().is_empty() {
-            let mut buf = [0u16; 4];
-            buf[..chunks.remainder().len()].copy_from_slice(chunks.remainder().reinterpret_cast());
-            let vec = convert::f16x4_to_f64x4(&buf);
-            let dst_idx = chunk_count * 4;
-            dst[dst_idx..dst_idx + chunks.remainder().len()]
-                .copy_from_slice(&vec[..chunks.remainder().len()]);
-        }
+        convert::f16_to_f64_slice(self.reinterpret_cast(), dst)
     }
 
     #[cfg(any(feature = "alloc", feature = "std"))]

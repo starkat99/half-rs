@@ -4,6 +4,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- Reduced unnecessary bounds checks for SIMD operations on slices. By [@Shnatsel].
+- Further slice conversion optimizations for slices. Fixes [#66].
 
 ## [2.2.0] - 2022-12-30 <a name="2.2.0"></a>
 ### Added
@@ -270,6 +273,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#48]: https://github.com/starkat99/half-rs/issues/48
 [#55]: https://github.com/starkat99/half-rs/issues/55
 [#60]: https://github.com/starkat99/half-rs/issues/60
+[#66]: https://github.com/starkat99/half-rs/issues/66
 
 [@tspiteri]: https://github.com/tspiteri
 [@PSeitz]: https://github.com/PSeitz
