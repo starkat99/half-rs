@@ -33,7 +33,7 @@ zerocopy = { version = "0.6.0", default-features = false, optional = true }
 crunchy = "0.2.2"
 
 [dev-dependencies]
-criterion = "0.3.5"
+criterion = "0.4.0"
 quickcheck = "1.0"
 quickcheck_macros = "1.0"
 rand = "0.8.4"
