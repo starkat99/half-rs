@@ -81,6 +81,8 @@ jobs:
           CARGO_BUILD_TARGET: aarch64-unknown-linux-gnu
           
         install: |
+          apt-get update -y
+          apt-get install -y curl
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -v -y --profile minimal --default-toolchain ${{ matrix.rust }}
           source $HOME/.cargo/env
           cargo install cargo-make
