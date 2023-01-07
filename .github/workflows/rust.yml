@@ -97,8 +97,8 @@ jobs:
       
         run: |
           source "$HOME/.cargo/env"
-          cargo -v test ${{ matrix.rust == 'nightly' && '--all-features' || '--features=std,serde,num-traits,bytemuck,zerocopy'}} --locked -- --nocapture
-          cargo -v test --no-default-features --locked -- --nocapture
+          cargo -v test ${{ matrix.rust == 'nightly' && '--all-features' || '--features=std,serde,num-traits,bytemuck,zerocopy'}} -- --nocapture
+          cargo -v test --no-default-features -- --nocapture
 
   miri:
     name: Miri
