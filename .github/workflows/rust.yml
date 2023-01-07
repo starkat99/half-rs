@@ -82,7 +82,7 @@ jobs:
           
         install: |
           apt-get update -y
-          apt-get install -y curl
+          apt-get install -y curl build-essential
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -v -y --profile minimal --default-toolchain ${{ matrix.rust }}
           source $HOME/.cargo/env
           cargo install cargo-make
