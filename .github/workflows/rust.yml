@@ -91,13 +91,13 @@ jobs:
           apt-get update -y
           apt-get install -y curl build-essential
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -v -y --profile minimal --default-toolchain ${{ matrix.rust }}
-          source $HOME/.cargo/env
         
         dockerRunArgs: |
           --volume "${PWD}:/work" --workdir "/work"
       
         run: |
-          cargo -v test ${{ matrix.rust == 'nightly' && '-all-features' || '--features=std,serde,num-traits,bytemuck,zerocopy'}} --locked -- --nocapture
+          source "$HOME/.cargo/env"
+          cargo -v test ${{ matrix.rust == 'nightly' && '--all-features' || '--features=std,serde,num-traits,bytemuck,zerocopy'}} --locked -- --nocapture
           cargo -v test --no-default-features --locked -- --nocapture
 
   miri:
