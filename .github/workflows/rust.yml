@@ -20,8 +20,8 @@ env:
   CARGO_MAKE_BUILD_BENCH: 1
 
 jobs:
-  rust:
-    name: Rust
+  rust_x86_64:
+    name: Rust x86-64
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -55,6 +55,41 @@ jobs:
       with:
         command: make
         args: ci-flow
+    
+  rust_aarch64:
+    name: Rust AArch64
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust:
+          - stable
+          - nightly
+          - 1.58.1
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      
+    - name: cargo-make test
+      uses: uraimo/run-on-arch-action@v2
+      with:
+        arch: aarch64
+        distro: ubuntu_latest
+        # Don't want to cache stable/nightly images for now or they'll never get updated
+        #githubToken: ${{ github.token }}
+        env: |
+          CARGO_BUILD_TARGET: aarch64-unknown-linux-gnu
+          
+        install: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -v -y --profile minimal --default-toolchain ${{ matrix.rust }}
+          source $HOME/.cargo/env
+          cargo install cargo-make
+        
+        dockerRunArgs: |
+          --volume "${PWD}:/work" --workdir "/work"
+      
+        run: |
+          cargo-make test
 
   miri:
     name: Miri
