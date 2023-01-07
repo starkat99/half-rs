@@ -97,13 +97,7 @@ jobs:
           --volume "${PWD}:/work" --workdir "/work"
       
         run: |
-          if ${{ matrix.rust == "nightly" }}
-          then
-            export CARGO_TEST_FEATURES=--all-features
-          else
-            export CARGO_TEST_FEATURES=--features=std,serde,num-traits,bytemuck,zerocopy
-          fi
-          cargo -v test $CARGO_TEST_FEATURES --locked -- --nocapture
+          cargo -v test ${{ matrix.rust == 'nightly' && '-all-features' || '--features=std,serde,num-traits,bytemuck,zerocopy'}} --locked -- --nocapture
           cargo -v test --no-default-features --locked -- --nocapture
 
   miri:
