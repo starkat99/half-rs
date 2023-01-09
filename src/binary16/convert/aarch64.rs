@@ -9,9 +9,9 @@ use core::{
 
 // TODO: Assembly conversions can go direct to f64 too, saving a cast
 
-#[target_feature(enable = "neon")]
+#[target_feature(enable = "fp16")]
 #[inline]
-pub(super) unsafe fn f16_to_f32_neon(i: u16) -> f32 {
+pub(super) unsafe fn f16_to_f32_fp16(i: u16) -> f32 {
     let result: f32;
     unsafe {
         asm!(
@@ -23,9 +23,9 @@ pub(super) unsafe fn f16_to_f32_neon(i: u16) -> f32 {
     result
 }
 
-#[target_feature(enable = "neon")]
+#[target_feature(enable = "fp16")]
 #[inline]
-pub(super) unsafe fn f32_to_f16_neon(f: f32) -> u16 {
+pub(super) unsafe fn f32_to_f16_fp16(f: f32) -> u16 {
     let result: u16;
     unsafe {
         asm!(
@@ -37,9 +37,9 @@ pub(super) unsafe fn f32_to_f16_neon(f: f32) -> u16 {
     result
 }
 
-#[target_feature(enable = "neon")]
+#[target_feature(enable = "fp16")]
 #[inline]
-pub(super) unsafe fn f16x4_to_f32x4_neon(v: &[u16; 4]) -> [f32; 4] {
+pub(super) unsafe fn f16x4_to_f32x4_fp16(v: &[u16; 4]) -> [f32; 4] {
     let mut vec = MaybeUninit::<uint16x4_t>::uninit();
     ptr::copy_nonoverlapping(v.as_ptr(), vec.as_mut_ptr().cast(), 4);
     let result: float32x4_t;
@@ -53,9 +53,9 @@ pub(super) unsafe fn f16x4_to_f32x4_neon(v: &[u16; 4]) -> [f32; 4] {
     *(&result as *const float32x4_t).cast()
 }
 
-#[target_feature(enable = "neon")]
+#[target_feature(enable = "fp16")]
 #[inline]
-pub(super) unsafe fn f32x4_to_f16x4_neon(v: &[f32; 4]) -> [u16; 4] {
+pub(super) unsafe fn f32x4_to_f16x4_fp16(v: &[f32; 4]) -> [u16; 4] {
     let mut vec = MaybeUninit::<float32x4_t>::uninit();
     ptr::copy_nonoverlapping(v.as_ptr(), vec.as_mut_ptr().cast(), 4);
     let result: uint16x4_t;
@@ -69,10 +69,10 @@ pub(super) unsafe fn f32x4_to_f16x4_neon(v: &[f32; 4]) -> [u16; 4] {
     *(&result as *const uint16x4_t).cast()
 }
 
-#[target_feature(enable = "neon")]
+#[target_feature(enable = "fp16")]
 #[inline]
-pub(super) unsafe fn f16x4_to_f64x4_neon(v: &[u16; 4]) -> [f64; 4] {
-    let array = f16x4_to_f32x4_neon(v);
+pub(super) unsafe fn f16x4_to_f64x4_fp16(v: &[u16; 4]) -> [f64; 4] {
+    let array = f16x4_to_f32x4_fp16(v);
     // Let compiler vectorize this regular cast for now.
     // TODO: investigate doing SIMD cast
     [
@@ -83,11 +83,11 @@ pub(super) unsafe fn f16x4_to_f64x4_neon(v: &[u16; 4]) -> [f64; 4] {
     ]
 }
 
-#[target_feature(enable = "neon")]
+#[target_feature(enable = "fp16")]
 #[inline]
-pub(super) unsafe fn f64x4_to_f16x4_neon(v: &[f64; 4]) -> [u16; 4] {
+pub(super) unsafe fn f64x4_to_f16x4_fp16(v: &[f64; 4]) -> [u16; 4] {
     // Let compiler vectorize this regular cast for now.
     // TODO: investigate doing SIMD cast
     let v = [v[0] as f32, v[1] as f32, v[2] as f32, v[3] as f32];
-    f32x4_to_f16x4_neon(&v)
+    f32x4_to_f16x4_fp16(&v)
 }
