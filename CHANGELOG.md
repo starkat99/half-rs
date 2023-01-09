@@ -4,9 +4,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### Fixed
+
+## [2.2.1] - 2023-01-08 <a name="2.2.1"></a>
+### Changed
 - Reduced unnecessary bounds checks for SIMD operations on slices. By [@Shnatsel].
-- Further slice conversion optimizations for slices. Fixes [#66].
+- Further slice conversion optimizations for slices. Resolves [#66].
 
 ## [2.2.0] - 2022-12-30 <a name="2.2.0"></a>
 ### Added
@@ -16,7 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Deserialize now supports deserializing from `f32`, `f64`, and string values in addition to its
   previous default deserialization. Closes [#60].
 
-### Fixed
+### Changed
 - Add `#[inline]` on fallback functions, which improved conversion execution on non-nightly rust 
   by up to 50%. By [@Shnatsel].
 
@@ -291,8 +293,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [@Shnatsel]: https://github.com/Shnatsel
 
 
-[Unreleased]: https://github.com/starkat99/half-rs/compare/v2.2.0...HEAD
-[2.2.0]: https://github.com/starkat99/half-rs/compare/v2.0.0...v2.2.0
+[Unreleased]: https://github.com/starkat99/half-rs/compare/v2.2.1...HEAD
+[2.2.1]: https://github.com/starkat99/half-rs/compare/v2.2.0...v2.2.1
+[2.2.0]: https://github.com/starkat99/half-rs/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/starkat99/half-rs/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/starkat99/half-rs/compare/v1.8.2...v2.0.0
 [1.8.2]: https://github.com/starkat99/half-rs/compare/v1.8.1...v1.8.2
