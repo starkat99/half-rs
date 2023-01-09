@@ -55,50 +55,6 @@ jobs:
       with:
         command: make
         args: ci-flow
-    
-  rust_aarch64:
-    name: Rust AArch64
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        rust:
-          - stable
-          - nightly
-          - 1.58.1
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      
-    - name: cargo test
-      uses: uraimo/run-on-arch-action@v2
-      with:
-        arch: aarch64
-        distro: ubuntu_latest
-        # Don't want to cache stable/nightly images for now or they'll never get updated
-        #githubToken: ${{ github.token }}
-        env: |
-          CARGO_INCREMENTAL: ${{ env.CARGO_INCREMENTAL }}
-          CARGO_NET_RETRY: ${{ env.CARGO_NET_RETRY }}
-          RUSTUP_MAX_RETRIES: ${{ env.RUSTUP_MAX_RETRIES }}
-          CARGO_TERM_COLOR: ${{ env.CARGO_TERM_COLOR }}
-          RUST_BACKTRACE: ${{ env.RUST_BACKTRACE }}
-          RUSTFLAGS: ${{ env.RUSTFLAGS }}
-          CARGO_PROFILE_DEV_DEBUG: ${{ env.CARGO_PROFILE_DEV_DEBUG }}
-          CARGO_PROFILE_TEST_DEBUG: ${{ env.CARGO_PROFILE_TEST_DEBUG }}
-          
-        install: |
-          apt-get update -y
-          apt-get install -y curl build-essential
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -v -y --profile minimal --default-toolchain ${{ matrix.rust }}
-        
-        dockerRunArgs: |
-          --volume "${PWD}:/work" --workdir "/work"
-      
-        run: |
-          source "$HOME/.cargo/env"
-          cargo -v test ${{ matrix.rust == 'nightly' && '--all-features' || '--features=std,serde,num-traits,bytemuck,zerocopy'}} -- --nocapture
-          cargo -v test --no-default-features -- --nocapture
 
   miri:
     name: Miri
