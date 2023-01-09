@@ -46,14 +46,14 @@ workflows:
   rust-workflow:
     jobs:
       - rust:
-          name: Rust (stable)
+          name: Rust AArch64 (stable)
           toolchain: stable
           features: --features=std,serde,num-traits,bytemuck,zerocopy
       - rust:
-          name: Rust (1.58.1)
+          name: Rust AArch64 (1.58.1)
           toolchain: 1.58.1
           features: --features=std,serde,num-traits,bytemuck,zerocopy
       - rust:
-          name: Rust (nightly)
+          name: Rust AArch64 (nightly)
           toolchain: nightly
           features: --all-features
