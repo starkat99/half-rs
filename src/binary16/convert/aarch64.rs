@@ -46,8 +46,8 @@ pub(super) unsafe fn f16x4_to_f32x4_neon(v: &[u16; 4]) -> [f32; 4] {
     unsafe {
         asm!(
             "fcvtl {0:v}.4s, {1:v}.4h",
-        in(vreg) vec.assume_init(),
         out(vreg) result,
+        in(vreg) vec.assume_init(),
         options(pure, nomem, nostack));
     }
     *(&result as *const float32x4_t).cast()
@@ -62,8 +62,8 @@ pub(super) unsafe fn f32x4_to_f16x4_neon(v: &[f32; 4]) -> [u16; 4] {
     unsafe {
         asm!(
             "fcvtn {0:v}.4h, {1:v}.4s",
-        in(vreg) vec.assume_init(),
         out(vreg) result,
+        in(vreg) vec.assume_init(),
         options(pure, nomem, nostack));
     }
     *(&result as *const uint16x4_t).cast()
