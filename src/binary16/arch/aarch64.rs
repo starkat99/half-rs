@@ -1,13 +1,11 @@
 use core::{
     arch::{
-        aarch64::{float32x4_t, uint16x4_t},
+        aarch64::{float32x4_t, float64x2_t, uint16x4_t},
         asm,
     },
     mem::MaybeUninit,
     ptr,
 };
-
-// TODO: Assembly conversions can go direct to f64 too, saving a cast
 
 #[target_feature(enable = "fp16")]
 #[inline]
@@ -25,11 +23,39 @@ pub(super) unsafe fn f16_to_f32_fp16(i: u16) -> f32 {
 
 #[target_feature(enable = "fp16")]
 #[inline]
+pub(super) unsafe fn f16_to_f64_fp16(i: u16) -> f64 {
+    let result: f64;
+    unsafe {
+        asm!(
+            "fcvt {0:d}, {1:h}",
+        out(vreg) result,
+        in(vreg) i,
+        options(pure, nomem, nostack));
+    }
+    result
+}
+
+#[target_feature(enable = "fp16")]
+#[inline]
 pub(super) unsafe fn f32_to_f16_fp16(f: f32) -> u16 {
     let result: u16;
     unsafe {
         asm!(
             "fcvt {0:h}, {1:s}",
+        out(vreg) result,
+        in(vreg) f,
+        options(pure, nomem, nostack));
+    }
+    result
+}
+
+#[target_feature(enable = "fp16")]
+#[inline]
+pub(super) unsafe fn f64_to_f16_fp16(f: f64) -> u16 {
+    let result: u16;
+    unsafe {
+        asm!(
+            "fcvt {0:h}, {1:d}",
         out(vreg) result,
         in(vreg) f,
         options(pure, nomem, nostack));
@@ -72,24 +98,44 @@ pub(super) unsafe fn f32x4_to_f16x4_fp16(v: &[f32; 4]) -> [u16; 4] {
 #[target_feature(enable = "fp16")]
 #[inline]
 pub(super) unsafe fn f16x4_to_f64x4_fp16(v: &[u16; 4]) -> [f64; 4] {
-    let array = f16x4_to_f32x4_fp16(v);
-    // Let compiler vectorize this regular cast for now.
-    // TODO: investigate doing SIMD cast
-    [
-        array[0] as f64,
-        array[1] as f64,
-        array[2] as f64,
-        array[3] as f64,
-    ]
+    let mut vec = MaybeUninit::<uint16x4_t>::uninit();
+    ptr::copy_nonoverlapping(v.as_ptr(), vec.as_mut_ptr().cast(), 4);
+    let low: float64x2_t;
+    let high: float64x2_t;
+    unsafe {
+        asm!(
+            "fcvtl {2:v}.4s, {3:v}.4h", // Convert to f32
+            "fcvtl {0:v}.2d, {2:v}.2s", // Convert low part to f64
+            "fcvtl2 {1:v}.2d, {2:v}.4s", // Convert high part to f64
+        lateout(vreg) low,
+        lateout(vreg) high,
+        out(vreg) _,
+        in(vreg) vec.assume_init(),
+        options(pure, nomem, nostack));
+    }
+    *[low, high].as_ptr().cast()
 }
 
 #[target_feature(enable = "fp16")]
 #[inline]
 pub(super) unsafe fn f64x4_to_f16x4_fp16(v: &[f64; 4]) -> [u16; 4] {
-    // Let compiler vectorize this regular cast for now.
-    // TODO: investigate doing SIMD cast
-    let v = [v[0] as f32, v[1] as f32, v[2] as f32, v[3] as f32];
-    f32x4_to_f16x4_fp16(&v)
+    let mut low = MaybeUninit::<float64x2_t>::uninit();
+    let mut high = MaybeUninit::<float64x2_t>::uninit();
+    ptr::copy_nonoverlapping(v.as_ptr(), low.as_mut_ptr().cast(), 2);
+    ptr::copy_nonoverlapping(v[2..].as_ptr(), high.as_mut_ptr().cast(), 2);
+    let result: uint16x4_t;
+    unsafe {
+        asm!(
+            "fcvtn {1:v}.2s, {2:v}.2d", // Convert low to f32
+            "fcvtn2 {1:v}.4s, {3:v}.2d", // Convert high to f32
+            "fcvtn {0:v}.4h, {1:v}.4s", // Convert to f16
+        lateout(vreg) result,
+        out(vreg) _,
+        in(vreg) low.assume_init(),
+        in(vreg) high.assume_init(),
+        options(pure, nomem, nostack));
+    }
+    *(&result as *const uint16x4_t).cast()
 }
 
 #[target_feature(enable = "fp16")]
