@@ -844,3 +844,5 @@ fn product_f16_fallback<I: Iterator<Item = u16>>(iter: I) -> u16 {
 fn sum_f16_fallback<I: Iterator<Item = u16>>(iter: I) -> u16 {
     f32_to_f16(iter.map(f16_to_f32).sum())
 }
+
+// TODO SIMD arithmetic

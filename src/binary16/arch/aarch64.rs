@@ -11,13 +11,11 @@ use core::{
 #[inline]
 pub(super) unsafe fn f16_to_f32_fp16(i: u16) -> f32 {
     let result: f32;
-    unsafe {
-        asm!(
-            "fcvt {0:s}, {1:h}",
+    asm!(
+        "fcvt {0:s}, {1:h}",
         out(vreg) result,
         in(vreg) i,
         options(pure, nomem, nostack));
-    }
     result
 }
 
@@ -25,13 +23,11 @@ pub(super) unsafe fn f16_to_f32_fp16(i: u16) -> f32 {
 #[inline]
 pub(super) unsafe fn f16_to_f64_fp16(i: u16) -> f64 {
     let result: f64;
-    unsafe {
-        asm!(
-            "fcvt {0:d}, {1:h}",
+    asm!(
+        "fcvt {0:d}, {1:h}",
         out(vreg) result,
         in(vreg) i,
         options(pure, nomem, nostack));
-    }
     result
 }
 
@@ -39,13 +35,11 @@ pub(super) unsafe fn f16_to_f64_fp16(i: u16) -> f64 {
 #[inline]
 pub(super) unsafe fn f32_to_f16_fp16(f: f32) -> u16 {
     let result: u16;
-    unsafe {
-        asm!(
-            "fcvt {0:h}, {1:s}",
+    asm!(
+        "fcvt {0:h}, {1:s}",
         out(vreg) result,
         in(vreg) f,
         options(pure, nomem, nostack));
-    }
     result
 }
 
@@ -53,13 +47,11 @@ pub(super) unsafe fn f32_to_f16_fp16(f: f32) -> u16 {
 #[inline]
 pub(super) unsafe fn f64_to_f16_fp16(f: f64) -> u16 {
     let result: u16;
-    unsafe {
-        asm!(
-            "fcvt {0:h}, {1:d}",
+    asm!(
+        "fcvt {0:h}, {1:d}",
         out(vreg) result,
         in(vreg) f,
         options(pure, nomem, nostack));
-    }
     result
 }
 
@@ -69,13 +61,11 @@ pub(super) unsafe fn f16x4_to_f32x4_fp16(v: &[u16; 4]) -> [f32; 4] {
     let mut vec = MaybeUninit::<uint16x4_t>::uninit();
     ptr::copy_nonoverlapping(v.as_ptr(), vec.as_mut_ptr().cast(), 4);
     let result: float32x4_t;
-    unsafe {
-        asm!(
-            "fcvtl {0:v}.4s, {1:v}.4h",
+    asm!(
+        "fcvtl {0:v}.4s, {1:v}.4h",
         out(vreg) result,
         in(vreg) vec.assume_init(),
         options(pure, nomem, nostack));
-    }
     *(&result as *const float32x4_t).cast()
 }
 
@@ -85,13 +75,11 @@ pub(super) unsafe fn f32x4_to_f16x4_fp16(v: &[f32; 4]) -> [u16; 4] {
     let mut vec = MaybeUninit::<float32x4_t>::uninit();
     ptr::copy_nonoverlapping(v.as_ptr(), vec.as_mut_ptr().cast(), 4);
     let result: uint16x4_t;
-    unsafe {
-        asm!(
-            "fcvtn {0:v}.4h, {1:v}.4s",
+    asm!(
+        "fcvtn {0:v}.4h, {1:v}.4s",
         out(vreg) result,
         in(vreg) vec.assume_init(),
         options(pure, nomem, nostack));
-    }
     *(&result as *const uint16x4_t).cast()
 }
 
@@ -102,17 +90,15 @@ pub(super) unsafe fn f16x4_to_f64x4_fp16(v: &[u16; 4]) -> [f64; 4] {
     ptr::copy_nonoverlapping(v.as_ptr(), vec.as_mut_ptr().cast(), 4);
     let low: float64x2_t;
     let high: float64x2_t;
-    unsafe {
-        asm!(
-            "fcvtl {2:v}.4s, {3:v}.4h", // Convert to f32
-            "fcvtl {0:v}.2d, {2:v}.2s", // Convert low part to f64
-            "fcvtl2 {1:v}.2d, {2:v}.4s", // Convert high part to f64
+    asm!(
+        "fcvtl {2:v}.4s, {3:v}.4h", // Convert to f32
+        "fcvtl {0:v}.2d, {2:v}.2s", // Convert low part to f64
+        "fcvtl2 {1:v}.2d, {2:v}.4s", // Convert high part to f64
         lateout(vreg) low,
         lateout(vreg) high,
         out(vreg) _,
         in(vreg) vec.assume_init(),
         options(pure, nomem, nostack));
-    }
     *[low, high].as_ptr().cast()
 }
 
@@ -124,17 +110,15 @@ pub(super) unsafe fn f64x4_to_f16x4_fp16(v: &[f64; 4]) -> [u16; 4] {
     ptr::copy_nonoverlapping(v.as_ptr(), low.as_mut_ptr().cast(), 2);
     ptr::copy_nonoverlapping(v[2..].as_ptr(), high.as_mut_ptr().cast(), 2);
     let result: uint16x4_t;
-    unsafe {
-        asm!(
-            "fcvtn {1:v}.2s, {2:v}.2d", // Convert low to f32
-            "fcvtn2 {1:v}.4s, {3:v}.2d", // Convert high to f32
-            "fcvtn {0:v}.4h, {1:v}.4s", // Convert to f16
+    asm!(
+        "fcvtn {1:v}.2s, {2:v}.2d", // Convert low to f32
+        "fcvtn2 {1:v}.4s, {3:v}.2d", // Convert high to f32
+        "fcvtn {0:v}.4h, {1:v}.4s", // Convert to f16
         lateout(vreg) result,
         out(vreg) _,
         in(vreg) low.assume_init(),
         in(vreg) high.assume_init(),
         options(pure, nomem, nostack));
-    }
     *(&result as *const uint16x4_t).cast()
 }
 
@@ -142,14 +126,12 @@ pub(super) unsafe fn f64x4_to_f16x4_fp16(v: &[f64; 4]) -> [u16; 4] {
 #[inline]
 pub(super) unsafe fn add_f16_fp16(a: u16, b: u16) -> u16 {
     let result: u16;
-    unsafe {
-        asm!(
-            "fadd {0:h}, {1:h}, {2:h}",
+    asm!(
+        "fadd {0:h}, {1:h}, {2:h}",
         out(vreg) result,
         in(vreg) a,
         in(vreg) b,
         options(pure, nomem, nostack));
-    }
     result
 }
 
@@ -157,14 +139,12 @@ pub(super) unsafe fn add_f16_fp16(a: u16, b: u16) -> u16 {
 #[inline]
 pub(super) unsafe fn subtract_f16_fp16(a: u16, b: u16) -> u16 {
     let result: u16;
-    unsafe {
-        asm!(
-            "fsub {0:h}, {1:h}, {2:h}",
+    asm!(
+        "fsub {0:h}, {1:h}, {2:h}",
         out(vreg) result,
         in(vreg) a,
         in(vreg) b,
         options(pure, nomem, nostack));
-    }
     result
 }
 
@@ -172,14 +152,12 @@ pub(super) unsafe fn subtract_f16_fp16(a: u16, b: u16) -> u16 {
 #[inline]
 pub(super) unsafe fn multiply_f16_fp16(a: u16, b: u16) -> u16 {
     let result: u16;
-    unsafe {
-        asm!(
-            "fmul {0:h}, {1:h}, {2:h}",
+    asm!(
+        "fmul {0:h}, {1:h}, {2:h}",
         out(vreg) result,
         in(vreg) a,
         in(vreg) b,
         options(pure, nomem, nostack));
-    }
     result
 }
 
@@ -187,13 +165,11 @@ pub(super) unsafe fn multiply_f16_fp16(a: u16, b: u16) -> u16 {
 #[inline]
 pub(super) unsafe fn divide_f16_fp16(a: u16, b: u16) -> u16 {
     let result: u16;
-    unsafe {
-        asm!(
-            "fdiv {0:h}, {1:h}, {2:h}",
+    asm!(
+        "fdiv {0:h}, {1:h}, {2:h}",
         out(vreg) result,
         in(vreg) a,
         in(vreg) b,
         options(pure, nomem, nostack));
-    }
     result
 }
