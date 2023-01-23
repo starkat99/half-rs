@@ -2,208 +2,402 @@
 use crate::leading_zeros::leading_zeros_u16;
 use core::mem;
 
+#[cfg(all(
+    feature = "use-intrinsics",
+    any(target_arch = "x86", target_arch = "x86_64")
+))]
+mod x86;
+
+#[cfg(target_arch = "aarch64")]
+mod aarch64;
+
 macro_rules! convert_fn {
-    (fn $name:ident($($var:ident : $vartype:ty),+) -> $restype:ty {
-            if feature("f16c") { $f16c:expr }
-            else { $fallback:expr }}) => {
-        #[inline]
-        pub(crate) fn $name($($var: $vartype),+) -> $restype {
+    (if x86_feature("f16c") { $f16c:expr }
+    else if aarch64_feature("fp16") { $aarch64:expr }
+    else { $fallback:expr }) => {
+        cfg_if::cfg_if! {
+            // Use intrinsics directly when a compile target or using no_std
+            if #[cfg(all(
+                feature = "use-intrinsics",
+                any(target_arch = "x86", target_arch = "x86_64"),
+                target_feature = "f16c"
+            ))] {
+                $f16c
+            }
+            else if #[cfg(all(
+                target_arch = "aarch64",
+                target_feature = "fp16"
+            ))] {
+                $aarch64
+
+            }
+
             // Use CPU feature detection if using std
-            #[cfg(all(
+            else if #[cfg(all(
                 feature = "use-intrinsics",
                 feature = "std",
-                any(target_arch = "x86", target_arch = "x86_64"),
-                not(target_feature = "f16c")
-            ))]
-            {
+                any(target_arch = "x86", target_arch = "x86_64")
+            ))] {
+                use std::arch::is_x86_feature_detected;
                 if is_x86_feature_detected!("f16c") {
                     $f16c
                 } else {
                     $fallback
                 }
             }
-            // Use intrinsics directly when a compile target or using no_std
-            #[cfg(all(
-                feature = "use-intrinsics",
-                any(target_arch = "x86", target_arch = "x86_64"),
-                target_feature = "f16c"
-            ))]
-            {
-                $f16c
+            else if #[cfg(all(
+                feature = "std",
+                target_arch = "aarch64",
+            ))] {
+                use std::arch::is_aarch64_feature_detected;
+                if is_aarch64_feature_detected!("fp16") {
+                    $aarch64
+                } else {
+                    $fallback
+                }
             }
+
             // Fallback to software
-            #[cfg(any(
-                not(feature = "use-intrinsics"),
-                not(any(target_arch = "x86", target_arch = "x86_64")),
-                all(not(feature = "std"), not(target_feature = "f16c"))
-            ))]
-            {
+            else {
                 $fallback
             }
         }
     };
 }
 
-convert_fn! {
-    fn f32_to_f16(f: f32) -> u16 {
-        if feature("f16c") {
+#[inline]
+pub(crate) fn f32_to_f16(f: f32) -> u16 {
+    convert_fn! {
+        if x86_feature("f16c") {
             unsafe { x86::f32_to_f16_x86_f16c(f) }
+        } else if aarch64_feature("fp16") {
+            unsafe { aarch64::f32_to_f16_fp16(f) }
         } else {
             f32_to_f16_fallback(f)
         }
     }
 }
 
-convert_fn! {
-    fn f64_to_f16(f: f64) -> u16 {
-        if feature("f16c") {
+#[inline]
+pub(crate) fn f64_to_f16(f: f64) -> u16 {
+    convert_fn! {
+        if x86_feature("f16c") {
             unsafe { x86::f32_to_f16_x86_f16c(f as f32) }
+        } else if aarch64_feature("fp16") {
+            unsafe { aarch64::f64_to_f16_fp16(f) }
         } else {
             f64_to_f16_fallback(f)
         }
     }
 }
 
-convert_fn! {
-    fn f16_to_f32(i: u16) -> f32 {
-        if feature("f16c") {
+#[inline]
+pub(crate) fn f16_to_f32(i: u16) -> f32 {
+    convert_fn! {
+        if x86_feature("f16c") {
             unsafe { x86::f16_to_f32_x86_f16c(i) }
+        } else if aarch64_feature("fp16") {
+            unsafe { aarch64::f16_to_f32_fp16(i) }
         } else {
             f16_to_f32_fallback(i)
         }
     }
 }
 
-convert_fn! {
-    fn f16_to_f64(i: u16) -> f64 {
-        if feature("f16c") {
+#[inline]
+pub(crate) fn f16_to_f64(i: u16) -> f64 {
+    convert_fn! {
+        if x86_feature("f16c") {
             unsafe { x86::f16_to_f32_x86_f16c(i) as f64 }
+        } else if aarch64_feature("fp16") {
+            unsafe { aarch64::f16_to_f64_fp16(i) }
         } else {
             f16_to_f64_fallback(i)
         }
     }
 }
 
-convert_fn! {
-    fn f32x4_to_f16x4(f: &[f32; 4]) -> [u16; 4] {
-        if feature("f16c") {
+#[inline]
+pub(crate) fn f32x4_to_f16x4(f: &[f32; 4]) -> [u16; 4] {
+    convert_fn! {
+        if x86_feature("f16c") {
             unsafe { x86::f32x4_to_f16x4_x86_f16c(f) }
+        } else if aarch64_feature("fp16") {
+            unsafe { aarch64::f32x4_to_f16x4_fp16(f) }
         } else {
             f32x4_to_f16x4_fallback(f)
         }
     }
 }
 
-convert_fn! {
-    fn f16x4_to_f32x4(i: &[u16; 4]) -> [f32; 4] {
-        if feature("f16c") {
+#[inline]
+pub(crate) fn f16x4_to_f32x4(i: &[u16; 4]) -> [f32; 4] {
+    convert_fn! {
+        if x86_feature("f16c") {
             unsafe { x86::f16x4_to_f32x4_x86_f16c(i) }
+        } else if aarch64_feature("fp16") {
+            unsafe { aarch64::f16x4_to_f32x4_fp16(i) }
         } else {
             f16x4_to_f32x4_fallback(i)
         }
     }
 }
 
-convert_fn! {
-    fn f64x4_to_f16x4(f: &[f64; 4]) -> [u16; 4] {
-        if feature("f16c") {
+#[inline]
+pub(crate) fn f64x4_to_f16x4(f: &[f64; 4]) -> [u16; 4] {
+    convert_fn! {
+        if x86_feature("f16c") {
             unsafe { x86::f64x4_to_f16x4_x86_f16c(f) }
+        } else if aarch64_feature("fp16") {
+            unsafe { aarch64::f64x4_to_f16x4_fp16(f) }
         } else {
             f64x4_to_f16x4_fallback(f)
         }
     }
 }
 
-convert_fn! {
-    fn f16x4_to_f64x4(i: &[u16; 4]) -> [f64; 4] {
-        if feature("f16c") {
+#[inline]
+pub(crate) fn f16x4_to_f64x4(i: &[u16; 4]) -> [f64; 4] {
+    convert_fn! {
+        if x86_feature("f16c") {
             unsafe { x86::f16x4_to_f64x4_x86_f16c(i) }
+        } else if aarch64_feature("fp16") {
+            unsafe { aarch64::f16x4_to_f64x4_fp16(i) }
         } else {
             f16x4_to_f64x4_fallback(i)
         }
     }
 }
 
-convert_fn! {
-    fn f32x8_to_f16x8(f: &[f32; 8]) -> [u16; 8] {
-        if feature("f16c") {
+#[inline]
+pub(crate) fn f32x8_to_f16x8(f: &[f32; 8]) -> [u16; 8] {
+    convert_fn! {
+        if x86_feature("f16c") {
             unsafe { x86::f32x8_to_f16x8_x86_f16c(f) }
+        } else if aarch64_feature("fp16") {
+            {
+                let mut result = [0u16; 8];
+                convert_chunked_slice_4(f.as_slice(), result.as_mut_slice(),
+                    aarch64::f32x4_to_f16x4_fp16);
+                result
+            }
         } else {
             f32x8_to_f16x8_fallback(f)
         }
     }
 }
 
-convert_fn! {
-    fn f16x8_to_f32x8(i: &[u16; 8]) -> [f32; 8] {
-        if feature("f16c") {
+#[inline]
+pub(crate) fn f16x8_to_f32x8(i: &[u16; 8]) -> [f32; 8] {
+    convert_fn! {
+        if x86_feature("f16c") {
             unsafe { x86::f16x8_to_f32x8_x86_f16c(i) }
+        } else if aarch64_feature("fp16") {
+            {
+                let mut result = [0f32; 8];
+                convert_chunked_slice_4(i.as_slice(), result.as_mut_slice(),
+                    aarch64::f16x4_to_f32x4_fp16);
+                result
+            }
         } else {
             f16x8_to_f32x8_fallback(i)
         }
     }
 }
 
-convert_fn! {
-    fn f64x8_to_f16x8(f: &[f64; 8]) -> [u16; 8] {
-        if feature("f16c") {
+#[inline]
+pub(crate) fn f64x8_to_f16x8(f: &[f64; 8]) -> [u16; 8] {
+    convert_fn! {
+        if x86_feature("f16c") {
             unsafe { x86::f64x8_to_f16x8_x86_f16c(f) }
+        } else if aarch64_feature("fp16") {
+            {
+                let mut result = [0u16; 8];
+                convert_chunked_slice_4(f.as_slice(), result.as_mut_slice(),
+                    aarch64::f64x4_to_f16x4_fp16);
+                result
+            }
         } else {
             f64x8_to_f16x8_fallback(f)
         }
     }
 }
 
-convert_fn! {
-    fn f16x8_to_f64x8(i: &[u16; 8]) -> [f64; 8] {
-        if feature("f16c") {
+#[inline]
+pub(crate) fn f16x8_to_f64x8(i: &[u16; 8]) -> [f64; 8] {
+    convert_fn! {
+        if x86_feature("f16c") {
             unsafe { x86::f16x8_to_f64x8_x86_f16c(i) }
+        } else if aarch64_feature("fp16") {
+            {
+                let mut result = [0f64; 8];
+                convert_chunked_slice_4(i.as_slice(), result.as_mut_slice(),
+                    aarch64::f16x4_to_f64x4_fp16);
+                result
+            }
         } else {
             f16x8_to_f64x8_fallback(i)
         }
     }
 }
 
-convert_fn! {
-    fn f32_to_f16_slice(src: &[f32], dst: &mut [u16]) -> () {
-        if feature("f16c") {
+#[inline]
+pub(crate) fn f32_to_f16_slice(src: &[f32], dst: &mut [u16]) {
+    convert_fn! {
+        if x86_feature("f16c") {
             convert_chunked_slice_8(src, dst, x86::f32x8_to_f16x8_x86_f16c,
                 x86::f32x4_to_f16x4_x86_f16c)
+        } else if aarch64_feature("fp16") {
+            convert_chunked_slice_4(src, dst, aarch64::f32x4_to_f16x4_fp16)
         } else {
             slice_fallback(src, dst, f32_to_f16_fallback)
         }
     }
 }
 
-convert_fn! {
-    fn f16_to_f32_slice(src: &[u16], dst: &mut [f32]) -> () {
-        if feature("f16c") {
+#[inline]
+pub(crate) fn f16_to_f32_slice(src: &[u16], dst: &mut [f32]) {
+    convert_fn! {
+        if x86_feature("f16c") {
             convert_chunked_slice_8(src, dst, x86::f16x8_to_f32x8_x86_f16c,
                 x86::f16x4_to_f32x4_x86_f16c)
+        } else if aarch64_feature("fp16") {
+            convert_chunked_slice_4(src, dst, aarch64::f16x4_to_f32x4_fp16)
         } else {
             slice_fallback(src, dst, f16_to_f32_fallback)
         }
     }
 }
 
-convert_fn! {
-    fn f64_to_f16_slice(src: &[f64], dst: &mut [u16]) -> () {
-        if feature("f16c") {
+#[inline]
+pub(crate) fn f64_to_f16_slice(src: &[f64], dst: &mut [u16]) {
+    convert_fn! {
+        if x86_feature("f16c") {
             convert_chunked_slice_8(src, dst, x86::f64x8_to_f16x8_x86_f16c,
                 x86::f64x4_to_f16x4_x86_f16c)
+        } else if aarch64_feature("fp16") {
+            convert_chunked_slice_4(src, dst, aarch64::f64x4_to_f16x4_fp16)
         } else {
             slice_fallback(src, dst, f64_to_f16_fallback)
         }
     }
 }
 
-convert_fn! {
-    fn f16_to_f64_slice(src: &[u16], dst: &mut [f64]) -> () {
-        if feature("f16c") {
+#[inline]
+pub(crate) fn f16_to_f64_slice(src: &[u16], dst: &mut [f64]) {
+    convert_fn! {
+        if x86_feature("f16c") {
             convert_chunked_slice_8(src, dst, x86::f16x8_to_f64x8_x86_f16c,
                 x86::f16x4_to_f64x4_x86_f16c)
+        } else if aarch64_feature("fp16") {
+            convert_chunked_slice_4(src, dst, aarch64::f16x4_to_f64x4_fp16)
         } else {
             slice_fallback(src, dst, f16_to_f64_fallback)
+        }
+    }
+}
+
+macro_rules! math_fn {
+    (if aarch64_feature("fp16") { $aarch64:expr }
+    else { $fallback:expr }) => {
+        cfg_if::cfg_if! {
+            // Use intrinsics directly when a compile target or using no_std
+            if #[cfg(all(
+                target_arch = "aarch64",
+                target_feature = "fp16"
+            ))] {
+                $aarch64
+            }
+
+            // Use CPU feature detection if using std
+            else if #[cfg(all(
+                feature = "std",
+                target_arch = "aarch64",
+                not(target_feature = "fp16")
+            ))] {
+                use std::arch::is_aarch64_feature_detected;
+                if is_aarch64_feature_detected!("fp16") {
+                    $aarch64
+                } else {
+                    $fallback
+                }
+            }
+
+            // Fallback to software
+            else {
+                $fallback
+            }
+        }
+    };
+}
+
+#[inline]
+pub(crate) fn add_f16(a: u16, b: u16) -> u16 {
+    math_fn! {
+        if aarch64_feature("fp16") {
+            unsafe { aarch64::add_f16_fp16(a, b) }
+        } else {
+            add_f16_fallback(a, b)
+        }
+    }
+}
+
+#[inline]
+pub(crate) fn subtract_f16(a: u16, b: u16) -> u16 {
+    math_fn! {
+        if aarch64_feature("fp16") {
+            unsafe { aarch64::subtract_f16_fp16(a, b) }
+        } else {
+            subtract_f16_fallback(a, b)
+        }
+    }
+}
+
+#[inline]
+pub(crate) fn multiply_f16(a: u16, b: u16) -> u16 {
+    math_fn! {
+        if aarch64_feature("fp16") {
+            unsafe { aarch64::multiply_f16_fp16(a, b) }
+        } else {
+            multiply_f16_fallback(a, b)
+        }
+    }
+}
+
+#[inline]
+pub(crate) fn divide_f16(a: u16, b: u16) -> u16 {
+    math_fn! {
+        if aarch64_feature("fp16") {
+            unsafe { aarch64::divide_f16_fp16(a, b) }
+        } else {
+            divide_f16_fallback(a, b)
+        }
+    }
+}
+
+#[inline]
+pub(crate) fn remainder_f16(a: u16, b: u16) -> u16 {
+    remainder_f16_fallback(a, b)
+}
+
+#[inline]
+pub(crate) fn product_f16<I: Iterator<Item = u16>>(iter: I) -> u16 {
+    math_fn! {
+        if aarch64_feature("fp16") {
+            iter.fold(0, |acc, x| unsafe { aarch64::multiply_f16_fp16(acc, x) })
+        } else {
+            product_f16_fallback(iter)
+        }
+    }
+}
+
+#[inline]
+pub(crate) fn sum_f16<I: Iterator<Item = u16>>(iter: I) -> u16 {
+    math_fn! {
+        if aarch64_feature("fp16") {
+            iter.fold(0, |acc, x| unsafe { aarch64::add_f16_fp16(acc, x) })
+        } else {
+            sum_f16_fallback(iter)
         }
     }
 }
@@ -616,137 +810,39 @@ fn slice_fallback<S: Copy, D>(src: &[S], dst: &mut [D], f: fn(S) -> D) {
     }
 }
 
-/////////////// x86/x86_64 f16c ////////////////
-#[cfg(all(
-    feature = "use-intrinsics",
-    any(target_arch = "x86", target_arch = "x86_64")
-))]
-mod x86 {
-    use core::{mem::MaybeUninit, ptr};
-
-    #[cfg(target_arch = "x86")]
-    use core::arch::x86::{
-        __m128, __m128i, __m256, _mm256_cvtph_ps, _mm256_cvtps_ph, _mm_cvtph_ps,
-        _MM_FROUND_TO_NEAREST_INT,
-    };
-    #[cfg(target_arch = "x86_64")]
-    use core::arch::x86_64::{
-        __m128, __m128i, __m256, _mm256_cvtph_ps, _mm256_cvtps_ph, _mm_cvtph_ps, _mm_cvtps_ph,
-        _MM_FROUND_TO_NEAREST_INT,
-    };
-
-    use super::convert_chunked_slice_8;
-
-    #[target_feature(enable = "f16c")]
-    #[inline]
-    pub(super) unsafe fn f16_to_f32_x86_f16c(i: u16) -> f32 {
-        let mut vec = MaybeUninit::<__m128i>::zeroed();
-        vec.as_mut_ptr().cast::<u16>().write(i);
-        let retval = _mm_cvtph_ps(vec.assume_init());
-        *(&retval as *const __m128).cast()
-    }
-
-    #[target_feature(enable = "f16c")]
-    #[inline]
-    pub(super) unsafe fn f32_to_f16_x86_f16c(f: f32) -> u16 {
-        let mut vec = MaybeUninit::<__m128>::zeroed();
-        vec.as_mut_ptr().cast::<f32>().write(f);
-        let retval = _mm_cvtps_ph(vec.assume_init(), _MM_FROUND_TO_NEAREST_INT);
-        *(&retval as *const __m128i).cast()
-    }
-
-    #[target_feature(enable = "f16c")]
-    #[inline]
-    pub(super) unsafe fn f16x4_to_f32x4_x86_f16c(v: &[u16; 4]) -> [f32; 4] {
-        let mut vec = MaybeUninit::<__m128i>::zeroed();
-        ptr::copy_nonoverlapping(v.as_ptr(), vec.as_mut_ptr().cast(), 4);
-        let retval = _mm_cvtph_ps(vec.assume_init());
-        *(&retval as *const __m128).cast()
-    }
-
-    #[target_feature(enable = "f16c")]
-    #[inline]
-    pub(super) unsafe fn f32x4_to_f16x4_x86_f16c(v: &[f32; 4]) -> [u16; 4] {
-        let mut vec = MaybeUninit::<__m128>::uninit();
-        ptr::copy_nonoverlapping(v.as_ptr(), vec.as_mut_ptr().cast(), 4);
-        let retval = _mm_cvtps_ph(vec.assume_init(), _MM_FROUND_TO_NEAREST_INT);
-        *(&retval as *const __m128i).cast()
-    }
-
-    #[target_feature(enable = "f16c")]
-    #[inline]
-    pub(super) unsafe fn f16x4_to_f64x4_x86_f16c(v: &[u16; 4]) -> [f64; 4] {
-        let array = f16x4_to_f32x4_x86_f16c(v);
-        // Let compiler vectorize this regular cast for now.
-        // TODO: investigate auto-detecting sse2/avx convert features
-        [
-            array[0] as f64,
-            array[1] as f64,
-            array[2] as f64,
-            array[3] as f64,
-        ]
-    }
-
-    #[target_feature(enable = "f16c")]
-    #[inline]
-    pub(super) unsafe fn f64x4_to_f16x4_x86_f16c(v: &[f64; 4]) -> [u16; 4] {
-        // Let compiler vectorize this regular cast for now.
-        // TODO: investigate auto-detecting sse2/avx convert features
-        let v = [v[0] as f32, v[1] as f32, v[2] as f32, v[3] as f32];
-        f32x4_to_f16x4_x86_f16c(&v)
-    }
-
-    #[target_feature(enable = "f16c")]
-    #[inline]
-    pub(super) unsafe fn f16x8_to_f32x8_x86_f16c(v: &[u16; 8]) -> [f32; 8] {
-        let mut vec = MaybeUninit::<__m128i>::zeroed();
-        ptr::copy_nonoverlapping(v.as_ptr(), vec.as_mut_ptr().cast(), 8);
-        let retval = _mm256_cvtph_ps(vec.assume_init());
-        *(&retval as *const __m256).cast()
-    }
-
-    #[target_feature(enable = "f16c")]
-    #[inline]
-    pub(super) unsafe fn f32x8_to_f16x8_x86_f16c(v: &[f32; 8]) -> [u16; 8] {
-        let mut vec = MaybeUninit::<__m256>::uninit();
-        ptr::copy_nonoverlapping(v.as_ptr(), vec.as_mut_ptr().cast(), 8);
-        let retval = _mm256_cvtps_ph(vec.assume_init(), _MM_FROUND_TO_NEAREST_INT);
-        *(&retval as *const __m128i).cast()
-    }
-
-    #[target_feature(enable = "f16c")]
-    #[inline]
-    pub(super) unsafe fn f16x8_to_f64x8_x86_f16c(v: &[u16; 8]) -> [f64; 8] {
-        let array = f16x8_to_f32x8_x86_f16c(v);
-        // Let compiler vectorize this regular cast for now.
-        // TODO: investigate auto-detecting sse2/avx convert features
-        [
-            array[0] as f64,
-            array[1] as f64,
-            array[2] as f64,
-            array[3] as f64,
-            array[4] as f64,
-            array[5] as f64,
-            array[6] as f64,
-            array[7] as f64,
-        ]
-    }
-
-    #[target_feature(enable = "f16c")]
-    #[inline]
-    pub(super) unsafe fn f64x8_to_f16x8_x86_f16c(v: &[f64; 8]) -> [u16; 8] {
-        // Let compiler vectorize this regular cast for now.
-        // TODO: investigate auto-detecting sse2/avx convert features
-        let v = [
-            v[0] as f32,
-            v[1] as f32,
-            v[2] as f32,
-            v[3] as f32,
-            v[4] as f32,
-            v[5] as f32,
-            v[6] as f32,
-            v[7] as f32,
-        ];
-        f32x8_to_f16x8_x86_f16c(&v)
-    }
+#[inline]
+fn add_f16_fallback(a: u16, b: u16) -> u16 {
+    f32_to_f16(f16_to_f32(a) + f16_to_f32(b))
 }
+
+#[inline]
+fn subtract_f16_fallback(a: u16, b: u16) -> u16 {
+    f32_to_f16(f16_to_f32(a) - f16_to_f32(b))
+}
+
+#[inline]
+fn multiply_f16_fallback(a: u16, b: u16) -> u16 {
+    f32_to_f16(f16_to_f32(a) * f16_to_f32(b))
+}
+
+#[inline]
+fn divide_f16_fallback(a: u16, b: u16) -> u16 {
+    f32_to_f16(f16_to_f32(a) / f16_to_f32(b))
+}
+
+#[inline]
+fn remainder_f16_fallback(a: u16, b: u16) -> u16 {
+    f32_to_f16(f16_to_f32(a) % f16_to_f32(b))
+}
+
+#[inline]
+fn product_f16_fallback<I: Iterator<Item = u16>>(iter: I) -> u16 {
+    f32_to_f16(iter.map(f16_to_f32).product())
+}
+
+#[inline]
+fn sum_f16_fallback<I: Iterator<Item = u16>>(iter: I) -> u16 {
+    f32_to_f16(iter.map(f16_to_f32).sum())
+}
+
+// TODO SIMD arithmetic
