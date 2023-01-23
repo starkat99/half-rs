@@ -5,7 +5,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Changed
-- **Breaking Change** Minimum supported Rust version is now 1.59.
+- **Breaking Change** Minimum supported Rust version is now 1.61.
 - AArch64 now uses FP16 hardware support for conversions and math operations when available.
 
 ## [2.2.1] - 2023-01-08 <a name="2.2.1"></a>
