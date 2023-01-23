@@ -8,24 +8,36 @@ use core::mem;
 ))]
 mod x86;
 
-#[cfg(all(feature = "use-intrinsics", target_arch = "aarch64"))]
+#[cfg(target_arch = "aarch64")]
 mod aarch64;
 
 macro_rules! convert_fn {
-    (fn $name:ident($($var:ident : $vartype:ty),+) -> $restype:ty {
-            if x86_feature("f16c") { $f16c:expr }
-            else if aarch64_feature("fp16") { $aarch64:expr }
-            else { $fallback:expr }}) => {
-        #[inline]
-        pub(crate) fn $name($($var: $vartype),+) -> $restype {
+    (if x86_feature("f16c") { $f16c:expr }
+    else if aarch64_feature("fp16") { $aarch64:expr }
+    else { $fallback:expr }) => {
+        cfg_if::cfg_if! {
+            // Use intrinsics directly when a compile target or using no_std
+            if #[cfg(all(
+                feature = "use-intrinsics",
+                any(target_arch = "x86", target_arch = "x86_64"),
+                target_feature = "f16c"
+            ))] {
+                $f16c
+            }
+            else if #[cfg(all(
+                target_arch = "aarch64",
+                target_feature = "fp16"
+            ))] {
+                $aarch64
+
+            }
+
             // Use CPU feature detection if using std
-            #[cfg(all(
+            else if #[cfg(all(
                 feature = "use-intrinsics",
                 feature = "std",
-                any(target_arch = "x86", target_arch = "x86_64"),
-                not(target_feature = "f16c")
-            ))]
-            {
+                any(target_arch = "x86", target_arch = "x86_64")
+            ))] {
                 use std::arch::is_x86_feature_detected;
                 if is_x86_feature_detected!("f16c") {
                     $f16c
@@ -33,13 +45,10 @@ macro_rules! convert_fn {
                     $fallback
                 }
             }
-            #[cfg(all(
-                feature = "use-intrinsics",
+            else if #[cfg(all(
                 feature = "std",
                 target_arch = "aarch64",
-                not(any(target_feature = "fp16", target_feature = "v8.2a"))
-            ))]
-            {
+            ))] {
                 use std::arch::is_aarch64_feature_detected;
                 if is_aarch64_feature_detected!("fp16") {
                     $aarch64
@@ -47,39 +56,18 @@ macro_rules! convert_fn {
                     $fallback
                 }
             }
-            // Use intrinsics directly when a compile target or using no_std
-            #[cfg(all(
-                feature = "use-intrinsics",
-                any(target_arch = "x86", target_arch = "x86_64"),
-                target_feature = "f16c"
-            ))]
-            {
-                $f16c
-            }
-            #[cfg(all(
-                feature = "use-intrinsics",
-                target_arch = "aarch64",
-                any(target_feature = "fp16", target_feature = "v8.2a")
-            ))]
-            {
-                $aarch64
-            }
+
             // Fallback to software
-            #[cfg(any(
-                not(feature = "use-intrinsics"),
-                not(any(target_arch = "x86", target_arch = "x86_64", target_arch = "aarch64")),
-                all(not(feature = "std"),
-                    not(any(target_feature = "f16c", target_feature = "fp16", target_feature = "v8.2a")))
-            ))]
-            {
+            else {
                 $fallback
             }
         }
     };
 }
 
-convert_fn! {
-    fn f32_to_f16(f: f32) -> u16 {
+#[inline]
+pub(crate) fn f32_to_f16(f: f32) -> u16 {
+    convert_fn! {
         if x86_feature("f16c") {
             unsafe { x86::f32_to_f16_x86_f16c(f) }
         } else if aarch64_feature("fp16") {
@@ -90,8 +78,9 @@ convert_fn! {
     }
 }
 
-convert_fn! {
-    fn f64_to_f16(f: f64) -> u16 {
+#[inline]
+pub(crate) fn f64_to_f16(f: f64) -> u16 {
+    convert_fn! {
         if x86_feature("f16c") {
             unsafe { x86::f32_to_f16_x86_f16c(f as f32) }
         } else if aarch64_feature("fp16") {
@@ -102,8 +91,9 @@ convert_fn! {
     }
 }
 
-convert_fn! {
-    fn f16_to_f32(i: u16) -> f32 {
+#[inline]
+pub(crate) fn f16_to_f32(i: u16) -> f32 {
+    convert_fn! {
         if x86_feature("f16c") {
             unsafe { x86::f16_to_f32_x86_f16c(i) }
         } else if aarch64_feature("fp16") {
@@ -114,8 +104,9 @@ convert_fn! {
     }
 }
 
-convert_fn! {
-    fn f16_to_f64(i: u16) -> f64 {
+#[inline]
+pub(crate) fn f16_to_f64(i: u16) -> f64 {
+    convert_fn! {
         if x86_feature("f16c") {
             unsafe { x86::f16_to_f32_x86_f16c(i) as f64 }
         } else if aarch64_feature("fp16") {
@@ -126,8 +117,9 @@ convert_fn! {
     }
 }
 
-convert_fn! {
-    fn f32x4_to_f16x4(f: &[f32; 4]) -> [u16; 4] {
+#[inline]
+pub(crate) fn f32x4_to_f16x4(f: &[f32; 4]) -> [u16; 4] {
+    convert_fn! {
         if x86_feature("f16c") {
             unsafe { x86::f32x4_to_f16x4_x86_f16c(f) }
         } else if aarch64_feature("fp16") {
@@ -138,8 +130,9 @@ convert_fn! {
     }
 }
 
-convert_fn! {
-    fn f16x4_to_f32x4(i: &[u16; 4]) -> [f32; 4] {
+#[inline]
+pub(crate) fn f16x4_to_f32x4(i: &[u16; 4]) -> [f32; 4] {
+    convert_fn! {
         if x86_feature("f16c") {
             unsafe { x86::f16x4_to_f32x4_x86_f16c(i) }
         } else if aarch64_feature("fp16") {
@@ -150,8 +143,9 @@ convert_fn! {
     }
 }
 
-convert_fn! {
-    fn f64x4_to_f16x4(f: &[f64; 4]) -> [u16; 4] {
+#[inline]
+pub(crate) fn f64x4_to_f16x4(f: &[f64; 4]) -> [u16; 4] {
+    convert_fn! {
         if x86_feature("f16c") {
             unsafe { x86::f64x4_to_f16x4_x86_f16c(f) }
         } else if aarch64_feature("fp16") {
@@ -162,8 +156,9 @@ convert_fn! {
     }
 }
 
-convert_fn! {
-    fn f16x4_to_f64x4(i: &[u16; 4]) -> [f64; 4] {
+#[inline]
+pub(crate) fn f16x4_to_f64x4(i: &[u16; 4]) -> [f64; 4] {
+    convert_fn! {
         if x86_feature("f16c") {
             unsafe { x86::f16x4_to_f64x4_x86_f16c(i) }
         } else if aarch64_feature("fp16") {
@@ -174,8 +169,9 @@ convert_fn! {
     }
 }
 
-convert_fn! {
-    fn f32x8_to_f16x8(f: &[f32; 8]) -> [u16; 8] {
+#[inline]
+pub(crate) fn f32x8_to_f16x8(f: &[f32; 8]) -> [u16; 8] {
+    convert_fn! {
         if x86_feature("f16c") {
             unsafe { x86::f32x8_to_f16x8_x86_f16c(f) }
         } else if aarch64_feature("fp16") {
@@ -191,8 +187,9 @@ convert_fn! {
     }
 }
 
-convert_fn! {
-    fn f16x8_to_f32x8(i: &[u16; 8]) -> [f32; 8] {
+#[inline]
+pub(crate) fn f16x8_to_f32x8(i: &[u16; 8]) -> [f32; 8] {
+    convert_fn! {
         if x86_feature("f16c") {
             unsafe { x86::f16x8_to_f32x8_x86_f16c(i) }
         } else if aarch64_feature("fp16") {
@@ -208,8 +205,9 @@ convert_fn! {
     }
 }
 
-convert_fn! {
-    fn f64x8_to_f16x8(f: &[f64; 8]) -> [u16; 8] {
+#[inline]
+pub(crate) fn f64x8_to_f16x8(f: &[f64; 8]) -> [u16; 8] {
+    convert_fn! {
         if x86_feature("f16c") {
             unsafe { x86::f64x8_to_f16x8_x86_f16c(f) }
         } else if aarch64_feature("fp16") {
@@ -225,8 +223,9 @@ convert_fn! {
     }
 }
 
-convert_fn! {
-    fn f16x8_to_f64x8(i: &[u16; 8]) -> [f64; 8] {
+#[inline]
+pub(crate) fn f16x8_to_f64x8(i: &[u16; 8]) -> [f64; 8] {
+    convert_fn! {
         if x86_feature("f16c") {
             unsafe { x86::f16x8_to_f64x8_x86_f16c(i) }
         } else if aarch64_feature("fp16") {
@@ -242,8 +241,9 @@ convert_fn! {
     }
 }
 
-convert_fn! {
-    fn f32_to_f16_slice(src: &[f32], dst: &mut [u16]) -> () {
+#[inline]
+pub(crate) fn f32_to_f16_slice(src: &[f32], dst: &mut [u16]) {
+    convert_fn! {
         if x86_feature("f16c") {
             convert_chunked_slice_8(src, dst, x86::f32x8_to_f16x8_x86_f16c,
                 x86::f32x4_to_f16x4_x86_f16c)
@@ -255,8 +255,9 @@ convert_fn! {
     }
 }
 
-convert_fn! {
-    fn f16_to_f32_slice(src: &[u16], dst: &mut [f32]) -> () {
+#[inline]
+pub(crate) fn f16_to_f32_slice(src: &[u16], dst: &mut [f32]) {
+    convert_fn! {
         if x86_feature("f16c") {
             convert_chunked_slice_8(src, dst, x86::f16x8_to_f32x8_x86_f16c,
                 x86::f16x4_to_f32x4_x86_f16c)
@@ -268,8 +269,9 @@ convert_fn! {
     }
 }
 
-convert_fn! {
-    fn f64_to_f16_slice(src: &[f64], dst: &mut [u16]) -> () {
+#[inline]
+pub(crate) fn f64_to_f16_slice(src: &[f64], dst: &mut [u16]) {
+    convert_fn! {
         if x86_feature("f16c") {
             convert_chunked_slice_8(src, dst, x86::f64x8_to_f16x8_x86_f16c,
                 x86::f64x4_to_f16x4_x86_f16c)
@@ -281,8 +283,9 @@ convert_fn! {
     }
 }
 
-convert_fn! {
-    fn f16_to_f64_slice(src: &[u16], dst: &mut [f64]) -> () {
+#[inline]
+pub(crate) fn f16_to_f64_slice(src: &[u16], dst: &mut [f64]) {
+    convert_fn! {
         if x86_feature("f16c") {
             convert_chunked_slice_8(src, dst, x86::f16x8_to_f64x8_x86_f16c,
                 x86::f16x4_to_f64x4_x86_f16c)
@@ -290,6 +293,111 @@ convert_fn! {
             convert_chunked_slice_4(src, dst, aarch64::f16x4_to_f64x4_fp16)
         } else {
             slice_fallback(src, dst, f16_to_f64_fallback)
+        }
+    }
+}
+
+macro_rules! math_fn {
+    (if aarch64_feature("fp16") { $aarch64:expr }
+    else { $fallback:expr }) => {
+        cfg_if::cfg_if! {
+            // Use intrinsics directly when a compile target or using no_std
+            if #[cfg(all(
+                target_arch = "aarch64",
+                target_feature = "fp16"
+            ))] {
+                $aarch64
+            }
+
+            // Use CPU feature detection if using std
+            else if #[cfg(all(
+                feature = "std",
+                target_arch = "aarch64",
+                not(target_feature = "fp16")
+            ))] {
+                use std::arch::is_aarch64_feature_detected;
+                if is_aarch64_feature_detected!("fp16") {
+                    $aarch64
+                } else {
+                    $fallback
+                }
+            }
+
+            // Fallback to software
+            else {
+                $fallback
+            }
+        }
+    };
+}
+
+#[inline]
+pub(crate) fn add_f16(a: u16, b: u16) -> u16 {
+    math_fn! {
+        if aarch64_feature("fp16") {
+            unsafe { aarch64::add_f16_fp16(a, b) }
+        } else {
+            add_f16_fallback(a, b)
+        }
+    }
+}
+
+#[inline]
+pub(crate) fn subtract_f16(a: u16, b: u16) -> u16 {
+    math_fn! {
+        if aarch64_feature("fp16") {
+            unsafe { aarch64::subtract_f16_fp16(a, b) }
+        } else {
+            subtract_f16_fallback(a, b)
+        }
+    }
+}
+
+#[inline]
+pub(crate) fn multiply_f16(a: u16, b: u16) -> u16 {
+    math_fn! {
+        if aarch64_feature("fp16") {
+            unsafe { aarch64::multiply_f16_fp16(a, b) }
+        } else {
+            multiply_f16_fallback(a, b)
+        }
+    }
+}
+
+#[inline]
+pub(crate) fn divide_f16(a: u16, b: u16) -> u16 {
+    math_fn! {
+        if aarch64_feature("fp16") {
+            unsafe { aarch64::divide_f16_fp16(a, b) }
+        } else {
+            divide_f16_fallback(a, b)
+        }
+    }
+}
+
+#[inline]
+pub(crate) fn remainder_f16(a: u16, b: u16) -> u16 {
+    remainder_f16_fallback(a, b)
+}
+
+#[inline]
+pub(crate) fn product_f16<I: Iterator<Item = u16>>(iter: I) -> u16 {
+    math_fn! {
+        if aarch64_feature("fp16") {
+            iter.fold(0, |acc, x| unsafe { aarch64::multiply_f16_fp16(acc, x) })
+        } else {
+            product_f16_fallback(iter)
+        }
+    }
+}
+
+#[inline]
+pub(crate) fn sum_f16<I: Iterator<Item = u16>>(iter: I) -> u16 {
+    math_fn! {
+        if aarch64_feature("fp16") {
+            iter.fold(0, |acc, x| unsafe { aarch64::add_f16_fp16(acc, x) })
+        } else {
+            sum_f16_fallback(iter)
         }
     }
 }
@@ -700,4 +808,39 @@ fn slice_fallback<S: Copy, D>(src: &[S], dst: &mut [D], f: fn(S) -> D) {
     for (s, d) in src.iter().copied().zip(dst.iter_mut()) {
         *d = f(s);
     }
+}
+
+#[inline]
+fn add_f16_fallback(a: u16, b: u16) -> u16 {
+    f32_to_f16(f16_to_f32(a) + f16_to_f32(b))
+}
+
+#[inline]
+fn subtract_f16_fallback(a: u16, b: u16) -> u16 {
+    f32_to_f16(f16_to_f32(a) - f16_to_f32(b))
+}
+
+#[inline]
+fn multiply_f16_fallback(a: u16, b: u16) -> u16 {
+    f32_to_f16(f16_to_f32(a) * f16_to_f32(b))
+}
+
+#[inline]
+fn divide_f16_fallback(a: u16, b: u16) -> u16 {
+    f32_to_f16(f16_to_f32(a) / f16_to_f32(b))
+}
+
+#[inline]
+fn remainder_f16_fallback(a: u16, b: u16) -> u16 {
+    f32_to_f16(f16_to_f32(a) % f16_to_f32(b))
+}
+
+#[inline]
+fn product_f16_fallback<I: Iterator<Item = u16>>(iter: I) -> u16 {
+    f32_to_f16(iter.map(f16_to_f32).product())
+}
+
+#[inline]
+fn sum_f16_fallback<I: Iterator<Item = u16>>(iter: I) -> u16 {
+    f32_to_f16(iter.map(f16_to_f32).sum())
 }

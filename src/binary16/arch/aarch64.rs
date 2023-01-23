@@ -91,3 +91,63 @@ pub(super) unsafe fn f64x4_to_f16x4_fp16(v: &[f64; 4]) -> [u16; 4] {
     let v = [v[0] as f32, v[1] as f32, v[2] as f32, v[3] as f32];
     f32x4_to_f16x4_fp16(&v)
 }
+
+#[target_feature(enable = "fp16")]
+#[inline]
+pub(super) unsafe fn add_f16_fp16(a: u16, b: u16) -> u16 {
+    let result: u16;
+    unsafe {
+        asm!(
+            "fadd {0:h}, {1:h}, {2:h}",
+        out(vreg) result,
+        in(vreg) a,
+        in(vreg) b,
+        options(pure, nomem, nostack));
+    }
+    result
+}
+
+#[target_feature(enable = "fp16")]
+#[inline]
+pub(super) unsafe fn subtract_f16_fp16(a: u16, b: u16) -> u16 {
+    let result: u16;
+    unsafe {
+        asm!(
+            "fsub {0:h}, {1:h}, {2:h}",
+        out(vreg) result,
+        in(vreg) a,
+        in(vreg) b,
+        options(pure, nomem, nostack));
+    }
+    result
+}
+
+#[target_feature(enable = "fp16")]
+#[inline]
+pub(super) unsafe fn multiply_f16_fp16(a: u16, b: u16) -> u16 {
+    let result: u16;
+    unsafe {
+        asm!(
+            "fmul {0:h}, {1:h}, {2:h}",
+        out(vreg) result,
+        in(vreg) a,
+        in(vreg) b,
+        options(pure, nomem, nostack));
+    }
+    result
+}
+
+#[target_feature(enable = "fp16")]
+#[inline]
+pub(super) unsafe fn divide_f16_fp16(a: u16, b: u16) -> u16 {
+    let result: u16;
+    unsafe {
+        asm!(
+            "fdiv {0:h}, {1:h}, {2:h}",
+        out(vreg) result,
+        in(vreg) a,
+        in(vreg) b,
+        options(pure, nomem, nostack));
+    }
+    result
+}

@@ -20,6 +20,7 @@ use-intrinsics = []
 alloc = []
 
 [dependencies]
+cfg-if = "1.0.0"
 bytemuck = { version = "1.4.1", default-features = false, features = [
     "derive",
 ], optional = true }
