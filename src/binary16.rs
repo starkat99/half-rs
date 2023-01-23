@@ -1884,6 +1884,17 @@ mod test {
         );
     }
 
+    #[test]
+    fn arithmetic() {
+        assert_eq!(f16::ONE + f16::ONE, f16::from_f32(2.));
+        assert_eq!(f16::ONE - f16::ONE, f16::ZERO);
+        assert_eq!(f16::ONE * f16::ONE, f16::ONE);
+        assert_eq!(f16::from_f32(2.) * f16::from_f32(2.), f16::from_f32(4.));
+        assert_eq!(f16::ONE / f16::ONE, f16::ONE);
+        assert_eq!(f16::from_f32(4.) / f16::from_f32(2.), f16::from_f32(2.));
+        assert_eq!(f16::from_f32(4.) % f16::from_f32(3.), f16::from_f32(1.));
+    }
+
     impl quickcheck::Arbitrary for f16 {
         fn arbitrary(g: &mut quickcheck::Gen) -> Self {
             f16(u16::arbitrary(g))
