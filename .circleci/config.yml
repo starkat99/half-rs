@@ -50,8 +50,8 @@ workflows:
           toolchain: stable
           features: --features=std,serde,num-traits,bytemuck,zerocopy
       - rust:
-          name: Rust AArch64 (1.59.0)
-          toolchain: 1.59.0
+          name: Rust AArch64 (1.61.0)
+          toolchain: 1.61.0
           features: --features=std,serde,num-traits,bytemuck,zerocopy
       - rust:
           name: Rust AArch64 (nightly)
