@@ -28,10 +28,6 @@ pub(crate) mod convert;
 /// having a lower precision than [`f16`][crate::f16]. While [`f16`][crate::f16] has a precision of
 /// 11 bits, [`bf16`] has a precision of only 8 bits.
 ///
-/// Like [`f16`][crate::f16], [`bf16`] does not offer arithmetic operations as it is intended for
-/// compact storage rather than calculations. Operations should be performed with [`f32`] or
-/// higher-precision types and converted to/from [`bf16`] as necessary.
-///
 /// [`bfloat16`]: https://en.wikipedia.org/wiki/Bfloat16_floating-point_format
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, Default)]

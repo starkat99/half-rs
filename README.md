@@ -3,15 +3,15 @@
 
 This crate implements a half-precision floating point `f16` type for Rust implementing the IEEE
 754-2008 standard [`binary16`](https://en.wikipedia.org/wiki/Half-precision_floating-point_format)
-a.k.a `half` format, as well as a `bf16` type implementing the
+a.k.a "half" format, as well as a `bf16` type implementing the
 [`bfloat16`](https://en.wikipedia.org/wiki/Bfloat16_floating-point_format) format.
 
 ## Usage
 
-The `f16` and `bf16` types provides conversion operations as a normal Rust floating point type, but
-since they are primarily leveraged for minimal floating point storage and most major hardware does
-not implement them, all math operations are done as an `f32` type under the hood. Complex arithmetic
-should manually convert to and from `f32` for better performance.
+The `f16` and `bf16` types attempt to match existing Rust floating point type functionality where possible, and provides both conversion operations (such as to/from `f32` and `f64`) and basic
+arithmetic operations. Hardware support for these operations will be used whenever hardware support
+is available—either through instrinsics or targeted assembly—although a nightly Rust toolchain may
+be required for some hardware.
 
 This crate provides [`no_std`](https://rust-embedded.github.io/book/intro/no-std.html) support by
 default so can easily be used in embedded code where a smaller float format is most useful.
@@ -26,33 +26,43 @@ See the [crate documentation](https://docs.rs/half/) for more details.
 - **`serde`** - Implement `Serialize` and `Deserialize` traits for `f16` and `bf16`. This adds a
   dependency on the [`serde`](https://crates.io/crates/serde) crate.
 
-- **`use-intrinsics`** - Use hardware intrinsics for `f16` and `bf16` conversions if available on
-  the compiler host target. By default, without this feature, conversions are done only in software,
-  which will be the fallback if the host target does not have hardware support. **Available only on
+- **`use-intrinsics`** — Use unstable hardware intrinsics for `f16` and `bf16` conversions if
+  available on the compiler target. By default, only hardware support compatible with the Rust
+  stable toolchain will be used, or software emulation otherwise. **Available only on
   Rust nightly channel.**
 
-- **`alloc`** - Enable use of the [`alloc`](https://doc.rust-lang.org/alloc/) crate when not using
+- **`alloc`** — Enable use of the [`alloc`](https://doc.rust-lang.org/alloc/) crate when not using
   the `std` library.
 
   This enables the `vec` module, which contains zero-copy conversions for the `Vec` type. This
   allows fast conversion between raw `Vec<u16>` bits and `Vec<f16>` or `Vec<bf16>` arrays, and vice
   versa.
 
-- **`std`** - Enable features that depend on the Rust `std` library, including everything in the
+- **`std`** — Enable features that depend on the Rust `std` library, including everything in the
   `alloc` feature.
 
-  Enabling the `std` feature enables runtime CPU feature detection when the `use-intrsincis` feature
-  is also enabled.
-  Without this feature detection, intrinsics are only used when compiler host target supports them.
+  Enabling the `std` feature enables runtime CPU feature detection of hardware support.
+  Without this feature detection, harware is only used when compiler target supports them.
 
-- **`num-traits`** - Enable `ToPrimitive`, `FromPrimitive`, `Num`, `Float`, `FloatCore` and
+- **`num-traits`** — Enable `ToPrimitive`, `FromPrimitive`, `Num`, `Float`, `FloatCore` and
   `Bounded` trait implementations from the [`num-traits`](https://crates.io/crates/num-traits) crate.
 
-- **`bytemuck`** - Enable `Zeroable` and `Pod` trait implementations from the
+- **`bytemuck`** — Enable `Zeroable` and `Pod` trait implementations from the
   [`bytemuck`](https://crates.io/crates/bytemuck) crate.
 
-- **`zerocopy`** - Enable `AsBytes` and `FromBytes` trait implementations from the 
+- **`zerocopy`** — Enable `AsBytes` and `FromBytes` trait implementations from the 
   [`zerocopy`](https://crates.io/crates/zerocopy) crate.
+
+### Hardware support
+
+The following list details hardware support for floating point types in this crate. When using `std`
+library, runtime CPU target detection will be used. To get the most performance benefits, compile
+for specific CPU features which avoids the runtime overhead and works in a `no_std` environment.
+
+| Architecture | CPU Target Feature | Notes |
+| ------------ | ------------------ | ----- |
+| `x86`/`x86_64` | `f16c` | **Only on nightly Rust toolchain with `use-intrinsics` cargo feature.** This supports conversion to/from `f16` only (including vector SIMD) and does not support any `bf16` or arithmetic operations. |
+| `aarch64` | `fp16` | This supports all operations on `f16` only. |
 
 ### More Documentation
 

@@ -1,7 +1,7 @@
 //! A crate that provides support for half-precision 16-bit floating point types.
 //!
 //! This crate provides the [`f16`] type, which is an implementation of the IEEE 754-2008 standard
-//! [`binary16`] a.k.a `half` floating point type. This 16-bit floating point type is intended for
+//! [`binary16`] a.k.a "half" floating point type. This 16-bit floating point type is intended for
 //! efficient storage where the full range and precision of a larger floating point value is not
 //! required. This is especially useful for image storage formats.
 //!
@@ -11,11 +11,9 @@
 //! bits for [`f16`]). See the [`bf16`] type for details.
 //!
 //! Because [`f16`] and [`bf16`] are primarily for efficient storage, floating point operations such
-//! as addition, multiplication, etc. are not implemented by hardware. While this crate does provide
-//! the appropriate trait implementations for basic operations, they each convert the value to
-//! [`f32`] before performing the operation and then back afterward. When performing complex
-//! arithmetic, manually convert to and from [`f32`] before and after to reduce repeated conversions
-//! for each operation.
+//! as addition, multiplication, etc. are not always implemented by hardware. When hardware does not
+//! support these operations, this crate emulates them by converting the value to
+//! [`f32`] before performing the operation and then back afterward.
 //!
 //! This crate also provides a [`slice`][mod@slice] module for zero-copy in-place conversions of
 //! [`u16`] slices to both [`f16`] and [`bf16`], as well as efficient vectorized conversions of
@@ -43,47 +41,57 @@
 //! Deserialization of both float types supports deserializing from the default serialization,
 //! strings, and `f32`/`f64` values, so no additional work is required.
 //!
+//! # Hardware support
+//!
+//! Hardware support for these conversions and arithmetic will be used
+//! whenever hardware support is available—either through instrinsics or targeted assembly—although
+//! a nightly Rust toolchain may be required for some hardware. When hardware supports it the
+//! functions and traits in the [`slice`][mod@slice] and [`vec`] modules will also use vectorized
+//! SIMD intructions for increased efficiency.
+//!
+//! The following list details hardware support for floating point types in this crate. When using
+//! `std` cargo feature, runtime CPU target detection will be used. To get the most performance
+//! benefits, compile for specific CPU features which avoids the runtime overhead and works in a
+//! `no_std` environment.
+//!
+//! | Architecture | CPU Target Feature | Notes |
+//! | ------------ | ------------------ | ----- |
+//! | `x86`/`x86_64` | `f16c` | **Only on nightly Rust toolchain with `use-intrinsics` cargo feature.** This supports conversion to/from [`f16`] only (including vector SIMD) and does not support any [`bf16`] or arithmetic operations. |
+//! | `aarch64` | `fp16` | This supports all operations on [`f16`] only. |
+//!
 //! # Cargo Features
 //!
 //! This crate supports a number of optional cargo features. None of these features are enabled by
 //! default, even `std`.
 //!
-//! - **`use-intrinsics`** -- Use [`core::arch`] hardware intrinsics for `f16` and `bf16` conversions
-//!   if available on the compiler target. This feature currently only works on nightly Rust
-//!   until the corresponding intrinsics are stabilized.
+//! - **`use-intrinsics`** — Use unstable hardware intrinsics for [`f16`] and [`bf16`] conversions
+//!   if available on the compiler target. By default, only hardware support compatible with the
+//!   Rust stable toolchain will be used, or software emulation otherwise. **Available only on
+//!   Rust nightly channel.**
 //!
-//!   When this feature is enabled and the hardware supports it, the functions and traits in the
-//!   [`slice`][mod@slice] module will use vectorized SIMD intructions for increased efficiency.
-//!
-//!   By default, without this feature, conversions are done only in software, which will also be
-//!   the fallback if the target does not have hardware support. Note that without the `std`
-//!   feature enabled, no runtime CPU feature detection is used, so the hardware support is only
-//!   compiled if the compiler target supports the CPU feature.
-//!
-//! - **`alloc`** -- Enable use of the [`alloc`] crate when not using the `std` library.
+//! - **`alloc`** — Enable use of the [`alloc`] crate when not using the `std` library.
 //!
 //!   Among other functions, this enables the [`vec`] module, which contains zero-copy
 //!   conversions for the [`Vec`] type. This allows fast conversion between raw `Vec<u16>` bits and
 //!   `Vec<f16>` or `Vec<bf16>` arrays, and vice versa.
 //!
-//! - **`std`** -- Enable features that depend on the Rust [`std`] library. This also enables the
+//! - **`std`** — Enable features that depend on the Rust [`std`] library. This also enables the
 //!   `alloc` feature automatically.
 //!
-//!   Enabling the `std` feature also enables runtime CPU feature detection when the
-//!   `use-intrsincis` feature is also enabled. Without this feature detection, intrinsics are only
-//!   used when compiler target supports the target feature.
+//!   Enabling the `std` feature enables runtime CPU feature detection of hardware support.
+//!   Without this feature detection, harware is only used when compiler target supports them.
 //!
-//! - **`serde`** -- Adds support for the [`serde`] crate by implementing [`Serialize`] and
+//! - **`serde`** — Adds support for the [`serde`] crate by implementing [`Serialize`] and
 //!   [`Deserialize`] traits for both [`f16`] and [`bf16`].
 //!
-//! - **`num-traits`** -- Adds support for the [`num-traits`] crate by implementing [`ToPrimitive`],
+//! - **`num-traits`** — Adds support for the [`num-traits`] crate by implementing [`ToPrimitive`],
 //!   [`FromPrimitive`], [`AsPrimitive`], [`Num`], [`Float`], [`FloatCore`], and [`Bounded`] traits
 //!   for both [`f16`] and [`bf16`].
 //!
-//! - **`bytemuck`** -- Adds support for the [`bytemuck`] crate by implementing [`Zeroable`] and
+//! - **`bytemuck`** — Adds support for the [`bytemuck`] crate by implementing [`Zeroable`] and
 //!   [`Pod`] traits for both [`f16`] and [`bf16`].
 //!
-//! - **`zerocopy`** -- Adds support for the [`zerocopy`] crate by implementing [`AsBytes`] and
+//! - **`zerocopy`** — Adds support for the [`zerocopy`] crate by implementing [`AsBytes`] and
 //!   [`FromBytes`] traits for both [`f16`] and [`bf16`].
 //!
 //! [`alloc`]: https://doc.rust-lang.org/alloc/

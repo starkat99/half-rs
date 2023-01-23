@@ -21,14 +21,11 @@ use zerocopy::{AsBytes, FromBytes};
 
 pub(crate) mod arch;
 
-/// A 16-bit floating point type implementing the IEEE 754-2008 standard [`binary16`] a.k.a `half`
+/// A 16-bit floating point type implementing the IEEE 754-2008 standard [`binary16`] a.k.a "half"
 /// format.
 ///
 /// This 16-bit floating point type is intended for efficient storage where the full range and
-/// precision of a larger floating point value is not required. Because [`f16`] is primarily for
-/// efficient storage, floating point operations such as addition, multiplication, etc. are not
-/// implemented. Operations should be performed with [`f32`] or higher-precision types and converted
-/// to/from [`f16`] as necessary.
+/// precision of a larger floating point value is not required.
 ///
 /// [`binary16`]: https://en.wikipedia.org/wiki/Half-precision_floating-point_format
 #[allow(non_camel_case_types)]
