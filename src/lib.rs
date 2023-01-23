@@ -177,7 +177,7 @@
         feature = "use-intrinsics",
         any(target_arch = "x86", target_arch = "x86_64")
     ),
-    feature(stdsimd, f16c_target_feature)
+    feature(stdsimd)
 )]
 #![doc(html_root_url = "https://docs.rs/half/2.2.1")]
 #![doc(test(attr(deny(warnings), allow(unused))))]
