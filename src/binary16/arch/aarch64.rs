@@ -15,7 +15,7 @@ pub(super) unsafe fn f16_to_f32_fp16(i: u16) -> f32 {
         "fcvt {0:s}, {1:h}",
         out(vreg) result,
         in(vreg) i,
-        options(pure, nomem, nostack));
+        options(pure, nomem, nostack, preserves_flags));
     result
 }
 
@@ -27,7 +27,7 @@ pub(super) unsafe fn f16_to_f64_fp16(i: u16) -> f64 {
         "fcvt {0:d}, {1:h}",
         out(vreg) result,
         in(vreg) i,
-        options(pure, nomem, nostack));
+        options(pure, nomem, nostack, preserves_flags));
     result
 }
 
@@ -39,7 +39,7 @@ pub(super) unsafe fn f32_to_f16_fp16(f: f32) -> u16 {
         "fcvt {0:h}, {1:s}",
         out(vreg) result,
         in(vreg) f,
-        options(pure, nomem, nostack));
+        options(pure, nomem, nostack, preserves_flags));
     result
 }
 
@@ -51,7 +51,7 @@ pub(super) unsafe fn f64_to_f16_fp16(f: f64) -> u16 {
         "fcvt {0:h}, {1:d}",
         out(vreg) result,
         in(vreg) f,
-        options(pure, nomem, nostack));
+        options(pure, nomem, nostack, preserves_flags));
     result
 }
 
