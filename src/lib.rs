@@ -209,6 +209,9 @@ pub mod vec;
 pub use bfloat::bf16;
 pub use binary16::f16;
 
+#[cfg(feature = "sample")]
+mod sample;
+
 /// A collection of the most used items and traits in this crate for easy importing.
 ///
 /// # Examples
