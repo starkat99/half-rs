@@ -94,20 +94,21 @@ impl rand_distr::uniform::UniformSampler for BFloat16Sampler {
 }
 
 #[cfg(test)]
-#[cfg(feature = "num-traits")]
 mod tests {
     use super::*;
 
     use rand::{thread_rng, Rng};
-    use rand_distr::{Normal, Standard, StandardNormal, Uniform};
+    use rand_distr::{Standard, StandardNormal, Uniform};
 
     #[test]
     fn test_sample_f16() {
         let mut rng = thread_rng();
         let _: f16 = rng.sample(Standard);
         let _: f16 = rng.sample(StandardNormal);
-        let _: f16 = rng.sample(Normal::new(f16::from_f32(0.0), f16::from_f32(1.0)).unwrap());
         let _: f16 = rng.sample(Uniform::new(f16::from_f32(0.0), f16::from_f32(1.0)));
+        #[cfg(feature = "num-traits")]
+        let _: f16 =
+            rng.sample(rand_distr::Normal::new(f16::from_f32(0.0), f16::from_f32(1.0)).unwrap());
     }
 
     #[test]
@@ -115,7 +116,9 @@ mod tests {
         let mut rng = thread_rng();
         let _: bf16 = rng.sample(Standard);
         let _: bf16 = rng.sample(StandardNormal);
-        let _: bf16 = rng.sample(Normal::new(bf16::from_f32(0.0), bf16::from_f32(1.0)).unwrap());
         let _: bf16 = rng.sample(Uniform::new(bf16::from_f32(0.0), bf16::from_f32(1.0)));
+        #[cfg(feature = "num-traits")]
+        let _: bf16 =
+            rng.sample(rand_distr::Normal::new(bf16::from_f32(0.0), bf16::from_f32(1.0)).unwrap());
     }
 }
