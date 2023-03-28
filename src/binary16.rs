@@ -1,3 +1,5 @@
+#[cfg(all(feature = "serde", feature = "alloc"))]
+use alloc::string::ToString;
 #[cfg(feature = "bytemuck")]
 use bytemuck::{Pod, Zeroable};
 use core::{
@@ -696,7 +698,7 @@ impl f16 {
     ///     value: f16 // Will be serialized as a string instead of u16
     /// }
     /// ```
-    #[cfg(feature = "serde")]
+    #[cfg(all(feature = "serde", feature = "alloc"))]
     pub fn serialize_as_string<S: serde::Serializer>(
         &self,
         serializer: S,
@@ -1294,7 +1296,7 @@ impl<'de> Deserialize<'de> for f16 {
 impl<'de> serde::de::Visitor<'de> for Visitor {
     type Value = f16;
 
-    fn expecting(&self, formatter: &mut alloc::fmt::Formatter) -> alloc::fmt::Result {
+    fn expecting(&self, formatter: &mut core::fmt::Formatter) -> core::fmt::Result {
         write!(formatter, "tuple struct f16")
     }
 
