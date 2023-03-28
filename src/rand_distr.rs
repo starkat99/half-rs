@@ -1,5 +1,7 @@
-use rand::Rng;
-use rand_distr::{uniform::UniformFloat, Distribution};
+use crate::{bf16, f16};
+
+use rand::{distributions::Distribution, Rng};
+use rand_distr::uniform::UniformFloat;
 
 macro_rules! impl_distribution_via_f32 {
     ($Ty:ty, $Distr:ty) => {
@@ -11,27 +13,27 @@ macro_rules! impl_distribution_via_f32 {
     };
 }
 
-impl_distribution_via_f32!(crate::f16, rand_distr::Standard);
-impl_distribution_via_f32!(crate::f16, rand_distr::StandardNormal);
-impl_distribution_via_f32!(crate::f16, rand_distr::Exp1);
-impl_distribution_via_f32!(crate::f16, rand_distr::Open01);
-impl_distribution_via_f32!(crate::f16, rand_distr::OpenClosed01);
+impl_distribution_via_f32!(f16, rand_distr::Standard);
+impl_distribution_via_f32!(f16, rand_distr::StandardNormal);
+impl_distribution_via_f32!(f16, rand_distr::Exp1);
+impl_distribution_via_f32!(f16, rand_distr::Open01);
+impl_distribution_via_f32!(f16, rand_distr::OpenClosed01);
 
-impl_distribution_via_f32!(crate::bf16, rand_distr::Standard);
-impl_distribution_via_f32!(crate::bf16, rand_distr::StandardNormal);
-impl_distribution_via_f32!(crate::bf16, rand_distr::Exp1);
-impl_distribution_via_f32!(crate::bf16, rand_distr::Open01);
-impl_distribution_via_f32!(crate::bf16, rand_distr::OpenClosed01);
+impl_distribution_via_f32!(bf16, rand_distr::Standard);
+impl_distribution_via_f32!(bf16, rand_distr::StandardNormal);
+impl_distribution_via_f32!(bf16, rand_distr::Exp1);
+impl_distribution_via_f32!(bf16, rand_distr::Open01);
+impl_distribution_via_f32!(bf16, rand_distr::OpenClosed01);
 
 #[derive(Debug, Clone, Copy)]
 pub struct Float16Sampler(UniformFloat<f32>);
 
-impl rand_distr::uniform::SampleUniform for crate::f16 {
+impl rand_distr::uniform::SampleUniform for f16 {
     type Sampler = Float16Sampler;
 }
 
 impl rand_distr::uniform::UniformSampler for Float16Sampler {
-    type X = crate::f16;
+    type X = f16;
     fn new<B1, B2>(low: B1, high: B2) -> Self
     where
         B1: rand_distr::uniform::SampleBorrow<Self::X> + Sized,
@@ -53,19 +55,19 @@ impl rand_distr::uniform::UniformSampler for Float16Sampler {
         ))
     }
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Self::X {
-        crate::f16::from_f32(self.0.sample(rng))
+        f16::from_f32(self.0.sample(rng))
     }
 }
 
 #[derive(Debug, Clone, Copy)]
 pub struct BFloat16Sampler(UniformFloat<f32>);
 
-impl rand_distr::uniform::SampleUniform for crate::bf16 {
+impl rand_distr::uniform::SampleUniform for bf16 {
     type Sampler = BFloat16Sampler;
 }
 
 impl rand_distr::uniform::UniformSampler for BFloat16Sampler {
-    type X = crate::bf16;
+    type X = bf16;
     fn new<B1, B2>(low: B1, high: B2) -> Self
     where
         B1: rand_distr::uniform::SampleBorrow<Self::X> + Sized,
@@ -87,40 +89,33 @@ impl rand_distr::uniform::UniformSampler for BFloat16Sampler {
         ))
     }
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Self::X {
-        crate::bf16::from_f32(self.0.sample(rng))
+        bf16::from_f32(self.0.sample(rng))
     }
 }
 
 #[cfg(test)]
+#[cfg(feature = "num-traits")]
 mod tests {
+    use super::*;
+
     use rand::{thread_rng, Rng};
+    use rand_distr::{Normal, Standard, StandardNormal, Uniform};
 
     #[test]
     fn test_sample_f16() {
         let mut rng = thread_rng();
-        let _: crate::f16 = rng.sample(rand_distr::Standard);
-        let _: crate::f16 = rng.sample(rand_distr::StandardNormal);
-        let _: crate::f16 = rng.sample(
-            rand_distr::Normal::new(crate::f16::from_f32(0.0), crate::f16::from_f32(1.0)).unwrap(),
-        );
-        let _: crate::f16 = rng.sample(rand_distr::Uniform::new(
-            crate::f16::from_f32(0.0),
-            crate::f16::from_f32(1.0),
-        ));
+        let _: f16 = rng.sample(Standard);
+        let _: f16 = rng.sample(StandardNormal);
+        let _: f16 = rng.sample(Normal::new(f16::from_f32(0.0), f16::from_f32(1.0)).unwrap());
+        let _: f16 = rng.sample(Uniform::new(f16::from_f32(0.0), f16::from_f32(1.0)));
     }
 
     #[test]
     fn test_sample_bf16() {
         let mut rng = thread_rng();
-        let _: crate::bf16 = rng.sample(rand_distr::Standard);
-        let _: crate::bf16 = rng.sample(rand_distr::StandardNormal);
-        let _: crate::bf16 = rng.sample(
-            rand_distr::Normal::new(crate::bf16::from_f32(0.0), crate::bf16::from_f32(1.0))
-                .unwrap(),
-        );
-        let _: crate::bf16 = rng.sample(rand_distr::Uniform::new(
-            crate::bf16::from_f32(0.0),
-            crate::bf16::from_f32(1.0),
-        ));
+        let _: bf16 = rng.sample(Standard);
+        let _: bf16 = rng.sample(StandardNormal);
+        let _: bf16 = rng.sample(Normal::new(bf16::from_f32(0.0), bf16::from_f32(1.0)).unwrap());
+        let _: bf16 = rng.sample(Uniform::new(bf16::from_f32(0.0), bf16::from_f32(1.0)));
     }
 }

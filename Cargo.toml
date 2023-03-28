@@ -18,6 +18,7 @@ default = ["std"]
 std = ["alloc"]
 use-intrinsics = []
 alloc = []
+rand_distr = ["dep:rand", "dep:rand_distr"]
 
 [dependencies]
 cfg-if = "1.0.0"
