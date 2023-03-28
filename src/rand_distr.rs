@@ -1,9 +1,10 @@
+use rand::Rng;
 use rand_distr::{uniform::UniformFloat, Distribution};
 
 macro_rules! impl_distribution_via_f32 {
     ($Ty:ty, $Distr:ty) => {
         impl Distribution<$Ty> for $Distr {
-            fn sample<R: rand::Rng + ?Sized>(&self, rng: &mut R) -> $Ty {
+            fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> $Ty {
                 <$Ty>::from_f32(<Self as Distribution<f32>>::sample(self, rng))
             }
         }
@@ -51,7 +52,7 @@ impl rand_distr::uniform::UniformSampler for Float16Sampler {
             high.borrow().to_f32(),
         ))
     }
-    fn sample<R: rand::Rng + ?Sized>(&self, rng: &mut R) -> Self::X {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Self::X {
         crate::f16::from_f32(self.0.sample(rng))
     }
 }
@@ -85,7 +86,7 @@ impl rand_distr::uniform::UniformSampler for BFloat16Sampler {
             high.borrow().to_f32(),
         ))
     }
-    fn sample<R: rand::Rng + ?Sized>(&self, rng: &mut R) -> Self::X {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Self::X {
         crate::bf16::from_f32(self.0.sample(rng))
     }
 }

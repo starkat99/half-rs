@@ -15,7 +15,6 @@ exclude = [".git*", ".editorconfig"]
 
 [features]
 default = ["std"]
-sample = ["rand", "rand_distr"]
 std = ["alloc"]
 use-intrinsics = []
 alloc = []
@@ -49,4 +48,4 @@ harness = false
 
 [package.metadata.docs.rs]
 rustc-args = ["--cfg", "docsrs"]
-features = ["std", "serde", "bytemuck", "num-traits", "zerocopy", "sample"]
+features = ["std", "serde", "bytemuck", "num-traits", "zerocopy", "rand_distr"]
