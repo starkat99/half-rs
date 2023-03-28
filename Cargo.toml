@@ -48,4 +48,4 @@ harness = false
 
 [package.metadata.docs.rs]
 rustc-args = ["--cfg", "docsrs"]
-features = ["std", "serde", "bytemuck", "num-traits", "zerocopy", "rand_distr"]
+features = ["std", "serde", "bytemuck", "num-traits", "zerocopy", "rand", "rand_distr"]
