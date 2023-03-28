@@ -318,6 +318,7 @@ impl HalfFloatSliceExt for [f16] {
         unsafe { slice::from_raw_parts_mut(pointer, length) }
     }
 
+    #[inline]
     fn convert_from_f32_slice(&mut self, src: &[f32]) {
         assert_eq!(
             self.len(),
@@ -328,6 +329,7 @@ impl HalfFloatSliceExt for [f16] {
         arch::f32_to_f16_slice(src, self.reinterpret_cast_mut())
     }
 
+    #[inline]
     fn convert_from_f64_slice(&mut self, src: &[f64]) {
         assert_eq!(
             self.len(),
@@ -338,6 +340,7 @@ impl HalfFloatSliceExt for [f16] {
         arch::f64_to_f16_slice(src, self.reinterpret_cast_mut())
     }
 
+    #[inline]
     fn convert_to_f32_slice(&self, dst: &mut [f32]) {
         assert_eq!(
             self.len(),
@@ -348,6 +351,7 @@ impl HalfFloatSliceExt for [f16] {
         arch::f16_to_f32_slice(self.reinterpret_cast(), dst)
     }
 
+    #[inline]
     fn convert_to_f64_slice(&self, dst: &mut [f64]) {
         assert_eq!(
             self.len(),
@@ -404,6 +408,7 @@ impl HalfFloatSliceExt for [bf16] {
         unsafe { slice::from_raw_parts_mut(pointer, length) }
     }
 
+    #[inline]
     fn convert_from_f32_slice(&mut self, src: &[f32]) {
         assert_eq!(
             self.len(),
@@ -417,6 +422,7 @@ impl HalfFloatSliceExt for [bf16] {
         }
     }
 
+    #[inline]
     fn convert_from_f64_slice(&mut self, src: &[f64]) {
         assert_eq!(
             self.len(),
@@ -430,6 +436,7 @@ impl HalfFloatSliceExt for [bf16] {
         }
     }
 
+    #[inline]
     fn convert_to_f32_slice(&self, dst: &mut [f32]) {
         assert_eq!(
             self.len(),
@@ -443,6 +450,7 @@ impl HalfFloatSliceExt for [bf16] {
         }
     }
 
+    #[inline]
     fn convert_to_f64_slice(&self, dst: &mut [f64]) {
         assert_eq!(
             self.len(),

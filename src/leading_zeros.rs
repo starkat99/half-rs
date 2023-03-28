@@ -7,6 +7,7 @@
         target_feature = "SPV_INTEL_shader_integer_functions2"
     ))
 ))))]
+#[inline]
 pub(crate) const fn leading_zeros_u16(x: u16) -> u32 {
     x.leading_zeros()
 }
@@ -18,6 +19,7 @@ pub(crate) const fn leading_zeros_u16(x: u16) -> u32 {
         target_feature = "SPV_INTEL_shader_integer_functions2"
     ))
 ))]
+#[inline]
 pub(crate) const fn leading_zeros_u16(x: u16) -> u32 {
     leading_zeros_u16_fallback(x)
 }
@@ -32,6 +34,7 @@ pub(crate) const fn leading_zeros_u16(x: u16) -> u32 {
         ))
     )
 ))]
+#[inline]
 const fn leading_zeros_u16_fallback(mut x: u16) -> u32 {
     use crunchy::unroll;
     let mut c = 0;
