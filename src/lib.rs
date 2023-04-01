@@ -94,7 +94,7 @@
 //! - **`zerocopy`** — Adds support for the [`zerocopy`] crate by implementing [`AsBytes`] and
 //!   [`FromBytes`] traits for both [`f16`] and [`bf16`].
 //!
-//! - **`rand_distr`** — Adds support for the [`rand_distr`] crate by implementing [`Distribution`]
+//! - **`rand_distr`** — Adds support for the [`rand_distr`] crate by implementing [`rand::distributions::Distribution`]
 //!   and other traits for both [`f16`] and [`bf16`].
 //!
 //! [`alloc`]: https://doc.rust-lang.org/alloc/
