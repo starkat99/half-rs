@@ -787,10 +787,24 @@ impl From<bf16> for f32 {
     }
 }
 
+impl From<f32> for bf16 {
+    #[inline]
+    fn from(x: f32) -> bf16 {
+        bf16::from_f32(x)
+    }
+}
+
 impl From<bf16> for f64 {
     #[inline]
     fn from(x: bf16) -> f64 {
         x.to_f64()
+    }
+}
+
+impl From<f64> for bf16 {
+    #[inline]
+    fn from(x: f64) -> bf16 {
+        bf16::from_f64(x)
     }
 }
 

@@ -797,10 +797,24 @@ impl From<f16> for f32 {
     }
 }
 
+impl From<f32> for f16 {
+    #[inline]
+    fn from(x: f32) -> f16 {
+        f16::from_f32(x)
+    }
+}
+
 impl From<f16> for f64 {
     #[inline]
     fn from(x: f16) -> f64 {
         x.to_f64()
+    }
+}
+
+impl From<f64> for f16 {
+    #[inline]
+    fn from(x: f64) -> f16 {
+        f16::from_f64(x)
     }
 }
 
