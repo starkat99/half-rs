@@ -53,6 +53,9 @@ See the [crate documentation](https://docs.rs/half/) for more details.
 - **`zerocopy`** — Enable `AsBytes` and `FromBytes` trait implementations from the 
   [`zerocopy`](https://crates.io/crates/zerocopy) crate.
 
+- **`rand_distr`** — Enable sampling from distributions like `Uniform` and `Normal` from the
+  [`rand_distr`](https://crates.io/crates/rand_distr) crate.
+
 ### Hardware support
 
 The following list details hardware support for floating point types in this crate. When using `std`

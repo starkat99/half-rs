@@ -94,6 +94,9 @@
 //! - **`zerocopy`** — Adds support for the [`zerocopy`] crate by implementing [`AsBytes`] and
 //!   [`FromBytes`] traits for both [`f16`] and [`bf16`].
 //!
+//! - **`rand_distr`** — Adds support for the [`rand_distr`] crate by implementing [`rand::distributions::Distribution`]
+//!   and other traits for both [`f16`] and [`bf16`].
+//!
 //! [`alloc`]: https://doc.rust-lang.org/alloc/
 //! [`std`]: https://doc.rust-lang.org/std/
 //! [`binary16`]: https://en.wikipedia.org/wiki/Half-precision_floating-point_format
@@ -102,6 +105,7 @@
 //! [`bytemuck`]: https://crates.io/crates/bytemuck
 //! [`num-traits`]: https://crates.io/crates/num-traits
 //! [`zerocopy`]: https://crates.io/crates/zerocopy
+//! [`rand_distr`]: https://crates.io/crates/rand_distr
 #![cfg_attr(
     feature = "alloc",
     doc = "
@@ -208,6 +212,9 @@ pub mod vec;
 
 pub use bfloat::bf16;
 pub use binary16::f16;
+
+#[cfg(feature = "rand_distr")]
+mod rand_distr;
 
 /// A collection of the most used items and traits in this crate for easy importing.
 ///

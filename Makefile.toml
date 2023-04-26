@@ -5,7 +5,7 @@ min_version = "0.35.0"
 CI_CARGO_TEST_FLAGS = { value = "--locked -- --nocapture", condition = { env_true = [
     "CARGO_MAKE_CI",
 ] } }
-CARGO_MAKE_CARGO_ALL_FEATURES = { source = "${CARGO_MAKE_RUST_CHANNEL}", default_value = "--features=std,serde,num-traits,bytemuck,zerocopy", mapping = { "nightly" = "--all-features" } }
+CARGO_MAKE_CARGO_ALL_FEATURES = { source = "${CARGO_MAKE_RUST_CHANNEL}", default_value = "--features=std,serde,num-traits,bytemuck,zerocopy,rand_distr", mapping = { "nightly" = "--all-features" } }
 CARGO_MAKE_CLIPPY_ARGS = { value = "${CARGO_MAKE_CLIPPY_ALL_FEATURES_WARN}", condition = { env_true = [
     "CARGO_MAKE_CI",
 ] } }
