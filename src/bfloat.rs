@@ -920,14 +920,14 @@ impl FromStr for bf16 {
 #[cfg(not(target_arch = "spirv"))]
 impl Debug for bf16 {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
-        write!(f, "{:?}", self.to_f32())
+        Debug::fmt(&self.to_f32(), f)
     }
 }
 
 #[cfg(not(target_arch = "spirv"))]
 impl Display for bf16 {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
-        write!(f, "{}", self.to_f32())
+        Display::fmt(&self.to_f32(), f)
     }
 }
 
@@ -1810,6 +1810,21 @@ mod test {
             bf16::from_f64(252.51f64).to_bits(),
             bf16::from_f64(253.0).to_bits()
         );
+    }
+
+    #[test]
+    fn formatting() {
+        let f = bf16::from_f32(0.1152344);
+
+        assert_eq!(format!("{:.3}", f), "0.115");
+        assert_eq!(format!("{:.4}", f), "0.1152");
+        assert_eq!(format!("{:+.4}", f), "+0.1152");
+        assert_eq!(format!("{:>+10.4}", f), "   +0.1152");
+
+        assert_eq!(format!("{:.3?}", f), "0.115");
+        assert_eq!(format!("{:.4?}", f), "0.1152");
+        assert_eq!(format!("{:+.4?}", f), "+0.1152");
+        assert_eq!(format!("{:>+10.4?}", f), "   +0.1152");
     }
 
     impl quickcheck::Arbitrary for bf16 {
