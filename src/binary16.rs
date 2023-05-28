@@ -1895,6 +1895,7 @@ mod test {
         assert_eq!(f16::from_f32(4.) % f16::from_f32(3.), f16::from_f32(1.));
     }
 
+    #[cfg(feature = "std")]
     #[test]
     fn formatting() {
         let f = f16::from_f32(0.1152344);

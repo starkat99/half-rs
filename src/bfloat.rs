@@ -1812,6 +1812,7 @@ mod test {
         );
     }
 
+    #[cfg(feature = "std")]
     #[test]
     fn formatting() {
         let f = bf16::from_f32(0.1152344);
