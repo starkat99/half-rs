@@ -790,6 +790,22 @@ impl f16 {
     pub const SQRT_2: f16 = f16(0x3DA8u16);
 }
 
+#[cfg(feature = "into-f16")]
+impl From<f32> for f16 {
+    #[inline]
+    fn from(x: f32) -> f16 {
+        f16::from_f32(x)
+    }
+}
+
+#[cfg(feature = "into-f16")]
+impl From<f64> for f16 {
+    #[inline]
+    fn from(x: f64) -> f16 {
+        f16::from_f64(x)
+    }
+}
+
 impl From<f16> for f32 {
     #[inline]
     fn from(x: f16) -> f32 {
