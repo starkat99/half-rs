@@ -50,8 +50,8 @@ workflows:
           toolchain: stable
           features: --all-features
       - rust:
-          name: Rust AArch64 (1.61.0)
-          toolchain: 1.61.0
+          name: Rust AArch64 (1.70.0)
+          toolchain: 1.70.0
           features: --all-features
       - rust:
           name: Rust AArch64 (nightly)

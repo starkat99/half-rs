@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Floating point formatting options in `Display` and `Debug` implementations. By [@eiz].
 
 ### Changed
-- **Breaking Change** Minimum supported Rust version is now 1.61.
+- **Breaking Change** Minimum supported Rust version is now 1.70.
 - **Breaking Change** Minimum supported Rust version policy reverted to original policy of allowing
   minimum supported Rust version updates for minor releases instead of only major to avoid
   segmentation and allow optimizing hardware implementations without unnecessary major releases.
