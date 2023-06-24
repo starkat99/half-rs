@@ -50,9 +50,9 @@ impl bf16 {
 
     /// Constructs a [`bf16`] value from a 32-bit floating point value.
     ///
-    /// If the 32-bit value is too large to fit, ±∞ will result. NaN values are preserved.
-    /// Subnormal values that are too tiny to be represented will result in ±0. All other values
-    /// are truncated and rounded to the nearest representable value.
+    /// This operation is lossy. If the 32-bit value is too large to fit, ±∞ will result. NaN values
+    /// are preserved. Subnormal values that are too tiny to be represented will result in ±0. All
+    /// other values are truncated and rounded to the nearest representable value.
     #[inline]
     #[must_use]
     pub fn from_f32(value: f32) -> bf16 {
@@ -65,9 +65,9 @@ impl bf16 {
     /// intrinsics, which allows it to be `const`. [`from_f32`][Self::from_f32] should be preferred
     /// in any non-`const` context.
     ///
-    /// If the 32-bit value is too large to fit, ±∞ will result. NaN values are preserved.
-    /// Subnormal values that are too tiny to be represented will result in ±0. All other values
-    /// are truncated and rounded to the nearest representable value.
+    /// This operation is lossy. If the 32-bit value is too large to fit, ±∞ will result. NaN values
+    /// are preserved. Subnormal values that are too tiny to be represented will result in ±0. All
+    /// other values are truncated and rounded to the nearest representable value.
     #[inline]
     #[must_use]
     pub const fn from_f32_const(value: f32) -> bf16 {
@@ -76,10 +76,10 @@ impl bf16 {
 
     /// Constructs a [`bf16`] value from a 64-bit floating point value.
     ///
-    /// If the 64-bit value is to large to fit, ±∞ will result. NaN values are preserved.
-    /// 64-bit subnormal values are too tiny to be represented and result in ±0. Exponents that
-    /// underflow the minimum exponent will result in subnormals or ±0. All other values are
-    /// truncated and rounded to the nearest representable value.
+    /// This operation is lossy. If the 64-bit value is to large to fit, ±∞ will result. NaN values
+    /// are preserved. 64-bit subnormal values are too tiny to be represented and result in ±0.
+    /// Exponents that underflow the minimum exponent will result in subnormals or ±0. All other
+    /// values are truncated and rounded to the nearest representable value.
     #[inline]
     #[must_use]
     pub fn from_f64(value: f64) -> bf16 {
@@ -92,10 +92,10 @@ impl bf16 {
     /// intrinsics, which allows it to be `const`. [`from_f64`][Self::from_f64] should be preferred
     /// in any non-`const` context.
     ///
-    /// If the 64-bit value is to large to fit, ±∞ will result. NaN values are preserved.
-    /// 64-bit subnormal values are too tiny to be represented and result in ±0. Exponents that
-    /// underflow the minimum exponent will result in subnormals or ±0. All other values are
-    /// truncated and rounded to the nearest representable value.
+    /// This operation is lossy. If the 64-bit value is to large to fit, ±∞ will result. NaN values
+    /// are preserved. 64-bit subnormal values are too tiny to be represented and result in ±0.
+    /// Exponents that underflow the minimum exponent will result in subnormals or ±0. All other
+    /// values are truncated and rounded to the nearest representable value.
     #[inline]
     #[must_use]
     pub const fn from_f64_const(value: f64) -> bf16 {

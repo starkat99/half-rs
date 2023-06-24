@@ -15,13 +15,21 @@
 //! support these operations, this crate emulates them by converting the value to
 //! [`f32`] before performing the operation and then back afterward.
 //!
+//! Note that conversion from [`f32`]/[`f64`] to both [`f16`] and [`bf16`] are lossy operations, and
+//! just as converting a [`f64`] to [`f32`] is lossy and does not have `Into`/`From` trait
+//! implementations, so too do these smaller types not have those trait implementations either.
+//! Instead, use `from_f32`/`from_f64` functions for the types in this crate. If you don't care
+//! about lossy conversions and need trait conversions, use the appropriate [`num-traits`]
+//! traits that are implemented.
+//!
 //! This crate also provides a [`slice`][mod@slice] module for zero-copy in-place conversions of
 //! [`u16`] slices to both [`f16`] and [`bf16`], as well as efficient vectorized conversions of
 //! larger buffers of floating point values to and from these half formats.
 //!
-//! The crate uses `#[no_std]` by default, so can be used in embedded environments without using the
-//! Rust [`std`] library. A `std` feature to enable support for the standard library is available,
-//! see the [Cargo Features](#cargo-features) section below.
+//! The crate supports `#[no_std]` when the `std` cargo feature is not enabled, so can be used in
+//! embedded environments without using the Rust [`std`] library. The `std` feature enables support
+//! for the standard library and is enabled by default, see the [Cargo Features](#cargo-features)
+//! section below.
 //!
 //! A [`prelude`] module is provided for easy importing of available utility traits.
 //!

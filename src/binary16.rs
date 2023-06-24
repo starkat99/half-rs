@@ -49,11 +49,11 @@ impl f16 {
 
     /// Constructs a 16-bit floating point value from a 32-bit floating point value.
     ///
-    /// If the 32-bit value is to large to fit in 16-bits, ±∞ will result. NaN values are
-    /// preserved. 32-bit subnormal values are too tiny to be represented in 16-bits and result in
-    /// ±0. Exponents that underflow the minimum 16-bit exponent will result in 16-bit subnormals
-    /// or ±0. All other values are truncated and rounded to the nearest representable 16-bit
-    /// value.
+    /// This operation is lossy. If the 32-bit value is to large to fit in 16-bits, ±∞ will result.
+    /// NaN values are preserved. 32-bit subnormal values are too tiny to be represented in 16-bits
+    /// and result in ±0. Exponents that underflow the minimum 16-bit exponent will result in 16-bit
+    /// subnormals or ±0. All other values are truncated and rounded to the nearest representable
+    /// 16-bit value.
     #[inline]
     #[must_use]
     pub fn from_f32(value: f32) -> f16 {
@@ -66,11 +66,11 @@ impl f16 {
     /// intrinsics, which allows it to be `const`. [`from_f32`][Self::from_f32] should be preferred
     /// in any non-`const` context.
     ///
-    /// If the 32-bit value is to large to fit in 16-bits, ±∞ will result. NaN values are
-    /// preserved. 32-bit subnormal values are too tiny to be represented in 16-bits and result in
-    /// ±0. Exponents that underflow the minimum 16-bit exponent will result in 16-bit subnormals
-    /// or ±0. All other values are truncated and rounded to the nearest representable 16-bit
-    /// value.
+    /// This operation is lossy. If the 32-bit value is to large to fit in 16-bits, ±∞ will result.
+    /// NaN values are preserved. 32-bit subnormal values are too tiny to be represented in 16-bits
+    /// and result in ±0. Exponents that underflow the minimum 16-bit exponent will result in 16-bit
+    /// subnormals or ±0. All other values are truncated and rounded to the nearest representable
+    /// 16-bit value.
     #[inline]
     #[must_use]
     pub const fn from_f32_const(value: f32) -> f16 {
@@ -79,11 +79,11 @@ impl f16 {
 
     /// Constructs a 16-bit floating point value from a 64-bit floating point value.
     ///
-    /// If the 64-bit value is to large to fit in 16-bits, ±∞ will result. NaN values are
-    /// preserved. 64-bit subnormal values are too tiny to be represented in 16-bits and result in
-    /// ±0. Exponents that underflow the minimum 16-bit exponent will result in 16-bit subnormals
-    /// or ±0. All other values are truncated and rounded to the nearest representable 16-bit
-    /// value.
+    /// This operation is lossy. If the 64-bit value is to large to fit in 16-bits, ±∞ will result.
+    /// NaN values are preserved. 64-bit subnormal values are too tiny to be represented in 16-bits
+    /// and result in ±0. Exponents that underflow the minimum 16-bit exponent will result in 16-bit
+    /// subnormals or ±0. All other values are truncated and rounded to the nearest representable
+    /// 16-bit value.
     #[inline]
     #[must_use]
     pub fn from_f64(value: f64) -> f16 {
@@ -96,11 +96,11 @@ impl f16 {
     /// intrinsics, which allows it to be `const`. [`from_f64`][Self::from_f64] should be preferred
     /// in any non-`const` context.
     ///
-    /// If the 64-bit value is to large to fit in 16-bits, ±∞ will result. NaN values are
-    /// preserved. 64-bit subnormal values are too tiny to be represented in 16-bits and result in
-    /// ±0. Exponents that underflow the minimum 16-bit exponent will result in 16-bit subnormals
-    /// or ±0. All other values are truncated and rounded to the nearest representable 16-bit
-    /// value.
+    /// This operation is lossy. If the 64-bit value is to large to fit in 16-bits, ±∞ will result.
+    /// NaN values are preserved. 64-bit subnormal values are too tiny to be represented in 16-bits
+    /// and result in ±0. Exponents that underflow the minimum 16-bit exponent will result in 16-bit
+    /// subnormals or ±0. All other values are truncated and rounded to the nearest representable
+    /// 16-bit value.
     #[inline]
     #[must_use]
     pub const fn from_f64_const(value: f64) -> f16 {
