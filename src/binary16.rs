@@ -930,14 +930,14 @@ impl FromStr for f16 {
 #[cfg(not(target_arch = "spirv"))]
 impl Debug for f16 {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
-        write!(f, "{:?}", self.to_f32())
+        Debug::fmt(&self.to_f32(), f)
     }
 }
 
 #[cfg(not(target_arch = "spirv"))]
 impl Display for f16 {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
-        write!(f, "{}", self.to_f32())
+        Display::fmt(&self.to_f32(), f)
     }
 }
 
@@ -1893,6 +1893,22 @@ mod test {
         assert_eq!(f16::ONE / f16::ONE, f16::ONE);
         assert_eq!(f16::from_f32(4.) / f16::from_f32(2.), f16::from_f32(2.));
         assert_eq!(f16::from_f32(4.) % f16::from_f32(3.), f16::from_f32(1.));
+    }
+
+    #[cfg(feature = "std")]
+    #[test]
+    fn formatting() {
+        let f = f16::from_f32(0.1152344);
+
+        assert_eq!(format!("{:.3}", f), "0.115");
+        assert_eq!(format!("{:.4}", f), "0.1152");
+        assert_eq!(format!("{:+.4}", f), "+0.1152");
+        assert_eq!(format!("{:>+10.4}", f), "   +0.1152");
+
+        assert_eq!(format!("{:.3?}", f), "0.115");
+        assert_eq!(format!("{:.4?}", f), "0.1152");
+        assert_eq!(format!("{:+.4?}", f), "+0.1152");
+        assert_eq!(format!("{:>+10.4?}", f), "   +0.1152");
     }
 
     impl quickcheck::Arbitrary for f16 {
