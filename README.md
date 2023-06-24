@@ -22,9 +22,6 @@ See the [crate documentation](https://docs.rs/half/) for more details.
 
 ### Optional Features
 
-- **`serde`** - Implement `Serialize` and `Deserialize` traits for `f16` and `bf16`. This adds a
-  dependency on the [`serde`](https://crates.io/crates/serde) crate.
-
 - **`alloc`** — Enable use of the [`alloc`](https://doc.rust-lang.org/alloc/) crate when not using
   the `std` library.
 
@@ -37,6 +34,9 @@ See the [crate documentation](https://docs.rs/half/) for more details.
 
   Enabling the `std` feature enables runtime CPU feature detection of hardware support.
   Without this feature detection, harware is only used when compiler target supports them.
+
+- **`serde`** - Implement `Serialize` and `Deserialize` traits for `f16` and `bf16`. This adds a
+  dependency on the [`serde`](https://crates.io/crates/serde) crate.
 
 - **`num-traits`** — Enable `ToPrimitive`, `FromPrimitive`, `Num`, `Float`, `FloatCore` and
   `Bounded` trait implementations from the [`num-traits`](https://crates.io/crates/num-traits) crate.
