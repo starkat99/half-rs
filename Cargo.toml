@@ -48,5 +48,5 @@ name = "convert"
 harness = false
 
 [package.metadata.docs.rs]
-rustc-args = ["--cfg", "docsrs"]
-features = ["std", "serde", "bytemuck", "num-traits", "zerocopy", "rand_distr"]
+rustdoc-args = ["--cfg", "docsrs"]
+all-features = true

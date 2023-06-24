@@ -97,7 +97,7 @@
 //! - **`zerocopy`** — Adds support for the [`zerocopy`] crate by implementing [`AsBytes`] and
 //!   [`FromBytes`] traits for both [`f16`] and [`bf16`].
 //!
-//! - **`rand_distr`** — Adds support for the [`rand_distr`] crate by implementing [`rand::distributions::Distribution`]
+//! - **`rand_distr`** — Adds support for the [`rand_distr`] crate by implementing [`Distribution`]
 //!   and other traits for both [`f16`] and [`bf16`].
 //!
 //! [`alloc`]: https://doc.rust-lang.org/alloc/
@@ -178,6 +178,16 @@
 [`AsBytes`]: https://docs.rs/zerocopy/*/zerocopy/trait.AsBytes.html
 [`FromBytes`]: https://docs.rs/zerocopy/*/zerocopy/trait.FromBytes.html"
 )]
+#![cfg_attr(
+    feature = "rand_distr",
+    doc = "
+[`Distribution`]: rand::distributions::Distribution"
+)]
+#![cfg_attr(
+    not(feature = "rand_distr"),
+    doc = "
+[`Distribution`]: https://docs.rs/rand/*/rand/distributions/trait.Distribution.html"
+)]
 #![warn(
     missing_docs,
     missing_copy_implementations,
@@ -189,7 +199,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![doc(html_root_url = "https://docs.rs/half/2.2.1")]
 #![doc(test(attr(deny(warnings), allow(unused))))]
-#![cfg_attr(docsrs, feature(doc_cfg))]
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
@@ -203,7 +213,6 @@ mod num_traits;
 #[cfg(not(target_arch = "spirv"))]
 pub mod slice;
 #[cfg(feature = "alloc")]
-#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 pub mod vec;
 
 pub use bfloat::bf16;
@@ -229,7 +238,6 @@ pub mod prelude {
 
     #[cfg(feature = "alloc")]
     #[doc(no_inline)]
-    #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
     pub use crate::vec::{HalfBitsVecExt, HalfFloatVecExt};
 }
 

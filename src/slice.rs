@@ -195,7 +195,6 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     /// assert_eq!(vec, vec![1., 2., 3., 4.]);
     /// ```
     #[cfg(any(feature = "alloc", feature = "std"))]
-    #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
     #[must_use]
     fn to_f32_vec(&self) -> Vec<f32>;
 
@@ -218,7 +217,6 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     /// assert_eq!(vec, vec![1., 2., 3., 4.]);
     /// ```
     #[cfg(feature = "alloc")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
     #[must_use]
     fn to_f64_vec(&self) -> Vec<f64>;
 }

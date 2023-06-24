@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - `Sum` implementation of `bf16` incorrectly performed product instead of sum. By [@wx-csy].
 - Compile failed when `serde` cargo feature enabled but `std` not enabled.
 - Incorrect black boxing of benchmark tests.
+- Rustdoc cfg display on docs.rs not getting enabled.
 
 ## [2.2.1] - 2023-01-08 <a name="2.2.1"></a>
 ### Changed
