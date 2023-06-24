@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
     - AArch64 now uses FP16 hardware instructions for conversions and math operations when
     available.
     - x86/x86-64 now uses F16C hardware instructions for conversions (but no math operations) when
-    available.
+    available. Fixes [#54].
 
 ### Deprecated
 - `use-intrinsics` cargo feature no longer used. Hardware support will now always be used whenever
@@ -303,6 +303,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#55]: https://github.com/starkat99/half-rs/issues/55
 [#60]: https://github.com/starkat99/half-rs/issues/60
 [#66]: https://github.com/starkat99/half-rs/issues/66
+[#54]: https://github.com/starkat99/half-rs/issues/54
 
 [@tspiteri]: https://github.com/tspiteri
 [@PSeitz]: https://github.com/PSeitz
