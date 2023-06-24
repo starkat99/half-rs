@@ -15,7 +15,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - **Breaking Change** Minimum supported Rust version policy reverted to original policy of allowing
   minimum supported Rust version updates for minor releases instead of only major to avoid
   segmentation and allow optimizing hardware implementations without unnecessary major releases.
-- AArch64 now uses FP16 hardware support for conversions and math operations when available.
+- Hardware intrinsics/assembly is finally available on stable Rust, including using hardware
+  feature detection (`std` only), including:
+    - AArch64 now uses FP16 hardware instructions for conversions and math operations when
+    available.
+    - x86/x86-64 now uses F16C hardware instructions for conversions (but no math operations) when
+    available.
 
 ### Deprecated
 - `use-intrinsics` cargo feature no longer used. Hardware support will now always be used whenever
