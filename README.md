@@ -13,8 +13,7 @@ arithmetic operations. Hardware support for these operations will be used whenev
 is available—either through instrinsics or targeted assembly—although a nightly Rust toolchain may
 be required for some hardware.
 
-This crate provides [`no_std`](https://rust-embedded.github.io/book/intro/no-std.html) support by
-default so can easily be used in embedded code where a smaller float format is most useful.
+This crate provides [`no_std`](https://rust-embedded.github.io/book/intro/no-std.html) support so can easily be used in embedded code where a smaller float format is most useful.
 
 *Requires Rust 1.61 or greater.* If you need support for older versions of Rust, use 1.x versions of
 this crate.
@@ -25,11 +24,6 @@ See the [crate documentation](https://docs.rs/half/) for more details.
 
 - **`serde`** - Implement `Serialize` and `Deserialize` traits for `f16` and `bf16`. This adds a
   dependency on the [`serde`](https://crates.io/crates/serde) crate.
-
-- **`use-intrinsics`** — Use unstable hardware intrinsics for `f16` and `bf16` conversions if
-  available on the compiler target. By default, only hardware support compatible with the Rust
-  stable toolchain will be used, or software emulation otherwise. **Available only on
-  Rust nightly channel.**
 
 - **`alloc`** — Enable use of the [`alloc`](https://doc.rust-lang.org/alloc/) crate when not using
   the `std` library.
@@ -64,7 +58,7 @@ for specific CPU features which avoids the runtime overhead and works in a `no_s
 
 | Architecture | CPU Target Feature | Notes |
 | ------------ | ------------------ | ----- |
-| `x86`/`x86_64` | `f16c` | **Only on nightly Rust toolchain with `use-intrinsics` cargo feature.** This supports conversion to/from `f16` only (including vector SIMD) and does not support any `bf16` or arithmetic operations. |
+| `x86`/`x86_64` | `f16c` | This supports conversion to/from `f16` only (including vector SIMD) and does not support any `bf16` or arithmetic operations. |
 | `aarch64` | `fp16` | This supports all operations on `f16` only. |
 
 ### More Documentation

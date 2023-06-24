@@ -4,9 +4,28 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Support for Kani Rust Verifier. By [@cameron1024].
+- Support for `rand_distr::Distribution` implementations behind `rand_distr` optional cargo
+  feature. By [@coreylowman].
+- Floating point formatting options in `Display` and `Debug` implementations. By [@eiz].
+
 ### Changed
 - **Breaking Change** Minimum supported Rust version is now 1.61.
+- **Breaking Change** Minimum supported Rust version policy reverted to original policy of allowing
+  minimum supported Rust version updates for minor releases instead of only major to avoid
+  segmentation and allow optimizing hardware implementations without unnecessary major releases.
 - AArch64 now uses FP16 hardware support for conversions and math operations when available.
+
+### Deprecated
+- `use-intrinsics` cargo feature no longer used. Hardware support will now always be used whenever
+  possible. A future version may output deprecation warnings if this feature is enabled.
+
+### Fixed
+- Improve code generation of `leading_zeros` functions by inlining. By [@encounter].
+- `Sum` implementation of `bf16` incorrectly performed product instead of sum. By [@wx-csy].
+- Compile failed when `serde` cargo feature enabled but `std` not enabled.
+- Incorrect black boxing of benchmark tests.
 
 ## [2.2.1] - 2023-01-08 <a name="2.2.1"></a>
 ### Changed
@@ -294,6 +313,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [@Nilstrieb]: https://github.com/Nilstrieb
 [@joseluis]: https://github.com/joseluis
 [@Shnatsel]: https://github.com/Shnatsel
+[@cameron1024]: https://github.com/cameron1024
+[@encounter]: https://github.com/encounter
+[@coreylowman]: https://github.com/coreylowman
+[@wx-csy]: https://github.com/wx-csy
+[@eiz]: https://github.com/eiz
 
 
 [Unreleased]: https://github.com/starkat99/half-rs/compare/v2.2.1...HEAD

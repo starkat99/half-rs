@@ -2,10 +2,7 @@
 use crate::leading_zeros::leading_zeros_u16;
 use core::mem;
 
-#[cfg(all(
-    feature = "use-intrinsics",
-    any(target_arch = "x86", target_arch = "x86_64")
-))]
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 mod x86;
 
 #[cfg(target_arch = "aarch64")]
@@ -18,7 +15,6 @@ macro_rules! convert_fn {
         cfg_if::cfg_if! {
             // Use intrinsics directly when a compile target or using no_std
             if #[cfg(all(
-                feature = "use-intrinsics",
                 any(target_arch = "x86", target_arch = "x86_64"),
                 target_feature = "f16c"
             ))] {
@@ -34,7 +30,6 @@ macro_rules! convert_fn {
 
             // Use CPU feature detection if using std
             else if #[cfg(all(
-                feature = "use-intrinsics",
                 feature = "std",
                 any(target_arch = "x86", target_arch = "x86_64")
             ))] {

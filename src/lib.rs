@@ -56,18 +56,13 @@
 //!
 //! | Architecture | CPU Target Feature | Notes |
 //! | ------------ | ------------------ | ----- |
-//! | `x86`/`x86_64` | `f16c` | **Only on nightly Rust toolchain with `use-intrinsics` cargo feature.** This supports conversion to/from [`f16`] only (including vector SIMD) and does not support any [`bf16`] or arithmetic operations. |
+//! | `x86`/`x86_64` | `f16c` | This supports conversion to/from [`f16`] only (including vector SIMD) and does not support any [`bf16`] or arithmetic operations. |
 //! | `aarch64` | `fp16` | This supports all operations on [`f16`] only. |
 //!
 //! # Cargo Features
 //!
 //! This crate supports a number of optional cargo features. None of these features are enabled by
 //! default, even `std`.
-//!
-//! - **`use-intrinsics`** — Use unstable hardware intrinsics for [`f16`] and [`bf16`] conversions
-//!   if available on the compiler target. By default, only hardware support compatible with the
-//!   Rust stable toolchain will be used, or software emulation otherwise. **Available only on
-//!   Rust nightly channel.**
 //!
 //! - **`alloc`** — Enable use of the [`alloc`] crate when not using the `std` library.
 //!
@@ -184,13 +179,6 @@
 #![cfg_attr(not(target_arch = "spirv"), warn(missing_debug_implementations))]
 #![allow(clippy::verbose_bit_mask, clippy::cast_lossless)]
 #![cfg_attr(not(feature = "std"), no_std)]
-#![cfg_attr(
-    all(
-        feature = "use-intrinsics",
-        any(target_arch = "x86", target_arch = "x86_64")
-    ),
-    feature(stdsimd)
-)]
 #![doc(html_root_url = "https://docs.rs/half/2.2.1")]
 #![doc(test(attr(deny(warnings), allow(unused))))]
 #![cfg_attr(docsrs, feature(doc_cfg))]
