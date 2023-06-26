@@ -37,7 +37,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Install Rust toolchain
+    - name: Linux Install Rust toolchain
       if: ${{ matrix.os == 'ubuntu-latest' }}
       uses: actions-rs/toolchain@v1
       with:
@@ -47,7 +47,7 @@ jobs:
         override: true
         components: clippy,rustfmt
 
-    - name: Install Rust toolchain
+    - name: Windows Install Rust toolchain
       if: ${{ matrix.os == 'windows-latest' }}
       uses: actions-rs/toolchain@v1
       with:
@@ -61,6 +61,7 @@ jobs:
       uses: Swatinem/rust-cache@v2
 
     - name: Install Cargo Make
+      if: ${{ matrix.target == 'x86_64' }}
       uses: davidB/rust-cargo-make@v1
 
     - name: cargo-make ci-flow
@@ -70,15 +71,15 @@ jobs:
         command: make
         args: ci-flow
 
-    - name: cargo-make build-only
-      if: ${{ matrix.target != 'x86_64' && matrix.target == 'ubuntu-latest' }}
+    - name: linux cargo-make build-only
+      if: ${{ matrix.target != 'x86_64' && matrix.os == 'ubuntu-latest' }}
       uses: actions-rs/cargo@v1
       with:
         command: build
         args: --all-features --target ${{ matrix.target }}-unknown-linux-gnu
 
-    - name: cargo-make build-only
-      if: ${{ matrix.target != 'x86_64' && matrix.target == 'windows-latest' }}
+    - name: windows cargo-make build-only
+      if: ${{ matrix.target != 'x86_64' && matrix.os == 'windows-latest' }}
       uses: actions-rs/cargo@v1
       with:
         command: build
