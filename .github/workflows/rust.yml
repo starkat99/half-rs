@@ -26,6 +26,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
+        target: [x86_64, i686, aarch64]
         rust:
           - stable
           - beta
@@ -37,10 +38,22 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Install Rust toolchain
+      if: ${{ matrix.os == 'ubuntu-latest' }}
       uses: actions-rs/toolchain@v1
       with:
         profile: minimal
         toolchain: ${{ matrix.rust }}
+        target: ${{ matrix.target }}-unknown-linux-gnu
+        override: true
+        components: clippy,rustfmt
+
+    - name: Install Rust toolchain
+      if: ${{ matrix.os == 'windows-latest' }}
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: ${{ matrix.rust }}
+        target: ${{ matrix.target }}-pc-windows-msvc
         override: true
         components: clippy,rustfmt
 
@@ -51,10 +64,25 @@ jobs:
       uses: davidB/rust-cargo-make@v1
 
     - name: cargo-make ci-flow
+      if: ${{ matrix.target == 'x86_64' }}
       uses: actions-rs/cargo@v1
       with:
         command: make
         args: ci-flow
+
+    - name: cargo-make build-only
+      if: ${{ matrix.target != 'x86_64' && matrix.target == 'ubuntu-latest' }}
+      uses: actions-rs/cargo@v1
+      with:
+        command: build
+        args: --all-features --target ${{ matrix.target }}-unknown-linux-gnu
+
+    - name: cargo-make build-only
+      if: ${{ matrix.target != 'x86_64' && matrix.target == 'windows-latest' }}
+      uses: actions-rs/cargo@v1
+      with:
+        command: build
+        args: --all-features --target ${{ matrix.target }}-pc-windows-msvc
 
   miri:
     name: Miri
