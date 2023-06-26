@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.3.1] - 2023-06-24 <a name="2.3.1"></a>
+### Fixed
+- Compile error on x86 (not x86_64) targets. Fixes [#93].
+
 ## [2.3.0] - 2023-06-24 <a name="2.3.0"></a>
 ### Added
 - Support for Kani Rust Verifier. By [@cameron1024].
@@ -307,6 +311,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#60]: https://github.com/starkat99/half-rs/issues/60
 [#66]: https://github.com/starkat99/half-rs/issues/66
 [#54]: https://github.com/starkat99/half-rs/issues/54
+[#93]: https://github.com/starkat99/half-rs/issues/54
 
 [@tspiteri]: https://github.com/tspiteri
 [@PSeitz]: https://github.com/PSeitz
@@ -329,7 +334,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [@eiz]: https://github.com/eiz
 
 
-[Unreleased]: https://github.com/starkat99/half-rs/compare/v2.3.0...HEAD
+[Unreleased]: https://github.com/starkat99/half-rs/compare/v2.3.1...HEAD
+[2.3.1]: https://github.com/starkat99/half-rs/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/starkat99/half-rs/compare/v2.2.1...v2.3.0
 [2.2.1]: https://github.com/starkat99/half-rs/compare/v2.2.0...v2.2.1
 [2.2.0]: https://github.com/starkat99/half-rs/compare/v2.1.0...v2.2.0
