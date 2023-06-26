@@ -25,17 +25,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        target: [x86_64, i686, aarch64]
+        os: [ubuntu-latest, windows-latest]
         rust:
           - stable
           - beta
           - nightly
           - 1.70.0
-        include:
-          - os: ubuntu-latest
-            target-suffix: unknown-linux-gnu
-          - os: windows-latest
-            target-suffix: pc-windows-msvc
 
     steps:
     - name: Checkout
@@ -46,7 +41,6 @@ jobs:
       with:
         profile: minimal
         toolchain: ${{ matrix.rust }}
-        target: ${{ matrix.target }}-${{ matrix.target-suffix }}
         override: true
         components: clippy,rustfmt
 
@@ -57,17 +51,10 @@ jobs:
       uses: davidB/rust-cargo-make@v1
 
     - name: cargo-make ci-flow
-      if: ${{ startsWith(matrix.target, 'x86_64') }}
       uses: actions-rs/cargo@v1
       with:
         command: make
         args: ci-flow
-    - name: cargo-make build-only
-      if: ${{ !startsWith(matrix.target, 'x86_64') }}
-      uses: actions-rs/cargo@v1
-      with:
-        command: make
-        args: build
 
   miri:
     name: Miri
