@@ -25,6 +25,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        target: [x86_64, i686, aarch64]
         rust:
           - stable
           - beta
@@ -32,18 +33,9 @@ jobs:
           - 1.70.0
         include:
           - os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-          - os: ubuntu-latest
-            target: i686-unknown-linux-gnu
-          - os: ubuntu-latest
-            target: aarch64-unknown-linux-gnu
-
+            target-suffix: unknown-linux-gnu
           - os: windows-latest
-            target: x86_64-pc-windows-msvc
-          - os: windows-latest
-            target: i686-pc-windows-msvc
-          - os: windows-latest
-            target: aarch64-pc-windows-msvc
+            target-suffix: pc-windows-msvc
 
     steps:
     - name: Checkout
@@ -54,7 +46,7 @@ jobs:
       with:
         profile: minimal
         toolchain: ${{ matrix.rust }}
-        target: ${{ matrix.target }}
+        target: ${{ matrix.target }}-${{ matrix.target-suffix }}
         override: true
         components: clippy,rustfmt
 
