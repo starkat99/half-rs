@@ -11,6 +11,9 @@ use core::arch::x86_64::{
     _MM_FROUND_TO_NEAREST_INT,
 };
 
+#[cfg(target_arch = "x86")]
+use core::arch::x86::_mm_cvtps_ph;
+
 use super::convert_chunked_slice_8;
 
 /////////////// x86/x86_64 f16c ////////////////
