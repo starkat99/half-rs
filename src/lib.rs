@@ -1,3 +1,4 @@
+#![feature(repr_simd)]
 //! A crate that provides support for half-precision 16-bit floating point types.
 //!
 //! This crate provides the [`f16`] type, which is an implementation of the IEEE 754-2008 standard
@@ -201,11 +202,13 @@
 #![doc(test(attr(deny(warnings), allow(unused))))]
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 
+
+
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
 mod bfloat;
-mod binary16;
+pub mod binary16;
 mod leading_zeros;
 #[cfg(feature = "num-traits")]
 mod num_traits;

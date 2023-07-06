@@ -7,6 +7,117 @@ use core::{
     ptr,
 };
 
+use crate::f16;
+
+#[repr(simd)]
+#[allow(non_camel_case_types)]
+#[derive(Clone, Copy)]
+pub struct float16x8_t(pub(crate) u16, pub(crate) u16, pub(crate) u16, pub(crate) u16, pub(crate) u16, pub(crate) u16, pub(crate) u16, pub(crate) u16);
+
+#[repr(simd)]
+#[allow(non_camel_case_types)]
+#[derive(Clone, Copy)]
+pub struct float16x4_t(pub(crate) u16, pub(crate) u16, pub(crate) u16, pub(crate) u16);
+
+#[target_feature(enable = "fp16")]
+#[inline]
+pub unsafe fn vcvt_f32_f16(i: float16x4_t) -> float32x4_t {
+    let result: float32x4_t;
+    asm!(
+        "fcvtl {0:v}.4s, {1:v}.4h",
+        out(vreg) result,
+        in(vreg) i,
+        options(pure, nomem, nostack, preserves_flags));
+    result
+}
+
+#[target_feature(enable = "fp16")]
+#[inline]
+pub unsafe fn vget_high_f16_f32(i: float16x8_t) -> float32x4_t {
+    let result: float32x4_t;
+    asm!(
+        "fcvtl2 {0:v}.4s, {1:v}.8h",
+        out(vreg) result,
+        in(vreg) i,
+        options(pure, nomem, nostack, preserves_flags));
+    result
+}
+
+#[target_feature(enable = "fp16")]
+#[inline]
+pub unsafe fn vget_low_f16_f32(i: float16x8_t) -> float32x4_t {
+    let result: float32x4_t;
+    asm!(
+        "fcvtl {0:v}.4s, {1:v}.4h",
+        out(vreg) result,
+        in(vreg) i,
+        options(pure, nomem, nostack, preserves_flags));
+    result
+}
+
+#[target_feature(enable = "fp16")]
+#[inline]
+pub unsafe fn vaddq_f16(a: float16x8_t, b: float16x8_t) -> float16x8_t {
+    let result: float16x8_t;
+    asm!(
+        "fadd {0:v}.8h, {1:v}.8h, {2:v}.8h",
+        out(vreg) result,
+        in(vreg) a,
+        in(vreg) b,
+        options(pure, nomem, nostack, preserves_flags));
+    result
+}
+
+#[target_feature(enable = "fp16")]
+#[inline]
+pub unsafe fn vst1q_f16(mut ptr: *mut f16, mut val: float16x8_t){
+    ptr::copy_nonoverlapping(&val, ptr.cast(), 8);
+    // asm!(
+    //     "vst1q_f16 {0:s}, {1:h}",
+    //     out(vreg) ptr,
+    //     in(vreg) val,
+    //     options(pure, nomem, nostack, preserves_flags));
+}
+
+#[target_feature(enable = "fp16")]
+#[inline]
+pub unsafe fn vld1q_f16(ptr: *const f16) -> float16x8_t{
+    let mut result = MaybeUninit::<float16x8_t>::uninit();
+    ptr::copy_nonoverlapping(ptr.cast(), &mut result, 8);
+    // asm!(
+    //     "vld1q_f16 {0:s}, {1:h}",
+    //     out(vreg) result,
+    //     in(vreg) ptr,
+    //     options(pure, nomem, nostack, preserves_flags));
+    result.assume_init()
+}
+
+#[target_feature(enable = "fp16")]
+#[inline]
+pub unsafe fn vfmaq_f16(a: float16x8_t, b: float16x8_t, c: float16x8_t) -> float16x8_t{
+    // let result: float16x8_t;
+    asm!(
+        "fmla {0:v}.8h, {1:v}.8h, {2:v}.8h",
+        in(vreg) a,
+        in(vreg) b,
+        in(vreg) c,
+        options(nomem, nostack, preserves_flags));
+    // result
+    a
+}
+
+#[target_feature(enable = "fp16")]
+#[inline]
+pub unsafe fn vdupq_n_f16(a: u16) -> float16x8_t{
+    let result: float16x8_t;
+    asm!(
+        "dup {0:v}.8h, {1:v}.h[0]",
+        out(vreg) result,
+        in(vreg) a,
+        options(pure, nomem, nostack, preserves_flags));
+    result
+}
+
 #[target_feature(enable = "fp16")]
 #[inline]
 pub(super) unsafe fn f16_to_f32_fp16(i: u16) -> f32 {

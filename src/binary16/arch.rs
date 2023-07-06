@@ -6,7 +6,11 @@ use core::mem;
 mod x86;
 
 #[cfg(target_arch = "aarch64")]
-mod aarch64;
+pub mod aarch64;
+
+#[cfg(target_arch = "arm")]
+mod arm;
+
 
 macro_rules! convert_fn {
     (if x86_feature("f16c") { $f16c:expr }
