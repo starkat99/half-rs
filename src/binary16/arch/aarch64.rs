@@ -1,6 +1,6 @@
 use core::{
     arch::{
-        aarch64::{float32x4_t, float64x2_t, uint16x4_t},
+        aarch64::{float32x4_t, float64x2_t, uint16x4_t, uint16x8_t},
         asm,
     },
     mem::MaybeUninit,
@@ -9,15 +9,10 @@ use core::{
 
 use crate::f16;
 
-#[repr(simd)]
 #[allow(non_camel_case_types)]
-#[derive(Clone, Copy)]
-pub struct float16x8_t(pub(crate) u16, pub(crate) u16, pub(crate) u16, pub(crate) u16, pub(crate) u16, pub(crate) u16, pub(crate) u16, pub(crate) u16);
-
-#[repr(simd)]
+type float16x8_t = uint16x8_t;
 #[allow(non_camel_case_types)]
-#[derive(Clone, Copy)]
-pub struct float16x4_t(pub(crate) u16, pub(crate) u16, pub(crate) u16, pub(crate) u16);
+type float16x4_t = uint16x4_t;
 
 #[target_feature(enable = "fp16")]
 #[inline]
