@@ -1,3 +1,4 @@
+#![allow(clippy::missing_safety_doc)]
 use core::{
     arch::{
         aarch64::{float32x4_t, float64x2_t, uint16x4_t, uint16x8_t},
@@ -14,9 +15,12 @@ type float16x8_t = uint16x8_t;
 #[allow(non_camel_case_types)]
 type float16x4_t = uint16x4_t;
 
+/// Convert to higher precision
+/// Takes the 64 bits and convert them as [`float32x4_t`]
+/// [doc](https://developer.arm.com/documentation/dui0801/g/A64-SIMD-Vector-Instructions/FCVTL--FCVTL2--vector-)
 #[target_feature(enable = "fp16")]
 #[inline]
-pub unsafe fn vcvt_f32_f16(i: float16x4_t) -> float32x4_t {
+pub unsafe fn vcvt_f16_f32(i: float16x4_t) -> float32x4_t {
     let result: float32x4_t;
     asm!(
         "fcvtl {0:v}.4s, {1:v}.4h",
@@ -26,6 +30,9 @@ pub unsafe fn vcvt_f32_f16(i: float16x4_t) -> float32x4_t {
     result
 }
 
+/// Convert to higher precision
+/// Takes the top 64 bits and convert them as [`float32x4_t`]
+/// [doc](https://developer.arm.com/documentation/dui0801/g/A64-SIMD-Vector-Instructions/FCVTL--FCVTL2--vector-)
 #[target_feature(enable = "fp16")]
 #[inline]
 pub unsafe fn vget_high_f16_f32(i: float16x8_t) -> float32x4_t {
@@ -38,6 +45,9 @@ pub unsafe fn vget_high_f16_f32(i: float16x8_t) -> float32x4_t {
     result
 }
 
+/// Convert to higher precision
+/// Takes the lower 64 bits and convert them as [`float32x4_t`]
+/// [doc](https://developer.arm.com/documentation/dui0801/g/A64-SIMD-Vector-Instructions/FCVTL--FCVTL2--vector-)
 #[target_feature(enable = "fp16")]
 #[inline]
 pub unsafe fn vget_low_f16_f32(i: float16x8_t) -> float32x4_t {
@@ -50,6 +60,8 @@ pub unsafe fn vget_low_f16_f32(i: float16x8_t) -> float32x4_t {
     result
 }
 
+/// Floating point addition
+/// [doc](https://developer.arm.com/documentation/dui0801/g/A64-SIMD-Vector-Instructions/FADD--vector-)
 #[target_feature(enable = "fp16")]
 #[inline]
 pub unsafe fn vaddq_f16(a: float16x8_t, b: float16x8_t) -> float16x8_t {
@@ -63,9 +75,10 @@ pub unsafe fn vaddq_f16(a: float16x8_t, b: float16x8_t) -> float16x8_t {
     result
 }
 
+/// Casts [`float16x8t`] to raw pointer.
 #[target_feature(enable = "fp16")]
 #[inline]
-pub unsafe fn vst1q_f16(mut ptr: *mut f16, mut val: float16x8_t){
+pub unsafe fn vst1q_f16(ptr: *mut f16, val: float16x8_t){
     ptr::copy_nonoverlapping(&val, ptr.cast(), 8);
     // asm!(
     //     "vst1q_f16 {0:s}, {1:h}",
@@ -74,6 +87,8 @@ pub unsafe fn vst1q_f16(mut ptr: *mut f16, mut val: float16x8_t){
     //     options(pure, nomem, nostack, preserves_flags));
 }
 
+/// Casts pointer to [`float16x8t`].
+/// This functions assumes pointer is aligned
 #[target_feature(enable = "fp16")]
 #[inline]
 pub unsafe fn vld1q_f16(ptr: *const f16) -> float16x8_t{
@@ -87,6 +102,8 @@ pub unsafe fn vld1q_f16(ptr: *const f16) -> float16x8_t{
     result.assume_init()
 }
 
+/// Broadcast value into [`float16x8_t`]
+/// Fused multiply add [doc](https://developer.arm.com/documentation/dui0801/g/A64-SIMD-Vector-Instructions/FMLA--vector-)
 #[target_feature(enable = "fp16")]
 #[inline]
 pub unsafe fn vfmaq_f16(a: float16x8_t, b: float16x8_t, c: float16x8_t) -> float16x8_t{
@@ -101,6 +118,7 @@ pub unsafe fn vfmaq_f16(a: float16x8_t, b: float16x8_t, c: float16x8_t) -> float
     a
 }
 
+/// Broadcast value into [`float16x8_t`]
 #[target_feature(enable = "fp16")]
 #[inline]
 pub unsafe fn vdupq_n_f16(a: u16) -> float16x8_t{

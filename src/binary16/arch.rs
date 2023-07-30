@@ -5,6 +5,7 @@ use core::mem;
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 mod x86;
 
+#[allow(missing_docs)]
 #[cfg(target_arch = "aarch64")]
 pub mod aarch64;
 

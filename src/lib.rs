@@ -207,6 +207,7 @@
 extern crate alloc;
 
 mod bfloat;
+#[allow(missing_docs)]
 pub mod binary16;
 mod leading_zeros;
 #[cfg(feature = "num-traits")]
