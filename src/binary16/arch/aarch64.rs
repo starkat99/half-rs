@@ -140,7 +140,7 @@ pub unsafe fn vget_lane_f16<const LANE: i32>(a: float16x8_t) -> u16 {
     //         options(nomem, nostack, preserves_flags)),
     //     _ => unimplemented!("get_lane_f16 - {LANE}")
     // }
-    result
+    // result
 }
 
 #[inline]
