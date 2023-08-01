@@ -181,10 +181,10 @@ pub unsafe fn vld1q_f16(ptr: *const f16) -> float16x8_t{
 /// Fused multiply add [doc](https://developer.arm.com/documentation/dui0801/g/A64-SIMD-Vector-Instructions/FMLA--vector-)
 #[target_feature(enable = "fp16")]
 #[inline]
-pub unsafe fn vfmaq_f16(a: float16x8_t, b: float16x8_t, c: float16x8_t) -> float16x8_t{
+pub unsafe fn vfmaq_f16(mut a: float16x8_t, b: float16x8_t, c: float16x8_t) -> float16x8_t{
     asm!(
         "fmla {0:v}.8h, {1:v}.8h, {2:v}.8h",
-        in(vreg) a,
+        inout(vreg) a,
         in(vreg) b,
         in(vreg) c,
         options(nomem, nostack, preserves_flags));
