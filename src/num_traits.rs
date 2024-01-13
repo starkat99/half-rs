@@ -718,6 +718,7 @@ impl_as_primitive_to_f16!(isize, to_f32);
 impl_as_primitive_to_f16!(usize, to_f32);
 impl_as_primitive_to_f16!(f32, to_f32);
 impl_as_primitive_to_f16!(f64, to_f64);
+impl_as_primitive_to_f16!(bf16, to_f32);
 
 macro_rules! impl_as_primitive_f16_from {
     ($ty:ty, $meth:ident) => {
@@ -1457,6 +1458,7 @@ impl_as_primitive_to_bf16!(isize, to_f32);
 impl_as_primitive_to_bf16!(usize, to_f32);
 impl_as_primitive_to_bf16!(f32, to_f32);
 impl_as_primitive_to_bf16!(f64, to_f64);
+impl_as_primitive_to_bf16!(f16, to_f32);
 
 macro_rules! impl_as_primitive_bf16_from {
     ($ty:ty, $meth:ident) => {
