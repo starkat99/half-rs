@@ -134,22 +134,14 @@ impl HalfFloatVecExt for Vec<f16> {
 
     #[allow(clippy::uninit_vec)]
     fn from_f32_slice(slice: &[f32]) -> Self {
-        let mut vec = Vec::with_capacity(slice.len());
-        // SAFETY: convert will initialize every value in the vector without reading them,
-        // so this is safe to do instead of double initialize from resize, and we're setting it to
-        // same value as capacity.
-        unsafe { vec.set_len(slice.len()) };
+        let mut vec = vec![f16::from_bits(0); slice.len()];
         vec.convert_from_f32_slice(slice);
         vec
     }
 
     #[allow(clippy::uninit_vec)]
     fn from_f64_slice(slice: &[f64]) -> Self {
-        let mut vec = Vec::with_capacity(slice.len());
-        // SAFETY: convert will initialize every value in the vector without reading them,
-        // so this is safe to do instead of double initialize from resize, and we're setting it to
-        // same value as capacity.
-        unsafe { vec.set_len(slice.len()) };
+        let mut vec = vec![f16::from_bits(0); slice.len()];
         vec.convert_from_f64_slice(slice);
         vec
     }
@@ -178,22 +170,14 @@ impl HalfFloatVecExt for Vec<bf16> {
 
     #[allow(clippy::uninit_vec)]
     fn from_f32_slice(slice: &[f32]) -> Self {
-        let mut vec = Vec::with_capacity(slice.len());
-        // SAFETY: convert will initialize every value in the vector without reading them,
-        // so this is safe to do instead of double initialize from resize, and we're setting it to
-        // same value as capacity.
-        unsafe { vec.set_len(slice.len()) };
+        let mut vec = vec![bf16::from_bits(0); slice.len()];
         vec.convert_from_f32_slice(slice);
         vec
     }
 
     #[allow(clippy::uninit_vec)]
     fn from_f64_slice(slice: &[f64]) -> Self {
-        let mut vec = Vec::with_capacity(slice.len());
-        // SAFETY: convert will initialize every value in the vector without reading them,
-        // so this is safe to do instead of double initialize from resize, and we're setting it to
-        // same value as capacity.
-        unsafe { vec.set_len(slice.len()) };
+        let mut vec = vec![bf16::from_bits(0); slice.len()];
         vec.convert_from_f64_slice(slice);
         vec
     }
