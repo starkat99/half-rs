@@ -436,7 +436,7 @@ mod x86 {
     #[target_feature(enable = "f16c")]
     #[inline]
     pub(super) unsafe fn f16x4_to_f32x4_x86_f16c(v: &[u16]) -> [f32; 4] {
-        debug_assert!(v.len() >= 4);
+        assert!(v.len() >= 4);
 
         let mut vec = MaybeUninit::<__m128i>::zeroed();
         ptr::copy_nonoverlapping(v.as_ptr(), vec.as_mut_ptr().cast(), 4);
@@ -458,7 +458,7 @@ mod x86 {
     #[target_feature(enable = "f16c")]
     #[inline]
     pub(super) unsafe fn f16x4_to_f64x4_x86_f16c(v: &[u16]) -> [f64; 4] {
-        debug_assert!(v.len() >= 4);
+        assert!(v.len() >= 4);
 
         let mut vec = MaybeUninit::<__m128i>::zeroed();
         ptr::copy_nonoverlapping(v.as_ptr(), vec.as_mut_ptr().cast(), 4);
@@ -477,7 +477,7 @@ mod x86 {
     #[target_feature(enable = "f16c")]
     #[inline]
     pub(super) unsafe fn f64x4_to_f16x4_x86_f16c(v: &[f64]) -> [u16; 4] {
-        debug_assert!(v.len() >= 4);
+        assert!(v.len() >= 4);
 
         // Let compiler vectorize this regular cast for now.
         // TODO: investigate auto-detecting sse2/avx convert features
