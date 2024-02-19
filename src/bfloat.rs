@@ -35,7 +35,7 @@ pub(crate) mod convert;
 #[derive(Clone, Copy, Default)]
 #[repr(transparent)]
 #[cfg_attr(feature = "serde", derive(Serialize))]
-#[cfg_attr(feature = "rkyv", derive(rkyv::Serialize, rkyv::Deserialize))]
+#[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize))]
 #[cfg_attr(feature = "bytemuck", derive(Zeroable, Pod))]
 #[cfg_attr(feature = "zerocopy", derive(AsBytes, FromBytes))]
 #[cfg_attr(kani, derive(kani::Arbitrary))]
