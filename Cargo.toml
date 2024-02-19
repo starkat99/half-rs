@@ -32,6 +32,7 @@ num-traits = { version = "0.2.14", default-features = false, features = ["libm"]
 zerocopy = { version = "0.6.0", default-features = false, optional = true }
 rand = { version = "0.8.5", default-features = false, optional = true }
 rand_distr = { version = "0.4.3", default-features = false, optional = true }
+rkyv = { version = "0.7", optional = true }
 
 [target.'cfg(target_arch = "spirv")'.dependencies]
 crunchy = "0.2.2"
