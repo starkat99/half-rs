@@ -11,6 +11,7 @@
 
 use super::{bf16, f16, slice::HalfFloatSliceExt};
 #[cfg(feature = "alloc")]
+#[allow(unused_imports)]
 use alloc::vec::Vec;
 use core::mem;
 

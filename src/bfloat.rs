@@ -1,4 +1,5 @@
 #[cfg(all(feature = "serde", feature = "alloc"))]
+#[allow(unused_imports)]
 use alloc::string::ToString;
 #[cfg(feature = "bytemuck")]
 use bytemuck::{Pod, Zeroable};
