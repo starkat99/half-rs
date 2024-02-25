@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Remove some unit NaN conversion sign tests due to non-deterministic hardware. Fixes [#103].
 - Redundant import warnings on nightly Rust.
+- Add optional `rkyv` support. Fixes [#100], by [@comath].
 
 ## [2.3.1] - 2023-06-24 <a name="2.3.1"></a>
 ### Fixed
@@ -315,6 +316,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#66]: https://github.com/starkat99/half-rs/issues/66
 [#54]: https://github.com/starkat99/half-rs/issues/54
 [#93]: https://github.com/starkat99/half-rs/issues/54
+[#100]: https://github.com/starkat99/half-rs/issues/100
 [#103]: https://github.com/starkat99/half-rs/issues/103
 
 [@tspiteri]: https://github.com/tspiteri
@@ -336,6 +338,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [@coreylowman]: https://github.com/coreylowman
 [@wx-csy]: https://github.com/wx-csy
 [@eiz]: https://github.com/eiz
+[@comath]: https://github.com/comath
 
 
 [Unreleased]: https://github.com/starkat99/half-rs/compare/v2.3.1...HEAD
