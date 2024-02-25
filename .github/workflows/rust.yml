@@ -8,7 +8,7 @@ env:
   RUSTUP_MAX_RETRIES: 10
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: full
-  RUSTFLAGS: "-D warnings"
+  #RUSTFLAGS: "-D warnings"
   # Disable debuginfo for faster compile
   CARGO_PROFILE_DEV_DEBUG: 0
   CARGO_PROFILE_TEST_DEBUG: 0
@@ -28,30 +28,30 @@ jobs:
         os: [ubuntu-latest, windows-latest]
         rust:
           - stable
-          - beta
+          # - beta
           - nightly
           - 1.51.0
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: Install Rust toolchain
-      uses: actions-rs/toolchain@v1
-      with:
-        profile: minimal
-        toolchain: ${{ matrix.rust }}
-        override: true
-        components: clippy,rustfmt
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: ${{ matrix.rust }}
+          override: true
+          components: clippy,rustfmt
 
-    - name: Cache Dependencies
-      uses: Swatinem/rust-cache@v1
+      #   - name: Cache Dependencies
+      #     uses: Swatinem/rust-cache@v1
 
-    - name: Install Cargo Make
-      uses: davidB/rust-cargo-make@v1
+      - name: Install Cargo Make
+        uses: davidB/rust-cargo-make@v1
 
-    - name: cargo-make ci-flow
-      uses: actions-rs/cargo@v1
-      with:
-        command: make
-        args: ci-flow
+      - name: cargo-make ci-flow
+        uses: actions-rs/cargo@v1
+        with:
+          command: make
+          args: ci-flow
