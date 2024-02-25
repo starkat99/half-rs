@@ -97,6 +97,7 @@ impl rand_distr::uniform::UniformSampler for BFloat16Sampler {
 mod tests {
     use super::*;
 
+    #[allow(unused_imports)]
     use rand::{thread_rng, Rng};
     use rand_distr::{Standard, StandardNormal, Uniform};
 
