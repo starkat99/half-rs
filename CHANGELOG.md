@@ -4,6 +4,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- Remove some unit NaN conversion sign tests due to non-deterministic hardware. Fixes [#103].
+- Redundant import warnings on nightly Rust.
 
 ## [2.3.1] - 2023-06-24 <a name="2.3.1"></a>
 ### Fixed
@@ -312,6 +315,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#66]: https://github.com/starkat99/half-rs/issues/66
 [#54]: https://github.com/starkat99/half-rs/issues/54
 [#93]: https://github.com/starkat99/half-rs/issues/54
+[#103]: https://github.com/starkat99/half-rs/issues/103
 
 [@tspiteri]: https://github.com/tspiteri
 [@PSeitz]: https://github.com/PSeitz
