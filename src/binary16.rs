@@ -1340,6 +1340,7 @@ impl<'de> serde::de::Visitor<'de> for Visitor {
 #[cfg(test)]
 mod test {
     use super::*;
+    #[allow(unused_imports)]
     use core::cmp::Ordering;
     #[cfg(feature = "num-traits")]
     use num_traits::{AsPrimitive, FromPrimitive, ToPrimitive};
