@@ -102,6 +102,7 @@ pub trait HalfBitsVecExt: private::SealedHalfBitsVec {
 mod private {
     use crate::{bf16, f16};
     #[cfg(feature = "alloc")]
+    #[allow(unused_imports)]
     use alloc::vec::Vec;
 
     pub trait SealedHalfFloatVec {}
