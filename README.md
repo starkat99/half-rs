@@ -50,6 +50,8 @@ See the [crate documentation](https://docs.rs/half/) for more details.
 - **`rand_distr`** — Enable sampling from distributions like `Uniform` and `Normal` from the
   [`rand_distr`](https://crates.io/crates/rand_distr) crate.
 
+- **`rkyv`** -- Enable zero-copy deserializtion with [`rkyv`](https://crates.io/crates/rkyv) crate.
+
 ### Hardware support
 
 The following list details hardware support for floating point types in this crate. When using `std`

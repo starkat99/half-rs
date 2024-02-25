@@ -100,6 +100,8 @@
 //! - **`rand_distr`** — Adds support for the [`rand_distr`] crate by implementing [`Distribution`]
 //!   and other traits for both [`f16`] and [`bf16`].
 //!
+//! - **`rkyv`** -- Enable zero-copy deserializtion with [`rkyv`] crate.
+//!
 //! [`alloc`]: https://doc.rust-lang.org/alloc/
 //! [`std`]: https://doc.rust-lang.org/std/
 //! [`binary16`]: https://en.wikipedia.org/wiki/Half-precision_floating-point_format
@@ -109,6 +111,7 @@
 //! [`num-traits`]: https://crates.io/crates/num-traits
 //! [`zerocopy`]: https://crates.io/crates/zerocopy
 //! [`rand_distr`]: https://crates.io/crates/rand_distr
+//! [`rkyv`]: (https://crates.io/crates/rkyv)
 #![cfg_attr(
     feature = "alloc",
     doc = "
