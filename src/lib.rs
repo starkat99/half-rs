@@ -200,7 +200,7 @@
 #![cfg_attr(not(target_arch = "spirv"), warn(missing_debug_implementations))]
 #![allow(clippy::verbose_bit_mask, clippy::cast_lossless)]
 #![cfg_attr(not(feature = "std"), no_std)]
-#![doc(html_root_url = "https://docs.rs/half/2.3.1")]
+#![doc(html_root_url = "https://docs.rs/half/2.4.0")]
 #![doc(test(attr(deny(warnings), allow(unused))))]
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 

@@ -1,7 +1,7 @@
 [package]
 name = "half"
 # Remember to keep in sync with html_root_url crate attribute
-version = "2.3.1"
+version = "2.4.0"
 authors = ["Kathryn Long <squeeself@gmail.com>"]
 description = "Half-precision floating point f16 and bf16 types for Rust implementing the IEEE 754-2008 standard binary16 and bfloat16 types."
 repository = "https://github.com/starkat99/half-rs"
@@ -16,7 +16,7 @@ exclude = [".git*", ".editorconfig", ".circleci"]
 [features]
 default = ["std"]
 std = ["alloc"]
-use-intrinsics = [] # Deprecated
+use-intrinsics = []                         # Deprecated
 alloc = []
 rand_distr = ["dep:rand", "dep:rand_distr"]
 
@@ -28,7 +28,9 @@ bytemuck = { version = "1.4.1", default-features = false, features = [
 serde = { version = "1.0", default-features = false, features = [
     "derive",
 ], optional = true }
-num-traits = { version = "0.2.14", default-features = false, features = ["libm"], optional = true }
+num-traits = { version = "0.2.14", default-features = false, features = [
+    "libm",
+], optional = true }
 zerocopy = { version = "0.6.0", default-features = false, optional = true }
 rand = { version = "0.8.5", default-features = false, optional = true }
 rand_distr = { version = "0.4.3", default-features = false, optional = true }

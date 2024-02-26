@@ -4,10 +4,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.4.0] - 2024-02-25 <a name="2.4.0"></a>
+### Added
+- Add optional `rkyv` support. Fixes [#100], by [@comath].
+- `Cargo.lock` added to vcs as is now recommended for library crates.
 ### Fixed
 - Remove some unit NaN conversion sign tests due to non-deterministic hardware. Fixes [#103].
 - Redundant import warnings on nightly Rust.
-- Add optional `rkyv` support. Fixes [#100], by [@comath].
 
 ## [2.3.1] - 2023-06-24 <a name="2.3.1"></a>
 ### Fixed
@@ -341,7 +345,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [@comath]: https://github.com/comath
 
 
-[Unreleased]: https://github.com/starkat99/half-rs/compare/v2.3.1...HEAD
+[Unreleased]: https://github.com/starkat99/half-rs/compare/v2.4.0...HEAD
+[2.4.0]: https://github.com/starkat99/half-rs/compare/v2.3.1...v2.4.0
 [2.3.1]: https://github.com/starkat99/half-rs/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/starkat99/half-rs/compare/v2.2.1...v2.3.0
 [2.2.1]: https://github.com/starkat99/half-rs/compare/v2.2.0...v2.2.1
