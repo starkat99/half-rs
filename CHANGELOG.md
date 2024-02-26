@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.4.0] - 2024-02-25 <a name="2.4.0"></a>
 ### Added
-- Add optional `rkyv` support. Fixes [#100], by [@comath].
+- Optional `rkyv` support. Fixes [#100], by [@comath].
+- New `num-traits` implementations: `AsPrimitive<f16>` for `bf16` and `AsPrimitive<bf16>` for
+  `f16`, allowing lossy conversions between the two types. By [@charles-r-earp].
 - `Cargo.lock` added to vcs as is now recommended for library crates.
 ### Fixed
 - Remove some unit NaN conversion sign tests due to non-deterministic hardware. Fixes [#103].
