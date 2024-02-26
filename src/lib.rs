@@ -163,7 +163,7 @@
     ),
     feature(stdsimd, f16c_target_feature)
 )]
-#![doc(html_root_url = "https://docs.rs/half/1.8.2")]
+#![doc(html_root_url = "https://docs.rs/half/1.8.3")]
 #![doc(test(attr(deny(warnings), allow(unused))))]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
