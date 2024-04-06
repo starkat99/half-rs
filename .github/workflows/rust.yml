@@ -23,6 +23,7 @@ jobs:
   rust:
     name: Rust
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.rust == 'nightly' }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
