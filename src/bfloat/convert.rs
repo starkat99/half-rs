@@ -5,7 +5,7 @@ use core::mem;
 pub(crate) const fn f32_to_bf16(value: f32) -> u16 {
     // TODO: Replace mem::transmute with to_bits() once to_bits is const-stabilized
     // Convert to raw bytes
-    let x: u32 = unsafe { mem::transmute(value) };
+    let x: u32 = unsafe { mem::transmute::<f32, u32>(value) };
 
     // check for NaN
     if x & 0x7FFF_FFFFu32 > 0x7F80_0000u32 {
@@ -27,7 +27,7 @@ pub(crate) const fn f64_to_bf16(value: f64) -> u16 {
     // TODO: Replace mem::transmute with to_bits() once to_bits is const-stabilized
     // Convert to raw bytes, truncating the last 32-bits of mantissa; that precision will always
     // be lost on half-precision.
-    let val: u64 = unsafe { mem::transmute(value) };
+    let val: u64 = unsafe { mem::transmute::<f64, u64>(value) };
     let x = (val >> 32) as u32;
 
     // Extract IEEE754 components
@@ -95,9 +95,9 @@ pub(crate) const fn bf16_to_f32(i: u16) -> f32 {
     // TODO: Replace mem::transmute with from_bits() once from_bits is const-stabilized
     // If NaN, keep current mantissa but also set most significiant mantissa bit
     if i & 0x7FFFu16 > 0x7F80u16 {
-        unsafe { mem::transmute((i as u32 | 0x0040u32) << 16) }
+        unsafe { mem::transmute::<u32, f32>((i as u32 | 0x0040u32) << 16) }
     } else {
-        unsafe { mem::transmute((i as u32) << 16) }
+        unsafe { mem::transmute::<u32, f32>((i as u32) << 16) }
     }
 }
 
@@ -106,7 +106,7 @@ pub(crate) const fn bf16_to_f64(i: u16) -> f64 {
     // TODO: Replace mem::transmute with from_bits() once from_bits is const-stabilized
     // Check for signed zero
     if i & 0x7FFFu16 == 0 {
-        return unsafe { mem::transmute((i as u64) << 48) };
+        return unsafe { mem::transmute::<u64, f64>((i as u64) << 48) };
     }
 
     let half_sign = (i & 0x8000u16) as u64;
@@ -117,11 +117,15 @@ pub(crate) const fn bf16_to_f64(i: u16) -> f64 {
     if half_exp == 0x7F80u64 {
         // Check for signed infinity if mantissa is zero
         if half_man == 0 {
-            return unsafe { mem::transmute((half_sign << 48) | 0x7FF0_0000_0000_0000u64) };
+            return unsafe {
+                mem::transmute::<u64, f64>((half_sign << 48) | 0x7FF0_0000_0000_0000u64)
+            };
         } else {
             // NaN, keep current mantissa but also set most significiant mantissa bit
             return unsafe {
-                mem::transmute((half_sign << 48) | 0x7FF8_0000_0000_0000u64 | (half_man << 45))
+                mem::transmute::<u64, f64>(
+                    (half_sign << 48) | 0x7FF8_0000_0000_0000u64 | (half_man << 45),
+                )
             };
         }
     }
@@ -139,10 +143,10 @@ pub(crate) const fn bf16_to_f64(i: u16) -> f64 {
         // Rebias and adjust exponent
         let exp = ((1023 - 127 - e) as u64) << 52;
         let man = (half_man << (46 + e)) & 0xF_FFFF_FFFF_FFFFu64;
-        return unsafe { mem::transmute(sign | exp | man) };
+        return unsafe { mem::transmute::<u64, f64>(sign | exp | man) };
     }
     // Rebias exponent for a normalized normal
     let exp = ((unbiased_exp + 1023) as u64) << 52;
     let man = (half_man & 0x007Fu64) << 45;
-    unsafe { mem::transmute(sign | exp | man) }
+    unsafe { mem::transmute::<u64, f64>(sign | exp | man) }
 }

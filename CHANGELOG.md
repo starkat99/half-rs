@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Fixed
 - Missing macro import causing build failure on `no_std` + `alloc` feature set. Fixes [#107].
+- Clippy warning on nightly rust.
 
 ## [2.4.0] - 2024-02-25 <a name="2.4.0"></a>
 ### Added
