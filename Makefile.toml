@@ -43,7 +43,15 @@ args = [
 
 # Build & Test with no features enabled
 [tasks.post-ci-flow]
-run_task = [{ name = ["check-docs", "build-no-std", "test-no-std"] }]
+run_task = [
+    { name = [
+        "check-docs",
+        "build-no-std",
+        "test-no-std",
+        "build-no-std-alloc",
+        "test-no-std-alloc",
+    ] },
+]
 
 [tasks.build-no-std]
 description = "Build without any features"
@@ -55,4 +63,16 @@ run_task = "build"
 description = "Run tests without any features"
 category = "Test"
 env = { CARGO_MAKE_CARGO_BUILD_TEST_FLAGS = "--no-default-features" }
+run_task = "test"
+
+[tasks.build-no-std-alloc]
+description = "Build without any features except alloc"
+category = "Build"
+env = { CARGO_MAKE_CARGO_BUILD_TEST_FLAGS = "--no-default-features --features alloc" }
+run_task = "build"
+
+[tasks.test-no-std-alloc]
+description = "Run tests without any features except alloc"
+category = "Test"
+env = { CARGO_MAKE_CARGO_BUILD_TEST_FLAGS = "--no-default-features --features alloc" }
 run_task = "test"

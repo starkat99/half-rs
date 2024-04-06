@@ -4,6 +4,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- Missing macro import causing build failure on `no_std` + `alloc` feature set. Fixes [#107].
 
 ## [2.4.0] - 2024-02-25 <a name="2.4.0"></a>
 ### Added
@@ -324,6 +326,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#93]: https://github.com/starkat99/half-rs/issues/54
 [#100]: https://github.com/starkat99/half-rs/issues/100
 [#103]: https://github.com/starkat99/half-rs/issues/103
+[#107]: https://github.com/starkat99/half-rs/issues/107
 
 [@tspiteri]: https://github.com/tspiteri
 [@PSeitz]: https://github.com/PSeitz

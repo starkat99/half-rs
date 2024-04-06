@@ -10,7 +10,7 @@
 use crate::{bf16, binary16::arch, f16};
 #[cfg(feature = "alloc")]
 #[allow(unused_imports)]
-use alloc::vec::Vec;
+use alloc::{vec, vec::Vec};
 use core::slice;
 
 /// Extensions to `[f16]` and `[bf16]` slices to support conversion and reinterpret operations.

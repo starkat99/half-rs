@@ -12,7 +12,7 @@
 use super::{bf16, f16, slice::HalfFloatSliceExt};
 #[cfg(feature = "alloc")]
 #[allow(unused_imports)]
-use alloc::vec::Vec;
+use alloc::{vec, vec::Vec};
 use core::mem;
 
 /// Extensions to [`Vec<f16>`] and [`Vec<bf16>`] to support reinterpret operations.
