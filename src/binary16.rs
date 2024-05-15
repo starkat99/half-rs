@@ -1,8 +1,6 @@
 #[cfg(all(feature = "serde", feature = "alloc"))]
 #[allow(unused_imports)]
 use alloc::string::ToString;
-#[cfg(feature = "arbitrary")]
-use arbitrary::Arbitrary;
 #[cfg(feature = "bytemuck")]
 use bytemuck::{Pod, Zeroable};
 use core::{
@@ -45,7 +43,7 @@ pub(crate) mod arch;
 #[cfg_attr(feature = "bytemuck", derive(Zeroable, Pod))]
 #[cfg_attr(feature = "zerocopy", derive(AsBytes, FromBytes))]
 #[cfg_attr(kani, derive(kani::Arbitrary))]
-#[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
+#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub struct f16(u16);
 
 impl f16 {
