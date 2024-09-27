@@ -5,7 +5,7 @@ use core::mem;
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 mod x86;
 
-#[cfg(target_arch = "aarch64")]
+#[cfg(all(target_arch = "aarch64", target_endian = "little"))]
 mod aarch64;
 
 macro_rules! convert_fn {
@@ -22,7 +22,8 @@ macro_rules! convert_fn {
             }
             else if #[cfg(all(
                 target_arch = "aarch64",
-                target_feature = "fp16"
+                target_feature = "fp16",
+                target_endian = "little"
             ))] {
                 $aarch64
 
@@ -43,6 +44,7 @@ macro_rules! convert_fn {
             else if #[cfg(all(
                 feature = "std",
                 target_arch = "aarch64",
+                target_endian = "little"
             ))] {
                 use std::arch::is_aarch64_feature_detected;
                 if is_aarch64_feature_detected!("fp16") {
@@ -308,7 +310,8 @@ macro_rules! math_fn {
             else if #[cfg(all(
                 feature = "std",
                 target_arch = "aarch64",
-                not(target_feature = "fp16")
+                not(target_feature = "fp16"),
+                target_endian = "little"
             ))] {
                 use std::arch::is_aarch64_feature_detected;
                 if is_aarch64_feature_detected!("fp16") {
