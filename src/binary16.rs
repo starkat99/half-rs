@@ -1337,6 +1337,51 @@ impl<'de> serde::de::Visitor<'de> for Visitor {
     }
 }
 
+#[cfg(feature = "bincode")]
+use bincode::{de::read::Reader, enc::write::Writer, BorrowDecode, Decode, Encode};
+
+#[cfg(feature = "bincode")]
+impl Decode for f16 {
+    fn decode<D: bincode::de::Decoder>(
+        decoder: &mut D,
+    ) -> Result<Self, bincode::error::DecodeError> {
+        let mut bytes: [u8; size_of::<f16>()] = [0; size_of::<f16>()];
+        decoder.reader().read(&mut bytes)?;
+
+        let b0 = *bytes.get(0).unwrap_or(&0);
+        let b1 = *bytes.get(1).unwrap_or(&0);
+
+        Ok(Self::from_bits(u16::from_be_bytes([b0, b1])))
+    }
+}
+
+#[cfg(feature = "bincode")]
+
+impl<'de> BorrowDecode<'de> for f16 {
+    fn borrow_decode<D: bincode::de::BorrowDecoder<'de>>(
+        decoder: &mut D,
+    ) -> Result<Self, bincode::error::DecodeError> {
+        let mut bytes: [u8; size_of::<f16>()] = [0; size_of::<f16>()];
+        decoder.reader().read(&mut bytes)?;
+
+        let b0 = *bytes.get(0).unwrap_or(&0);
+        let b1 = *bytes.get(1).unwrap_or(&0);
+
+        Ok(Self::from_bits(u16::from_be_bytes([b0, b1])))
+    }
+}
+
+#[cfg(feature = "bincode")]
+impl Encode for f16 {
+    fn encode<E: bincode::enc::Encoder>(
+        &self,
+        encoder: &mut E,
+    ) -> Result<(), bincode::error::EncodeError> {
+        println!("encoding: {:?}", self.0.to_be_bytes());
+        encoder.writer().write(&self.0.to_be_bytes())
+    }
+}
+
 #[allow(
     clippy::cognitive_complexity,
     clippy::float_cmp,
