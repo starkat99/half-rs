@@ -1377,7 +1377,6 @@ impl Encode for f16 {
         &self,
         encoder: &mut E,
     ) -> Result<(), bincode::error::EncodeError> {
-        println!("encoding: {:?}", self.0.to_be_bytes());
         encoder.writer().write(&self.0.to_be_bytes())
     }
 }
