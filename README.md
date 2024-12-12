@@ -1,22 +1,18 @@
-# `f16` and `bf16` floating point types for Rust
-[![Crates.io](https://img.shields.io/crates/v/half.svg)](https://crates.io/crates/half/) [![Documentation](https://docs.rs/half/badge.svg)](https://docs.rs/half/) ![Crates.io](https://img.shields.io/crates/l/half) [![Build status](https://github.com/starkat99/half-rs/actions/workflows/rust.yml/badge.svg?branch=main&event=push)](https://github.com/starkat99/half-rs/actions/workflows/rust.yml) [![CircleCI](https://dl.circleci.com/status-badge/img/gh/starkat99/half-rs/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/starkat99/half-rs/tree/main)
+# 16-Bit Floating-Point Types
 
-This crate implements a half-precision floating point `f16` type for Rust implementing the IEEE
-754-2008 standard [`binary16`](https://en.wikipedia.org/wiki/Half-precision_floating-point_format)
-a.k.a "half" format, as well as a `bf16` type implementing the
-[`bfloat16`](https://en.wikipedia.org/wiki/Bfloat16_floating-point_format) format.
+[![Crates.io](https://img.shields.io/crates/v/min-half.svg)](https://crates.io/crates/min-half/) [![Documentation](https://docs.rs/min-half/badge.svg)](https://docs.rs/min-half/) ![Crates.io](https://img.shields.io/crates/l/half) [![Build status](https://github.com/starkat99/half-rs/actions/workflows/rust.yml/badge.svg?branch=main&event=push)](https://github.com/starkat99/half-rs/actions/workflows/rust.yml) [![CircleCI](https://dl.circleci.com/status-badge/img/gh/starkat99/half-rs/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/starkat99/half-rs/tree/main)
+
+This crate implements a half-precision floating point `f16` type for Rust implementing the IEEE 754-2008 standard [`binary16`](https://en.wikipedia.org/wiki/Half-precision_floating-point_format) a.k.a "half" format, as well as a `bf16` type implementing the [`bfloat16`](https://en.wikipedia.org/wiki/Bfloat16_floating-point_format) format.
+
+This is a minimal variant which removes some features, including a few compiler intrinsics that can reduce portability by causing issues compilation issues on certain environments.
 
 ## Usage
 
-The `f16` and `bf16` types attempt to match existing Rust floating point type functionality where possible, and provides both conversion operations (such as to/from `f32` and `f64`) and basic
-arithmetic operations. Hardware support for these operations will be used whenever hardware support
-is available—either through instrinsics or targeted assembly—although a nightly Rust toolchain may
-be required for some hardware.
+The `f16` and `bf16` types attempt to match existing Rust floating point type functionality where possible, and provides both conversion operations (such as to/from `f32` and `f64`) and basic arithmetic operations. Hardware support for these operations will be used whenever hardware support is available—either through instrinsics or targeted assembly—although a nightly Rust toolchain may be required for some hardware.
 
 This crate provides [`no_std`](https://rust-embedded.github.io/book/intro/no-std.html) support so can easily be used in embedded code where a smaller float format is most useful.
 
-*Requires Rust 1.70 or greater.* If you need support for older versions of Rust, use 1.x versions of
-this crate.
+*Requires Rust 1.63 or greater.* If you need support for older versions of Rust, use 1.x versions of this crate.
 
 See the [crate documentation](https://docs.rs/half/) for more details.
 
@@ -44,7 +40,7 @@ See the [crate documentation](https://docs.rs/half/) for more details.
 - **`bytemuck`** — Enable `Zeroable` and `Pod` trait implementations from the
   [`bytemuck`](https://crates.io/crates/bytemuck) crate.
 
-- **`zerocopy`** — Enable `AsBytes` and `FromBytes` trait implementations from the 
+- **`zerocopy`** — Enable `AsBytes` and `FromBytes` trait implementations from the
   [`zerocopy`](https://crates.io/crates/zerocopy) crate.
 
 - **`rand_distr`** — Enable sampling from distributions like `Uniform` and `Normal` from the
@@ -65,27 +61,21 @@ for specific CPU features which avoids the runtime overhead and works in a `no_s
 
 ### More Documentation
 
-- [Crate API Reference](https://docs.rs/half/)
+- [Crate API Reference](https://docs.rs/min-half/)
 - [Latest Changes](CHANGELOG.md)
 
 ## License
 
 This library is distributed under the terms of either of:
 
-* [MIT License](LICENSES/MIT.txt)
-  ([http://opensource.org/licenses/MIT](http://opensource.org/licenses/MIT))
-* [Apache License, Version 2.0](LICENSES/Apache-2.0.txt)
-  ([http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0))
+- [MIT License](LICENSES/MIT.txt) ([http://opensource.org/licenses/MIT](http://opensource.org/licenses/MIT))
+- [Apache License, Version 2.0](LICENSES/Apache-2.0.txt) ([http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0))
 
 at your option.
 
-This project is [REUSE-compliant](https://reuse.software/spec/). Copyrights are retained by their
-contributors. Some files may include explicit copyright notices and/or license
-[SPDX identifiers](https://spdx.dev/ids/). For full authorship information, see the version control
-history.
+This project is [REUSE-compliant](https://reuse.software/spec/). Copyrights are retained by their contributors. Some files may include explicit copyright notices and/or license
+[SPDX identifiers](https://spdx.dev/ids/). For full authorship information, see the version control history.
 
 ### Contributing
 
-Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the
-work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any
-additional terms or conditions.
+Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any additional terms or conditions.
