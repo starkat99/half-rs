@@ -33,7 +33,7 @@ pub(crate) mod arch;
 /// [`binary16`]: https://en.wikipedia.org/wiki/Half-precision_floating-point_format
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, Default)]
-#[repr(transparent)]
+#[repr(C)]
 #[cfg_attr(feature = "serde", derive(Serialize))]
 #[cfg_attr(
     feature = "rkyv",
