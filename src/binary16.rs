@@ -1,8 +1,3 @@
-#[cfg(all(feature = "serde", feature = "alloc"))]
-#[allow(unused_imports)]
-use alloc::string::ToString;
-#[cfg(feature = "bytemuck")]
-use bytemuck::{Pod, Zeroable};
 use core::{
     cmp::Ordering,
     iter::{Product, Sum},
@@ -17,10 +12,6 @@ use core::{
     num::ParseFloatError,
     str::FromStr,
 };
-#[cfg(feature = "serde")]
-use serde::{Deserialize, Serialize};
-#[cfg(feature = "zerocopy")]
-use zerocopy::{AsBytes, FromBytes};
 
 pub(crate) mod arch;
 
@@ -31,18 +22,10 @@ pub(crate) mod arch;
 /// precision of a larger floating point value is not required.
 ///
 /// [`binary16`]: https://en.wikipedia.org/wiki/Half-precision_floating-point_format
+#[repr(C)]
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, Default)]
-#[repr(C)]
-#[cfg_attr(feature = "serde", derive(Serialize))]
-#[cfg_attr(
-    feature = "rkyv",
-    derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)
-)]
-#[cfg_attr(feature = "rkyv", archive(resolver = "F16Resolver"))]
-#[cfg_attr(feature = "bytemuck", derive(Zeroable, Pod))]
-#[cfg_attr(feature = "zerocopy", derive(AsBytes, FromBytes))]
-#[cfg_attr(kani, derive(kani::Arbitrary))]
+#[cfg_attr(kani, derive(kani::Arbitrary))]  // TODO: Fix this
 pub struct f16(u16);
 
 impl f16 {
@@ -657,61 +640,6 @@ impl f16 {
         left.cmp(&right)
     }
 
-    /// Alternate serialize adapter for serializing as a float.
-    ///
-    /// By default, [`f16`] serializes as a newtype of [`u16`]. This is an alternate serialize
-    /// implementation that serializes as an [`f32`] value. It is designed for use with
-    /// `serialize_with` serde attributes. Deserialization from `f32` values is already supported by
-    /// the default deserialize implementation.
-    ///
-    /// # Examples
-    ///
-    /// A demonstration on how to use this adapater:
-    ///
-    /// ```
-    /// use serde::{Serialize, Deserialize};
-    /// use float16::f16;
-    ///
-    /// #[derive(Serialize, Deserialize)]
-    /// struct MyStruct {
-    ///     #[serde(serialize_with = "f16::serialize_as_f32")]
-    ///     value: f16 // Will be serialized as f32 instead of u16
-    /// }
-    /// ```
-    #[cfg(feature = "serde")]
-    pub fn serialize_as_f32<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        serializer.serialize_f32(self.to_f32())
-    }
-
-    /// Alternate serialize adapter for serializing as a string.
-    ///
-    /// By default, [`f16`] serializes as a newtype of [`u16`]. This is an alternate serialize
-    /// implementation that serializes as a string value. It is designed for use with
-    /// `serialize_with` serde attributes. Deserialization from string values is already supported
-    /// by the default deserialize implementation.
-    ///
-    /// # Examples
-    ///
-    /// A demonstration on how to use this adapater:
-    ///
-    /// ```
-    /// use serde::{Serialize, Deserialize};
-    /// use float16::f16;
-    ///
-    /// #[derive(Serialize, Deserialize)]
-    /// struct MyStruct {
-    ///     #[serde(serialize_with = "f16::serialize_as_string")]
-    ///     value: f16 // Will be serialized as a string instead of u16
-    /// }
-    /// ```
-    #[cfg(all(feature = "serde", feature = "alloc"))]
-    pub fn serialize_as_string<S: serde::Serializer>(
-        &self,
-        serializer: S,
-    ) -> Result<S::Ok, S::Error> {
-        serializer.serialize_str(&self.to_string())
-    }
-
     /// Approximate number of [`f16`] significant digits in base 10
     pub const DIGITS: u32 = 3;
     /// [`f16`]
@@ -1285,58 +1213,6 @@ impl<'a> Sum<&'a f16> for f16 {
     }
 }
 
-#[cfg(feature = "serde")]
-struct Visitor;
-
-#[cfg(feature = "serde")]
-impl<'de> Deserialize<'de> for f16 {
-    fn deserialize<D>(deserializer: D) -> Result<f16, D::Error>
-    where
-        D: serde::de::Deserializer<'de>,
-    {
-        deserializer.deserialize_newtype_struct("f16", Visitor)
-    }
-}
-
-#[cfg(feature = "serde")]
-impl<'de> serde::de::Visitor<'de> for Visitor {
-    type Value = f16;
-
-    fn expecting(&self, formatter: &mut core::fmt::Formatter) -> core::fmt::Result {
-        write!(formatter, "tuple struct f16")
-    }
-
-    fn visit_newtype_struct<D>(self, deserializer: D) -> Result<Self::Value, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        Ok(f16(<u16 as Deserialize>::deserialize(deserializer)?))
-    }
-
-    fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
-    where
-        E: serde::de::Error,
-    {
-        v.parse().map_err(|_| {
-            serde::de::Error::invalid_value(serde::de::Unexpected::Str(v), &"a float string")
-        })
-    }
-
-    fn visit_f32<E>(self, v: f32) -> Result<Self::Value, E>
-    where
-        E: serde::de::Error,
-    {
-        Ok(f16::from_f32(v))
-    }
-
-    fn visit_f64<E>(self, v: f64) -> Result<Self::Value, E>
-    where
-        E: serde::de::Error,
-    {
-        Ok(f16::from_f64(v))
-    }
-}
-
 #[allow(
     clippy::cognitive_complexity,
     clippy::float_cmp,
@@ -1347,41 +1223,7 @@ mod test {
     use super::*;
     #[allow(unused_imports)]
     use core::cmp::Ordering;
-    #[cfg(feature = "num-traits")]
-    use num_traits::{AsPrimitive, FromPrimitive, ToPrimitive};
     use quickcheck_macros::quickcheck;
-
-    #[cfg(feature = "num-traits")]
-    #[test]
-    fn as_primitive() {
-        let two = f16::from_f32(2.0);
-        assert_eq!(<i32 as AsPrimitive<f16>>::as_(2), two);
-        assert_eq!(<f16 as AsPrimitive<i32>>::as_(two), 2);
-
-        assert_eq!(<f32 as AsPrimitive<f16>>::as_(2.0), two);
-        assert_eq!(<f16 as AsPrimitive<f32>>::as_(two), 2.0);
-
-        assert_eq!(<f64 as AsPrimitive<f16>>::as_(2.0), two);
-        assert_eq!(<f16 as AsPrimitive<f64>>::as_(two), 2.0);
-    }
-
-    #[cfg(feature = "num-traits")]
-    #[test]
-    fn to_primitive() {
-        let two = f16::from_f32(2.0);
-        assert_eq!(ToPrimitive::to_i32(&two).unwrap(), 2i32);
-        assert_eq!(ToPrimitive::to_f32(&two).unwrap(), 2.0f32);
-        assert_eq!(ToPrimitive::to_f64(&two).unwrap(), 2.0f64);
-    }
-
-    #[cfg(feature = "num-traits")]
-    #[test]
-    fn from_primitive() {
-        let two = f16::from_f32(2.0);
-        assert_eq!(<f16 as FromPrimitive>::from_i32(2).unwrap(), two);
-        assert_eq!(<f16 as FromPrimitive>::from_f32(2.0).unwrap(), two);
-        assert_eq!(<f16 as FromPrimitive>::from_f64(2.0).unwrap(), two);
-    }
 
     #[test]
     fn test_f16_consts() {

@@ -33,22 +33,6 @@
 //!
 //! A [`prelude`] module is provided for easy importing of available utility traits.
 //!
-//! # Serialization
-//!
-//! When the `serde` feature is enabled, [`f16`] and [`bf16`] will be serialized as a newtype of
-//! [`u16`] by default. In binary formats this is ideal, as it will generally use just two bytes for
-//! storage. For string formats like JSON, however, this isn't as useful, and due to design
-//! limitations of serde, it's not possible for the default `Serialize` implementation to support
-//! different serialization for different formats.
-//!
-//! Instead, it's up to the containter type of the floats to control how it is serialized. This can
-//! easily be controlled when using the derive macros using `#[serde(serialize_with="")]`
-//! attributes. For both [`f16`] and [`bf16`] a `serialize_as_f32` and `serialize_as_string` are
-//! provided for use with this attribute.
-//!
-//! Deserialization of both float types supports deserializing from the default serialization,
-//! strings, and `f32`/`f64` values, so no additional work is required.
-//!
 //! # Hardware support
 //!
 //! Hardware support for these conversions and arithmetic will be used
@@ -69,27 +53,9 @@
 //!
 //! # Cargo Features
 //!
-//! This crate supports a number of optional cargo features. None of these features are enabled by
-//! default, even `std`.
-//!
-//! - **`std`** — Enable features that depend on the Rust [`std`] library. This also enables the
-//!   `alloc` feature automatically.
-//!
-//!   Enabling the `std` feature enables runtime CPU feature detection of hardware support.
-//!   Without this feature detection, harware is only used when compiler target supports them.
-//!
-//! - **`serde`** — Adds support for the [`serde`] crate by implementing [`Serialize`] and
-//!   [`Deserialize`] traits for both [`f16`] and [`bf16`].
-//!
-//! - **`num-traits`** — Adds support for the [`num-traits`] crate by implementing [`ToPrimitive`],
-//!   [`FromPrimitive`], [`AsPrimitive`], [`Num`], [`Float`], [`FloatCore`], and [`Bounded`] traits
-//!   for both [`f16`] and [`bf16`].
-//!
-//! - **`bytemuck`** — Adds support for the [`bytemuck`] crate by implementing [`Zeroable`] and
-//!   [`Pod`] traits for both [`f16`] and [`bf16`].
-//!
-//! - **`rand_distr`** — Adds support for the [`rand_distr`] crate by implementing [`Distribution`]
-//!   and other traits for both [`f16`] and [`bf16`].
+//! To support numerous features, use the [float16-ext] package, which
+//! implements its own `f16` and `bf16` types that support features like
+//! `serde` serializing, zero-copy logic, and more.
 //!
 //! [`std`]: https://doc.rust-lang.org/std/
 //! [`binary16`]: https://en.wikipedia.org/wiki/Half-precision_floating-point_format
@@ -100,21 +66,13 @@
 #![doc(test(attr(deny(warnings), allow(unused))))]
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 
-#[cfg(feature = "alloc")]
-extern crate alloc;
-
 mod bfloat;
 mod binary16;
 mod leading_zeros;
 mod slice;
-#[cfg(feature = "num-traits")]
-mod num_traits;
 
 pub use bfloat::bf16;
 pub use binary16::f16;
-
-#[cfg(feature = "rand_distr")]
-mod rand_distr;
 
 /// A collection of the most used items and traits in this crate for easy importing.
 ///

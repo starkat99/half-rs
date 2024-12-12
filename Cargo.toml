@@ -16,12 +16,6 @@ exclude = [".git*", ".editorconfig", ".circleci"]
 [features]
 default = ["std"]
 std = []
-# TODO: Remove these after here
-serde = []
-num-traits = []
-bytemuck = []
-rand_distr = []
-alloc = []
 
 [dependencies]
 cfg-if = "1.0.0"
@@ -30,7 +24,6 @@ cfg-if = "1.0.0"
 criterion = "0.5.1"
 quickcheck = "1.0"
 quickcheck_macros = "1.0"
-rand = "0.8.5"
 
 [[bench]]
 name = "convert"
