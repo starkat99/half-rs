@@ -12,29 +12,9 @@ The `f16` and `bf16` types attempt to match existing Rust floating point type fu
 
 This crate provides [`no_std`](https://rust-embedded.github.io/book/intro/no-std.html) support so can easily be used in embedded code where a smaller float format is most useful.
 
-*Requires Rust 1.63 or greater.* If you need support for older versions of Rust, use 1.x versions of this crate.
+*Requires Rust 1.56 or greater.*
 
 See the [crate documentation](https://docs.rs/float16/) for more details.
-
-### Optional Features
-
-- **`alloc`** — Enable use of the [`alloc`](https://doc.rust-lang.org/alloc/) crate when not using
-  the `std` library.
-
-  This enables the `vec` module, which contains zero-copy conversions for the `Vec` type. This
-  allows fast conversion between raw `Vec<u16>` bits and `Vec<f16>` or `Vec<bf16>` arrays, and vice
-  versa.
-
-- **`std`** — Enable features that depend on the Rust `std` library, including everything in the
-  `alloc` feature.
-
-  Enabling the `std` feature enables runtime CPU feature detection of hardware support.
-  Without this feature detection, harware is only used when compiler target supports them.
-
-- **`serde`** - Implement `Serialize` and `Deserialize` traits for `f16` and `bf16`. This adds a dependency on the [`serde`](https://crates.io/crates/serde) crate.
-- **`num-traits`** — Enable `ToPrimitive`, `FromPrimitive`, `Num`, `Float`, `FloatCore` and `Bounded` trait implementations from the [`num-traits`](https://crates.io/crates/num-traits) crate.
-- **`bytemuck`** — Enable `Zeroable` and `Pod` trait implementations from the [`bytemuck`](https://crates.io/crates/bytemuck) crate.
-- **`rand_distr`** — Enable sampling from distributions like `Uniform` and `Normal` from the [`rand_distr`](https://crates.io/crates/rand_distr) crate.
 
 ### Hardware support
 
