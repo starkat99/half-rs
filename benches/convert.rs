@@ -1,5 +1,5 @@
 use criterion::{black_box, criterion_group, criterion_main, Bencher, BenchmarkId, Criterion};
-use half::prelude::*;
+use float16::prelude::*;
 use std::{f32, f64, iter};
 
 const SIMD_LARGE_BENCH_SLICE_LEN: usize = 1024;

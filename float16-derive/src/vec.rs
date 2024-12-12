@@ -27,7 +27,7 @@ pub trait HalfFloatVecExt: private::SealedHalfFloatVec {
     /// # Examples
     ///
     /// ```rust
-    /// # use half::prelude::*;
+    /// # use float16::prelude::*;
     /// let float_buffer = vec![f16::from_f32(1.), f16::from_f32(2.), f16::from_f32(3.)];
     /// let int_buffer = float_buffer.reinterpret_into();
     ///
@@ -45,7 +45,7 @@ pub trait HalfFloatVecExt: private::SealedHalfFloatVec {
     ///
     /// # Examples
     /// ```rust
-    /// # use half::prelude::*;
+    /// # use float16::prelude::*;
     /// let float_values = [1., 2., 3., 4.];
     /// let vec: Vec<f16> = Vec::from_f32_slice(&float_values);
     ///
@@ -63,7 +63,7 @@ pub trait HalfFloatVecExt: private::SealedHalfFloatVec {
     ///
     /// # Examples
     /// ```rust
-    /// # use half::prelude::*;
+    /// # use float16::prelude::*;
     /// let float_values = [1., 2., 3., 4.];
     /// let vec: Vec<f16> = Vec::from_f64_slice(&float_values);
     ///
@@ -87,7 +87,7 @@ pub trait HalfBitsVecExt: private::SealedHalfBitsVec {
     /// # Examples
     ///
     /// ```rust
-    /// # use half::prelude::*;
+    /// # use float16::prelude::*;
     /// let int_buffer = vec![f16::from_f32(1.).to_bits(), f16::from_f32(2.).to_bits(), f16::from_f32(3.).to_bits()];
     /// let float_buffer = int_buffer.reinterpret_into::<f16>();
     ///

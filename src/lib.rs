@@ -64,19 +64,13 @@
 //!
 //! | Architecture | CPU Target Feature | Notes |
 //! | ------------ | ------------------ | ----- |
-//! | `x86`/`x86_64` | `f16c` | This supports conversion to/from [`f16`] only (including vector SIMD) and does not support any [`bf16`] or arithmetic operations. |
+//! | `x86`/`x86_64` | `f16c` | This supports conversion to/from [`f16`] only (including vector SIMD)and does not support any [`bf16`] or arithmetic operations. |
 //! | `aarch64` | `fp16` | This supports all operations on [`f16`] only. |
 //!
 //! # Cargo Features
 //!
 //! This crate supports a number of optional cargo features. None of these features are enabled by
 //! default, even `std`.
-//!
-//! - **`alloc`** — Enable use of the [`alloc`] crate when not using the `std` library.
-//!
-//!   Among other functions, this enables the [`vec`] module, which contains zero-copy
-//!   conversions for the [`Vec`] type. This allows fast conversion between raw `Vec<u16>` bits and
-//!   `Vec<f16>` or `Vec<bf16>` arrays, and vice versa.
 //!
 //! - **`std`** — Enable features that depend on the Rust [`std`] library. This also enables the
 //!   `alloc` feature automatically.
@@ -94,35 +88,16 @@
 //! - **`bytemuck`** — Adds support for the [`bytemuck`] crate by implementing [`Zeroable`] and
 //!   [`Pod`] traits for both [`f16`] and [`bf16`].
 //!
-//! - **`zerocopy`** — Adds support for the [`zerocopy`] crate by implementing [`AsBytes`] and
-//!   [`FromBytes`] traits for both [`f16`] and [`bf16`].
-//!
 //! - **`rand_distr`** — Adds support for the [`rand_distr`] crate by implementing [`Distribution`]
 //!   and other traits for both [`f16`] and [`bf16`].
 //!
-//! - **`rkyv`** -- Enable zero-copy deserializtion with [`rkyv`] crate.
-//!
-//! [`alloc`]: https://doc.rust-lang.org/alloc/
 //! [`std`]: https://doc.rust-lang.org/std/
 //! [`binary16`]: https://en.wikipedia.org/wiki/Half-precision_floating-point_format
 //! [`bfloat16`]: https://en.wikipedia.org/wiki/Bfloat16_floating-point_format
 //! [`serde`]: https://crates.io/crates/serde
 //! [`bytemuck`]: https://crates.io/crates/bytemuck
 //! [`num-traits`]: https://crates.io/crates/num-traits
-//! [`zerocopy`]: https://crates.io/crates/zerocopy
 //! [`rand_distr`]: https://crates.io/crates/rand_distr
-//! [`rkyv`]: (https://crates.io/crates/rkyv)
-#![cfg_attr(
-    feature = "alloc",
-    doc = "
-[`vec`]: mod@vec"
-)]
-#![cfg_attr(
-    not(feature = "alloc"),
-    doc = "
-[`vec`]: #
-[`Vec`]: https://docs.rust-lang.org/stable/alloc/vec/struct.Vec.html"
-)]
 #![cfg_attr(
     feature = "serde",
     doc = "
@@ -170,18 +145,6 @@
 [`Pod`]: https://docs.rs/bytemuck/*bytemuck/trait.Pod.html"
 )]
 #![cfg_attr(
-    feature = "zerocopy",
-    doc = "
-[`AsBytes`]: zerocopy::AsBytes
-[`FromBytes`]: zerocopy::FromBytes"
-)]
-#![cfg_attr(
-    not(feature = "zerocopy"),
-    doc = "
-[`AsBytes`]: https://docs.rs/zerocopy/*/zerocopy/trait.AsBytes.html
-[`FromBytes`]: https://docs.rs/zerocopy/*/zerocopy/trait.FromBytes.html"
-)]
-#![cfg_attr(
     feature = "rand_distr",
     doc = "
 [`Distribution`]: rand::distributions::Distribution"
@@ -197,7 +160,6 @@
     trivial_numeric_casts,
     future_incompatible
 )]
-#![cfg_attr(not(target_arch = "spirv"), warn(missing_debug_implementations))]
 #![allow(clippy::verbose_bit_mask, clippy::cast_lossless)]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![doc(html_root_url = "https://docs.rs/half/2.4.1")]
@@ -210,13 +172,9 @@ extern crate alloc;
 mod bfloat;
 mod binary16;
 mod leading_zeros;
+mod slice;
 #[cfg(feature = "num-traits")]
 mod num_traits;
-
-#[cfg(not(target_arch = "spirv"))]
-pub mod slice;
-#[cfg(feature = "alloc")]
-pub mod vec;
 
 pub use bfloat::bf16;
 pub use binary16::f16;
@@ -229,7 +187,7 @@ mod rand_distr;
 /// # Examples
 ///
 /// ```rust
-/// use half::prelude::*;
+/// use float16::prelude::*;
 /// ```
 pub mod prelude {
     #[doc(no_inline)]
@@ -238,10 +196,6 @@ pub mod prelude {
     #[cfg(not(target_arch = "spirv"))]
     #[doc(no_inline)]
     pub use crate::slice::{HalfBitsSliceExt, HalfFloatSliceExt};
-
-    #[cfg(feature = "alloc")]
-    #[doc(no_inline)]
-    pub use crate::vec::{HalfBitsVecExt, HalfFloatVecExt};
 }
 
 // Keep this module private to crate

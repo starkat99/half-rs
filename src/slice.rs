@@ -8,9 +8,6 @@
 //! [`prelude`][crate::prelude] module.
 
 use crate::{bf16, binary16::arch, f16};
-#[cfg(feature = "alloc")]
-#[allow(unused_imports)]
-use alloc::{vec, vec::Vec};
 use core::slice;
 
 /// Extensions to `[f16]` and `[bf16]` slices to support conversion and reinterpret operations.
@@ -25,7 +22,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     /// # Examples
     ///
     /// ```rust
-    /// # use half::prelude::*;
+    /// # use float16::prelude::*;
     /// let float_buffer = [f16::from_f32(1.), f16::from_f32(2.), f16::from_f32(3.)];
     /// let int_buffer = float_buffer.reinterpret_cast();
     ///
@@ -43,7 +40,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     /// # Examples
     ///
     /// ```rust
-    /// # use half::prelude::*;
+    /// # use float16::prelude::*;
     /// let mut float_buffer = [f16::from_f32(1.), f16::from_f32(2.), f16::from_f32(3.)];
     ///
     /// {
@@ -76,7 +73,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     ///
     /// # Examples
     /// ```rust
-    /// # use half::prelude::*;
+    /// # use float16::prelude::*;
     /// // Initialize an empty buffer
     /// let mut buffer = [0u16; 4];
     /// let buffer = buffer.reinterpret_cast_mut::<f16>();
@@ -105,7 +102,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     ///
     /// # Examples
     /// ```rust
-    /// # use half::prelude::*;
+    /// # use float16::prelude::*;
     /// // Initialize an empty buffer
     /// let mut buffer = [0u16; 4];
     /// let buffer = buffer.reinterpret_cast_mut::<f16>();
@@ -134,7 +131,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     ///
     /// # Examples
     /// ```rust
-    /// # use half::prelude::*;
+    /// # use float16::prelude::*;
     /// // Initialize an empty buffer
     /// let mut buffer = [0f32; 4];
     ///
@@ -162,7 +159,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     ///
     /// # Examples
     /// ```rust
-    /// # use half::prelude::*;
+    /// # use float16::prelude::*;
     /// // Initialize an empty buffer
     /// let mut buffer = [0f64; 4];
     ///
@@ -174,52 +171,6 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     /// assert_eq!(buffer, [1., 2., 3., 4.]);
     /// ```
     fn convert_to_f64_slice(&self, dst: &mut [f64]);
-
-    // Because trait is sealed, we can get away with different interfaces between features.
-
-    /// Converts all of the [`f16`] or [`bf16`] elements of `self` into [`f32`] values in a new
-    /// vector
-    ///
-    /// The conversion operation is vectorized over the slice, meaning the conversion may be more
-    /// efficient than converting individual elements on some hardware that supports SIMD
-    /// conversions. See [crate documentation](crate) for more information on hardware conversion
-    /// support.
-    ///
-    /// This method is only available with the `std` or `alloc` feature.
-    ///
-    /// # Examples
-    /// ```rust
-    /// # use half::prelude::*;
-    /// let half_values = [f16::from_f32(1.), f16::from_f32(2.), f16::from_f32(3.), f16::from_f32(4.)];
-    /// let vec = half_values.to_f32_vec();
-    ///
-    /// assert_eq!(vec, vec![1., 2., 3., 4.]);
-    /// ```
-    #[cfg(any(feature = "alloc", feature = "std"))]
-    #[must_use]
-    fn to_f32_vec(&self) -> Vec<f32>;
-
-    /// Converts all of the [`f16`] or [`bf16`] elements of `self` into [`f64`] values in a new
-    /// vector.
-    ///
-    /// The conversion operation is vectorized over the slice, meaning the conversion may be more
-    /// efficient than converting individual elements on some hardware that supports SIMD
-    /// conversions. See [crate documentation](crate) for more information on hardware conversion
-    /// support.
-    ///
-    /// This method is only available with the `std` or `alloc` feature.
-    ///
-    /// # Examples
-    /// ```rust
-    /// # use half::prelude::*;
-    /// let half_values = [f16::from_f64(1.), f16::from_f64(2.), f16::from_f64(3.), f16::from_f64(4.)];
-    /// let vec = half_values.to_f64_vec();
-    ///
-    /// assert_eq!(vec, vec![1., 2., 3., 4.]);
-    /// ```
-    #[cfg(feature = "alloc")]
-    #[must_use]
-    fn to_f64_vec(&self) -> Vec<f64>;
 }
 
 /// Extensions to `[u16]` slices to support reinterpret operations.
@@ -236,7 +187,7 @@ pub trait HalfBitsSliceExt: private::SealedHalfBitsSlice {
     /// # Examples
     ///
     /// ```rust
-    /// # use half::prelude::*;
+    /// # use float16::prelude::*;
     /// let int_buffer = [f16::from_f32(1.).to_bits(), f16::from_f32(2.).to_bits(), f16::from_f32(3.).to_bits()];
     /// let float_buffer: &[f16] = int_buffer.reinterpret_cast();
     ///
@@ -262,7 +213,7 @@ pub trait HalfBitsSliceExt: private::SealedHalfBitsSlice {
     /// # Examples
     ///
     /// ```rust
-    /// # use half::prelude::*;
+    /// # use float16::prelude::*;
     /// let mut int_buffer = [f16::from_f32(1.).to_bits(), f16::from_f32(2.).to_bits(), f16::from_f32(3.).to_bits()];
     ///
     /// {
@@ -360,24 +311,6 @@ impl HalfFloatSliceExt for [f16] {
 
         arch::f16_to_f64_slice(self.reinterpret_cast(), dst)
     }
-
-    #[cfg(any(feature = "alloc", feature = "std"))]
-    #[inline]
-    #[allow(clippy::uninit_vec)]
-    fn to_f32_vec(&self) -> Vec<f32> {
-        let mut vec = vec![0f32; self.len()];
-        self.convert_to_f32_slice(&mut vec);
-        vec
-    }
-
-    #[cfg(any(feature = "alloc", feature = "std"))]
-    #[inline]
-    #[allow(clippy::uninit_vec)]
-    fn to_f64_vec(&self) -> Vec<f64> {
-        let mut vec = vec![0f64; self.len()];
-        self.convert_to_f64_slice(&mut vec);
-        vec
-    }
 }
 
 impl HalfFloatSliceExt for [bf16] {
@@ -453,24 +386,6 @@ impl HalfFloatSliceExt for [bf16] {
         for (i, f) in self.iter().enumerate() {
             dst[i] = f.to_f64();
         }
-    }
-
-    #[cfg(any(feature = "alloc", feature = "std"))]
-    #[inline]
-    #[allow(clippy::uninit_vec)]
-    fn to_f32_vec(&self) -> Vec<f32> {
-        let mut vec = vec![0f32; self.len()];
-        self.convert_to_f32_slice(&mut vec);
-        vec
-    }
-
-    #[cfg(any(feature = "alloc", feature = "std"))]
-    #[inline]
-    #[allow(clippy::uninit_vec)]
-    fn to_f64_vec(&self) -> Vec<f64> {
-        let mut vec = vec![0f64; self.len()];
-        self.convert_to_f64_slice(&mut vec);
-        vec
     }
 }
 
