@@ -20,6 +20,7 @@ std = []
 [lints.rust.unexpected_cfgs]
  level = "warn"
  check-cfg = [
+    'cfg(kani)',
     'cfg(target_arch, values("spirv"))',
     'cfg(target_feature, values("IntegerFunctions2INTEL", "SPV_INTEL_shader_integer_functions2"))',
 ]
