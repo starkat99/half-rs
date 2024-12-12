@@ -1,49 +1,58 @@
-//! A crate that provides support for half-precision 16-bit floating point types.
+//! A crate that provides support for half-precision 16-bit floating point
+//! types.
 //!
-//! This crate provides the [`f16`] type, which is an implementation of the IEEE 754-2008 standard
-//! [`binary16`] a.k.a "half" floating point type. This 16-bit floating point type is intended for
-//! efficient storage where the full range and precision of a larger floating point value is not
-//! required. This is especially useful for image storage formats.
+//! This crate provides the [`f16`] type, which is an implementation of the IEEE
+//! 754-2008 standard [`binary16`] a.k.a "half" floating point type. This 16-bit
+//! floating point type is intended for efficient storage where the full range
+//! and precision of a larger floating point value is not required. This is
+//! especially useful for image storage formats.
 //!
-//! This crate also provides a [`bf16`] type, an alternative 16-bit floating point format. The
-//! [`bfloat16`] format is a truncated IEEE 754 standard `binary32` float that preserves the
-//! exponent to allow the same range as [`f32`] but with only 8 bits of precision (instead of 11
-//! bits for [`f16`]). See the [`bf16`] type for details.
+//! This crate also provides a [`bf16`] type, an alternative 16-bit floating
+//! point format. The [`bfloat16`] format is a truncated IEEE 754 standard
+//! `binary32` float that preserves the exponent to allow the same range as
+//! [`f32`] but with only 8 bits of precision (instead of 11 bits for [`f16`]).
+//! See the [`bf16`] type for details.
 //!
-//! Because [`f16`] and [`bf16`] are primarily for efficient storage, floating point operations such
-//! as addition, multiplication, etc. are not always implemented by hardware. When hardware does not
-//! support these operations, this crate emulates them by converting the value to
-//! [`f32`] before performing the operation and then back afterward.
+//! Because [`f16`] and [`bf16`] are primarily for efficient storage, floating
+//! point operations such as addition, multiplication, etc. are not always
+//! implemented by hardware. When hardware does not support these operations,
+//! this crate emulates them by converting the value to [`f32`] before
+//! performing the operation and then back afterward.
 //!
-//! Note that conversion from [`f32`]/[`f64`] to both [`f16`] and [`bf16`] are lossy operations, and
-//! just as converting a [`f64`] to [`f32`] is lossy and does not have `Into`/`From` trait
-//! implementations, so too do these smaller types not have those trait implementations either.
-//! Instead, use `from_f32`/`from_f64` functions for the types in this crate. If you don't care
-//! about lossy conversions and need trait conversions, use the appropriate [`num-traits`]
-//! traits that are implemented.
+//! Note that conversion from [`f32`]/[`f64`] to both [`f16`] and [`bf16`] are
+//! lossy operations, and just as converting a [`f64`] to [`f32`] is lossy and
+//! does not have `Into`/`From` trait implementations, so too do these smaller
+//! types not have those trait implementations either. Instead, use
+//! `from_f32`/`from_f64` functions for the types in this crate. If you don't
+//! care about lossy conversions and need trait conversions, use the appropriate
+//! [`num-traits`] traits that are implemented.
 //!
-//! This crate also provides a [`slice`][mod@slice] module for zero-copy in-place conversions of
-//! [`u16`] slices to both [`f16`] and [`bf16`], as well as efficient vectorized conversions of
-//! larger buffers of floating point values to and from these half formats.
+//! This crate also provides a [`slice`][mod@slice] module for zero-copy
+//! in-place conversions of [`u16`] slices to both [`f16`] and [`bf16`], as well
+//! as efficient vectorized conversions of larger buffers of floating point
+//! values to and from these half formats.
 //!
-//! The crate supports `#[no_std]` when the `std` cargo feature is not enabled, so can be used in
-//! embedded environments without using the Rust [`std`] library. The `std` feature enables support
-//! for the standard library and is enabled by default, see the [Cargo Features](#cargo-features)
-//! section below.
+//! The crate supports `#[no_std]` when the `std` cargo feature is not enabled,
+//! so can be used in embedded environments without using the Rust [`std`]
+//! library. The `std` feature enables support for the standard library and is
+//! enabled by default, see the [Cargo Features](#cargo-features) section below.
 //!
-//! A [`prelude`] module is provided for easy importing of available utility traits.
+//! A [`prelude`] module is provided for easy importing of available utility
+//! traits.
 //!
 //! # Hardware support
 //!
 //! Hardware support for these conversions and arithmetic will be used
-//! whenever hardware support is available—either through instrinsics or targeted assembly—although
-//! a nightly Rust toolchain may be required for some hardware. When hardware supports it the
-//! functions and traits in the [`slice`][mod@slice] and [`vec`] modules will also use vectorized
+//! whenever hardware support is available—either through instrinsics or
+//! targeted assembly—although a nightly Rust toolchain may be required for some
+//! hardware. When hardware supports it the functions and traits in the
+//! [`slice`][mod@slice] and [`vec`] modules will also use vectorized
 //! SIMD intructions for increased efficiency.
 //!
-//! The following list details hardware support for floating point types in this crate. When using
-//! `std` cargo feature, runtime CPU target detection will be used. To get the most performance
-//! benefits, compile for specific CPU features which avoids the runtime overhead and works in a
+//! The following list details hardware support for floating point types in this
+//! crate. When using `std` cargo feature, runtime CPU target detection will be
+//! used. To get the most performance benefits, compile for specific CPU
+//! features which avoids the runtime overhead and works in a
 //! `no_std` environment.
 //!
 //! | Architecture | CPU Target Feature | Notes |
@@ -74,7 +83,8 @@ mod slice;
 pub use bfloat::bf16;
 pub use binary16::f16;
 
-/// A collection of the most used items and traits in this crate for easy importing.
+/// A collection of the most used items and traits in this crate for easy
+/// importing.
 ///
 /// # Examples
 ///
@@ -82,12 +92,11 @@ pub use binary16::f16;
 /// use float16::prelude::*;
 /// ```
 pub mod prelude {
-    #[doc(no_inline)]
-    pub use crate::{bf16, f16};
-
     #[cfg(not(target_arch = "spirv"))]
     #[doc(no_inline)]
     pub use crate::slice::{HalfBitsSliceExt, HalfFloatSliceExt};
+    #[doc(no_inline)]
+    pub use crate::{bf16, f16};
 }
 
 // Keep this module private to crate
@@ -96,6 +105,8 @@ mod private {
 
     pub trait SealedHalf {}
 
-    impl SealedHalf for f16 {}
-    impl SealedHalf for bf16 {}
+    impl SealedHalf for f16 {
+    }
+    impl SealedHalf for bf16 {
+    }
 }

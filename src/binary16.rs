@@ -7,7 +7,16 @@ use core::{
 #[cfg(not(target_arch = "spirv"))]
 use core::{
     fmt::{
-        Binary, Debug, Display, Error, Formatter, LowerExp, LowerHex, Octal, UpperExp, UpperHex,
+        Binary,
+        Debug,
+        Display,
+        Error,
+        Formatter,
+        LowerExp,
+        LowerHex,
+        Octal,
+        UpperExp,
+        UpperHex,
     },
     num::ParseFloatError,
     str::FromStr,
@@ -15,17 +24,17 @@ use core::{
 
 pub(crate) mod arch;
 
-/// A 16-bit floating point type implementing the IEEE 754-2008 standard [`binary16`] a.k.a "half"
-/// format.
+/// A 16-bit floating point type implementing the IEEE 754-2008 standard
+/// [`binary16`] a.k.a "half" format.
 ///
-/// This 16-bit floating point type is intended for efficient storage where the full range and
-/// precision of a larger floating point value is not required.
+/// This 16-bit floating point type is intended for efficient storage where the
+/// full range and precision of a larger floating point value is not required.
 ///
 /// [`binary16`]: https://en.wikipedia.org/wiki/Half-precision_floating-point_format
 #[repr(C)]
 #[allow(non_camel_case_types)]
 #[derive(Clone, Copy, Default)]
-#[cfg_attr(kani, derive(kani::Arbitrary))]  // TODO: Fix this
+#[cfg_attr(kani, derive(kani::Arbitrary))] // TODO: Fix this
 pub struct f16(u16);
 
 impl f16 {
@@ -36,60 +45,70 @@ impl f16 {
         f16(bits)
     }
 
-    /// Constructs a 16-bit floating point value from a 32-bit floating point value.
+    /// Constructs a 16-bit floating point value from a 32-bit floating point
+    /// value.
     ///
-    /// This operation is lossy. If the 32-bit value is to large to fit in 16-bits, ±∞ will result.
-    /// NaN values are preserved. 32-bit subnormal values are too tiny to be represented in 16-bits
-    /// and result in ±0. Exponents that underflow the minimum 16-bit exponent will result in 16-bit
-    /// subnormals or ±0. All other values are truncated and rounded to the nearest representable
-    /// 16-bit value.
+    /// This operation is lossy. If the 32-bit value is to large to fit in
+    /// 16-bits, ±∞ will result. NaN values are preserved. 32-bit subnormal
+    /// values are too tiny to be represented in 16-bits and result in ±0.
+    /// Exponents that underflow the minimum 16-bit exponent will result in
+    /// 16-bit subnormals or ±0. All other values are truncated and rounded
+    /// to the nearest representable 16-bit value.
     #[inline]
     #[must_use]
     pub fn from_f32(value: f32) -> f16 {
         f16(arch::f32_to_f16(value))
     }
 
-    /// Constructs a 16-bit floating point value from a 32-bit floating point value.
+    /// Constructs a 16-bit floating point value from a 32-bit floating point
+    /// value.
     ///
-    /// This function is identical to [`from_f32`][Self::from_f32] except it never uses hardware
-    /// intrinsics, which allows it to be `const`. [`from_f32`][Self::from_f32] should be preferred
-    /// in any non-`const` context.
+    /// This function is identical to [`from_f32`][Self::from_f32] except it
+    /// never uses hardware intrinsics, which allows it to be `const`.
+    /// [`from_f32`][Self::from_f32] should be preferred in any non-`const`
+    /// context.
     ///
-    /// This operation is lossy. If the 32-bit value is to large to fit in 16-bits, ±∞ will result.
-    /// NaN values are preserved. 32-bit subnormal values are too tiny to be represented in 16-bits
-    /// and result in ±0. Exponents that underflow the minimum 16-bit exponent will result in 16-bit
-    /// subnormals or ±0. All other values are truncated and rounded to the nearest representable
-    /// 16-bit value.
+    /// This operation is lossy. If the 32-bit value is to large to fit in
+    /// 16-bits, ±∞ will result. NaN values are preserved. 32-bit subnormal
+    /// values are too tiny to be represented in 16-bits and result in ±0.
+    /// Exponents that underflow the minimum 16-bit exponent will result in
+    /// 16-bit subnormals or ±0. All other values are truncated and rounded
+    /// to the nearest representable 16-bit value.
     #[inline]
     #[must_use]
     pub const fn from_f32_const(value: f32) -> f16 {
         f16(arch::f32_to_f16_fallback(value))
     }
 
-    /// Constructs a 16-bit floating point value from a 64-bit floating point value.
+    /// Constructs a 16-bit floating point value from a 64-bit floating point
+    /// value.
     ///
-    /// This operation is lossy. If the 64-bit value is to large to fit in 16-bits, ±∞ will result.
-    /// NaN values are preserved. 64-bit subnormal values are too tiny to be represented in 16-bits
-    /// and result in ±0. Exponents that underflow the minimum 16-bit exponent will result in 16-bit
-    /// subnormals or ±0. All other values are truncated and rounded to the nearest representable
-    /// 16-bit value.
+    /// This operation is lossy. If the 64-bit value is to large to fit in
+    /// 16-bits, ±∞ will result. NaN values are preserved. 64-bit subnormal
+    /// values are too tiny to be represented in 16-bits and result in ±0.
+    /// Exponents that underflow the minimum 16-bit exponent will result in
+    /// 16-bit subnormals or ±0. All other values are truncated and rounded
+    /// to the nearest representable 16-bit value.
     #[inline]
     #[must_use]
     pub fn from_f64(value: f64) -> f16 {
         f16(arch::f64_to_f16(value))
     }
 
-    /// Constructs a 16-bit floating point value from a 64-bit floating point value.
+    /// Constructs a 16-bit floating point value from a 64-bit floating point
+    /// value.
     ///
-    /// This function is identical to [`from_f64`][Self::from_f64] except it never uses hardware
-    /// intrinsics, which allows it to be `const`. [`from_f64`][Self::from_f64] should be preferred
-    /// in any non-`const` context.
+    /// This function is identical to [`from_f64`][Self::from_f64] except it
+    /// never uses hardware intrinsics, which allows it to be `const`.
+    /// [`from_f64`][Self::from_f64] should be preferred in any non-`const`
+    /// context.
     ///
-    /// This operation is lossy. If the 64-bit value is to large to fit in 16-bits, ±∞ will result.
-    /// NaN values are preserved. 64-bit subnormal values are too tiny to be represented in 16-bits
-    /// and result in ±0. Exponents that underflow the minimum 16-bit exponent will result in 16-bit
-    /// subnormals or ±0. All other values are truncated and rounded to the nearest representable
-    /// 16-bit value.
+    /// This operation is lossy. If the 64-bit value is to large to fit in
+    /// 16-bits, ±∞ will result. NaN values are preserved. 64-bit subnormal
+    /// values are too tiny to be represented in 16-bits and result in ±0.
+    /// Exponents that underflow the minimum 16-bit exponent will result in
+    /// 16-bit subnormals or ±0. All other values are truncated and rounded
+    /// to the nearest representable 16-bit value.
     #[inline]
     #[must_use]
     pub const fn from_f64_const(value: f64) -> f16 {
@@ -103,8 +122,8 @@ impl f16 {
         self.0
     }
 
-    /// Returns the memory representation of the underlying bit representation as a byte array in
-    /// little-endian byte order.
+    /// Returns the memory representation of the underlying bit representation
+    /// as a byte array in little-endian byte order.
     ///
     /// # Examples
     ///
@@ -119,8 +138,8 @@ impl f16 {
         self.0.to_le_bytes()
     }
 
-    /// Returns the memory representation of the underlying bit representation as a byte array in
-    /// big-endian (network) byte order.
+    /// Returns the memory representation of the underlying bit representation
+    /// as a byte array in big-endian (network) byte order.
     ///
     /// # Examples
     ///
@@ -135,12 +154,12 @@ impl f16 {
         self.0.to_be_bytes()
     }
 
-    /// Returns the memory representation of the underlying bit representation as a byte array in
-    /// native byte order.
+    /// Returns the memory representation of the underlying bit representation
+    /// as a byte array in native byte order.
     ///
-    /// As the target platform's native endianness is used, portable code should use
-    /// [`to_be_bytes`][Self::to_be_bytes] or [`to_le_bytes`][Self::to_le_bytes], as appropriate,
-    /// instead.
+    /// As the target platform's native endianness is used, portable code should
+    /// use [`to_be_bytes`][Self::to_be_bytes] or
+    /// [`to_le_bytes`][Self::to_le_bytes], as appropriate, instead.
     ///
     /// # Examples
     ///
@@ -159,7 +178,8 @@ impl f16 {
         self.0.to_ne_bytes()
     }
 
-    /// Creates a floating point value from its representation as a byte array in little endian.
+    /// Creates a floating point value from its representation as a byte array
+    /// in little endian.
     ///
     /// # Examples
     ///
@@ -174,7 +194,8 @@ impl f16 {
         f16::from_bits(u16::from_le_bytes(bytes))
     }
 
-    /// Creates a floating point value from its representation as a byte array in big endian.
+    /// Creates a floating point value from its representation as a byte array
+    /// in big endian.
     ///
     /// # Examples
     ///
@@ -189,11 +210,12 @@ impl f16 {
         f16::from_bits(u16::from_be_bytes(bytes))
     }
 
-    /// Creates a floating point value from its representation as a byte array in native endian.
+    /// Creates a floating point value from its representation as a byte array
+    /// in native endian.
     ///
-    /// As the target platform's native endianness is used, portable code likely wants to use
-    /// [`from_be_bytes`][Self::from_be_bytes] or [`from_le_bytes`][Self::from_le_bytes], as
-    /// appropriate instead.
+    /// As the target platform's native endianness is used, portable code likely
+    /// wants to use [`from_be_bytes`][Self::from_be_bytes] or
+    /// [`from_le_bytes`][Self::from_le_bytes], as appropriate instead.
     ///
     /// # Examples
     ///
@@ -214,8 +236,8 @@ impl f16 {
 
     /// Converts a [`f16`] value into a `f32` value.
     ///
-    /// This conversion is lossless as all 16-bit floating point values can be represented exactly
-    /// in 32-bit floating point.
+    /// This conversion is lossless as all 16-bit floating point values can be
+    /// represented exactly in 32-bit floating point.
     #[inline]
     #[must_use]
     pub fn to_f32(self) -> f32 {
@@ -224,12 +246,13 @@ impl f16 {
 
     /// Converts a [`f16`] value into a `f32` value.
     ///
-    /// This function is identical to [`to_f32`][Self::to_f32] except it never uses hardware
-    /// intrinsics, which allows it to be `const`. [`to_f32`][Self::to_f32] should be preferred
-    /// in any non-`const` context.
+    /// This function is identical to [`to_f32`][Self::to_f32] except it never
+    /// uses hardware intrinsics, which allows it to be `const`.
+    /// [`to_f32`][Self::to_f32] should be preferred in any non-`const`
+    /// context.
     ///
-    /// This conversion is lossless as all 16-bit floating point values can be represented exactly
-    /// in 32-bit floating point.
+    /// This conversion is lossless as all 16-bit floating point values can be
+    /// represented exactly in 32-bit floating point.
     #[inline]
     #[must_use]
     pub const fn to_f32_const(self) -> f32 {
@@ -238,8 +261,8 @@ impl f16 {
 
     /// Converts a [`f16`] value into a `f64` value.
     ///
-    /// This conversion is lossless as all 16-bit floating point values can be represented exactly
-    /// in 64-bit floating point.
+    /// This conversion is lossless as all 16-bit floating point values can be
+    /// represented exactly in 64-bit floating point.
     #[inline]
     #[must_use]
     pub fn to_f64(self) -> f64 {
@@ -248,12 +271,13 @@ impl f16 {
 
     /// Converts a [`f16`] value into a `f64` value.
     ///
-    /// This function is identical to [`to_f64`][Self::to_f64] except it never uses hardware
-    /// intrinsics, which allows it to be `const`. [`to_f64`][Self::to_f64] should be preferred
-    /// in any non-`const` context.
+    /// This function is identical to [`to_f64`][Self::to_f64] except it never
+    /// uses hardware intrinsics, which allows it to be `const`.
+    /// [`to_f64`][Self::to_f64] should be preferred in any non-`const`
+    /// context.
     ///
-    /// This conversion is lossless as all 16-bit floating point values can be represented exactly
-    /// in 64-bit floating point.
+    /// This conversion is lossless as all 16-bit floating point values can be
+    /// represented exactly in 64-bit floating point.
     #[inline]
     #[must_use]
     pub const fn to_f64_const(self) -> f64 {
@@ -328,7 +352,8 @@ impl f16 {
         self.0 & 0x7C00u16 != 0x7C00u16
     }
 
-    /// Returns `true` if the number is neither zero, infinite, subnormal, or `NaN`.
+    /// Returns `true` if the number is neither zero, infinite, subnormal, or
+    /// `NaN`.
     ///
     /// # Examples
     ///
@@ -358,8 +383,8 @@ impl f16 {
 
     /// Returns the floating point category of the number.
     ///
-    /// If only one property is going to be tested, it is generally faster to use the specific
-    /// predicate instead.
+    /// If only one property is going to be tested, it is generally faster to
+    /// use the specific predicate instead.
     ///
     /// # Examples
     ///
@@ -389,7 +414,8 @@ impl f16 {
     /// Returns a number that represents the sign of `self`.
     ///
     /// * `1.0` if the number is positive, `+0.0` or [`INFINITY`][f16::INFINITY]
-    /// * `-1.0` if the number is negative, `-0.0` or [`NEG_INFINITY`][f16::NEG_INFINITY]
+    /// * `-1.0` if the number is negative, `-0.0` or
+    ///   [`NEG_INFINITY`][f16::NEG_INFINITY]
     /// * [`NAN`][f16::NAN] if the number is `NaN`
     ///
     /// # Examples
@@ -415,8 +441,8 @@ impl f16 {
         }
     }
 
-    /// Returns `true` if and only if `self` has a positive sign, including `+0.0`, `NaNs` with a
-    /// positive sign bit and +∞.
+    /// Returns `true` if and only if `self` has a positive sign, including
+    /// `+0.0`, `NaNs` with a positive sign bit and +∞.
     ///
     /// # Examples
     ///
@@ -438,8 +464,8 @@ impl f16 {
         self.0 & 0x8000u16 == 0
     }
 
-    /// Returns `true` if and only if `self` has a negative sign, including `-0.0`, `NaNs` with a
-    /// negative sign bit and −∞.
+    /// Returns `true` if and only if `self` has a negative sign, including
+    /// `-0.0`, `NaNs` with a negative sign bit and −∞.
     ///
     /// # Examples
     ///
@@ -461,10 +487,12 @@ impl f16 {
         self.0 & 0x8000u16 != 0
     }
 
-    /// Returns a number composed of the magnitude of `self` and the sign of `sign`.
+    /// Returns a number composed of the magnitude of `self` and the sign of
+    /// `sign`.
     ///
-    /// Equal to `self` if the sign of `self` and `sign` are the same, otherwise equal to `-self`.
-    /// If `self` is NaN, then NaN with the sign of `sign` is returned.
+    /// Equal to `self` if the sign of `self` and `sign` are the same, otherwise
+    /// equal to `-self`. If `self` is NaN, then NaN with the sign of `sign`
+    /// is returned.
     ///
     /// # Examples
     ///
@@ -533,10 +561,11 @@ impl f16 {
 
     /// Restrict a value to a certain interval unless it is NaN.
     ///
-    /// Returns `max` if `self` is greater than `max`, and `min` if `self` is less than `min`.
-    /// Otherwise this returns `self`.
+    /// Returns `max` if `self` is greater than `max`, and `min` if `self` is
+    /// less than `min`. Otherwise this returns `self`.
     ///
-    /// Note that this function returns NaN if the initial value was NaN as well.
+    /// Note that this function returns NaN if the initial value was NaN as
+    /// well.
     ///
     /// # Panics
     /// Panics if `min > max`, `min` is NaN, or `max` is NaN.
@@ -569,7 +598,8 @@ impl f16 {
     /// Unlike the standard partial comparison between floating point numbers,
     /// this comparison always produces an ordering in accordance to
     /// the `totalOrder` predicate as defined in the IEEE 754 (2008 revision)
-    /// floating point standard. The values are ordered in the following sequence:
+    /// floating point standard. The values are ordered in the following
+    /// sequence:
     ///
     /// - negative quiet NaN
     /// - negative signaling NaN
@@ -645,7 +675,8 @@ impl f16 {
     /// [`f16`]
     /// [machine epsilon](https://en.wikipedia.org/wiki/Machine_epsilon) value
     ///
-    /// This is the difference between 1.0 and the next largest representable number.
+    /// This is the difference between 1.0 and the next largest representable
+    /// number.
     pub const EPSILON: f16 = f16(0x1400u16);
     /// [`f16`] positive Infinity (+∞)
     pub const INFINITY: f16 = f16(0x7C00u16);
@@ -779,14 +810,14 @@ impl PartialOrd for f16 {
                     } else {
                         Some(Ordering::Greater)
                     }
-                }
+                },
                 (true, false) => {
                     if (self.0 | other.0) & 0x7FFFu16 == 0 {
                         Some(Ordering::Equal)
                     } else {
                         Some(Ordering::Less)
                     }
-                }
+                },
                 (true, true) => Some(other.0.cmp(&self.0)),
             }
         }
@@ -1213,17 +1244,15 @@ impl<'a> Sum<&'a f16> for f16 {
     }
 }
 
-#[allow(
-    clippy::cognitive_complexity,
-    clippy::float_cmp,
-    clippy::neg_cmp_op_on_partial_ord
-)]
+#[allow(clippy::cognitive_complexity, clippy::float_cmp, clippy::neg_cmp_op_on_partial_ord)]
 #[cfg(test)]
 mod test {
-    use super::*;
     #[allow(unused_imports)]
     use core::cmp::Ordering;
+
     use quickcheck_macros::quickcheck;
+
+    use super::*;
 
     #[test]
     fn test_f16_consts() {
@@ -1467,10 +1496,7 @@ mod test {
         assert_eq!(f16::from_bits(0x0000_0005).to_f32(), 5.0 * 2.0f32.powi(-24));
 
         assert_eq!(f16::from_bits(0x0000_0001), f16::from_f32(2.0f32.powi(-24)));
-        assert_eq!(
-            f16::from_bits(0x0000_0005),
-            f16::from_f32(5.0 * 2.0f32.powi(-24))
-        );
+        assert_eq!(f16::from_bits(0x0000_0005), f16::from_f32(5.0 * 2.0f32.powi(-24)));
     }
 
     #[test]
@@ -1488,10 +1514,7 @@ mod test {
         assert_eq!(f16::from_bits(0x0000_0005).to_f64(), 5.0 * 2.0f64.powi(-24));
 
         assert_eq!(f16::from_bits(0x0000_0001), f16::from_f64(2.0f64.powi(-24)));
-        assert_eq!(
-            f16::from_bits(0x0000_0005),
-            f16::from_f64(5.0 * 2.0f64.powi(-24))
-        );
+        assert_eq!(f16::from_bits(0x0000_0005), f16::from_f64(5.0 * 2.0f64.powi(-24)));
     }
 
     #[test]
@@ -1559,87 +1582,33 @@ mod test {
         // 0.0000000000_011111 rounded to 0.0000000000 (< tie, no rounding)
         // 0.0000000000_100000 rounded to 0.0000000000 (tie and even, remains at even)
         // 0.0000000000_100001 rounded to 0.0000000001 (> tie, rounds up)
-        assert_eq!(
-            f16::from_f32(min_sub_f * 0.49).to_bits(),
-            min_sub.to_bits() * 0
-        );
-        assert_eq!(
-            f16::from_f32(min_sub_f * 0.50).to_bits(),
-            min_sub.to_bits() * 0
-        );
-        assert_eq!(
-            f16::from_f32(min_sub_f * 0.51).to_bits(),
-            min_sub.to_bits() * 1
-        );
+        assert_eq!(f16::from_f32(min_sub_f * 0.49).to_bits(), min_sub.to_bits() * 0);
+        assert_eq!(f16::from_f32(min_sub_f * 0.50).to_bits(), min_sub.to_bits() * 0);
+        assert_eq!(f16::from_f32(min_sub_f * 0.51).to_bits(), min_sub.to_bits() * 1);
 
         // 0.0000000001_011111 rounded to 0.0000000001 (< tie, no rounding)
         // 0.0000000001_100000 rounded to 0.0000000010 (tie and odd, rounds up to even)
         // 0.0000000001_100001 rounded to 0.0000000010 (> tie, rounds up)
-        assert_eq!(
-            f16::from_f32(min_sub_f * 1.49).to_bits(),
-            min_sub.to_bits() * 1
-        );
-        assert_eq!(
-            f16::from_f32(min_sub_f * 1.50).to_bits(),
-            min_sub.to_bits() * 2
-        );
-        assert_eq!(
-            f16::from_f32(min_sub_f * 1.51).to_bits(),
-            min_sub.to_bits() * 2
-        );
+        assert_eq!(f16::from_f32(min_sub_f * 1.49).to_bits(), min_sub.to_bits() * 1);
+        assert_eq!(f16::from_f32(min_sub_f * 1.50).to_bits(), min_sub.to_bits() * 2);
+        assert_eq!(f16::from_f32(min_sub_f * 1.51).to_bits(), min_sub.to_bits() * 2);
 
         // 0.0000000010_011111 rounded to 0.0000000010 (< tie, no rounding)
         // 0.0000000010_100000 rounded to 0.0000000010 (tie and even, remains at even)
         // 0.0000000010_100001 rounded to 0.0000000011 (> tie, rounds up)
-        assert_eq!(
-            f16::from_f32(min_sub_f * 2.49).to_bits(),
-            min_sub.to_bits() * 2
-        );
-        assert_eq!(
-            f16::from_f32(min_sub_f * 2.50).to_bits(),
-            min_sub.to_bits() * 2
-        );
-        assert_eq!(
-            f16::from_f32(min_sub_f * 2.51).to_bits(),
-            min_sub.to_bits() * 3
-        );
+        assert_eq!(f16::from_f32(min_sub_f * 2.49).to_bits(), min_sub.to_bits() * 2);
+        assert_eq!(f16::from_f32(min_sub_f * 2.50).to_bits(), min_sub.to_bits() * 2);
+        assert_eq!(f16::from_f32(min_sub_f * 2.51).to_bits(), min_sub.to_bits() * 3);
 
-        assert_eq!(
-            f16::from_f32(2000.49f32).to_bits(),
-            f16::from_f32(2000.0).to_bits()
-        );
-        assert_eq!(
-            f16::from_f32(2000.50f32).to_bits(),
-            f16::from_f32(2000.0).to_bits()
-        );
-        assert_eq!(
-            f16::from_f32(2000.51f32).to_bits(),
-            f16::from_f32(2001.0).to_bits()
-        );
-        assert_eq!(
-            f16::from_f32(2001.49f32).to_bits(),
-            f16::from_f32(2001.0).to_bits()
-        );
-        assert_eq!(
-            f16::from_f32(2001.50f32).to_bits(),
-            f16::from_f32(2002.0).to_bits()
-        );
-        assert_eq!(
-            f16::from_f32(2001.51f32).to_bits(),
-            f16::from_f32(2002.0).to_bits()
-        );
-        assert_eq!(
-            f16::from_f32(2002.49f32).to_bits(),
-            f16::from_f32(2002.0).to_bits()
-        );
-        assert_eq!(
-            f16::from_f32(2002.50f32).to_bits(),
-            f16::from_f32(2002.0).to_bits()
-        );
-        assert_eq!(
-            f16::from_f32(2002.51f32).to_bits(),
-            f16::from_f32(2003.0).to_bits()
-        );
+        assert_eq!(f16::from_f32(2000.49f32).to_bits(), f16::from_f32(2000.0).to_bits());
+        assert_eq!(f16::from_f32(2000.50f32).to_bits(), f16::from_f32(2000.0).to_bits());
+        assert_eq!(f16::from_f32(2000.51f32).to_bits(), f16::from_f32(2001.0).to_bits());
+        assert_eq!(f16::from_f32(2001.49f32).to_bits(), f16::from_f32(2001.0).to_bits());
+        assert_eq!(f16::from_f32(2001.50f32).to_bits(), f16::from_f32(2002.0).to_bits());
+        assert_eq!(f16::from_f32(2001.51f32).to_bits(), f16::from_f32(2002.0).to_bits());
+        assert_eq!(f16::from_f32(2002.49f32).to_bits(), f16::from_f32(2002.0).to_bits());
+        assert_eq!(f16::from_f32(2002.50f32).to_bits(), f16::from_f32(2002.0).to_bits());
+        assert_eq!(f16::from_f32(2002.51f32).to_bits(), f16::from_f32(2003.0).to_bits());
     }
 
     #[test]
@@ -1654,87 +1623,33 @@ mod test {
         // 0.0000000000_011111 rounded to 0.0000000000 (< tie, no rounding)
         // 0.0000000000_100000 rounded to 0.0000000000 (tie and even, remains at even)
         // 0.0000000000_100001 rounded to 0.0000000001 (> tie, rounds up)
-        assert_eq!(
-            f16::from_f64(min_sub_f * 0.49).to_bits(),
-            min_sub.to_bits() * 0
-        );
-        assert_eq!(
-            f16::from_f64(min_sub_f * 0.50).to_bits(),
-            min_sub.to_bits() * 0
-        );
-        assert_eq!(
-            f16::from_f64(min_sub_f * 0.51).to_bits(),
-            min_sub.to_bits() * 1
-        );
+        assert_eq!(f16::from_f64(min_sub_f * 0.49).to_bits(), min_sub.to_bits() * 0);
+        assert_eq!(f16::from_f64(min_sub_f * 0.50).to_bits(), min_sub.to_bits() * 0);
+        assert_eq!(f16::from_f64(min_sub_f * 0.51).to_bits(), min_sub.to_bits() * 1);
 
         // 0.0000000001_011111 rounded to 0.0000000001 (< tie, no rounding)
         // 0.0000000001_100000 rounded to 0.0000000010 (tie and odd, rounds up to even)
         // 0.0000000001_100001 rounded to 0.0000000010 (> tie, rounds up)
-        assert_eq!(
-            f16::from_f64(min_sub_f * 1.49).to_bits(),
-            min_sub.to_bits() * 1
-        );
-        assert_eq!(
-            f16::from_f64(min_sub_f * 1.50).to_bits(),
-            min_sub.to_bits() * 2
-        );
-        assert_eq!(
-            f16::from_f64(min_sub_f * 1.51).to_bits(),
-            min_sub.to_bits() * 2
-        );
+        assert_eq!(f16::from_f64(min_sub_f * 1.49).to_bits(), min_sub.to_bits() * 1);
+        assert_eq!(f16::from_f64(min_sub_f * 1.50).to_bits(), min_sub.to_bits() * 2);
+        assert_eq!(f16::from_f64(min_sub_f * 1.51).to_bits(), min_sub.to_bits() * 2);
 
         // 0.0000000010_011111 rounded to 0.0000000010 (< tie, no rounding)
         // 0.0000000010_100000 rounded to 0.0000000010 (tie and even, remains at even)
         // 0.0000000010_100001 rounded to 0.0000000011 (> tie, rounds up)
-        assert_eq!(
-            f16::from_f64(min_sub_f * 2.49).to_bits(),
-            min_sub.to_bits() * 2
-        );
-        assert_eq!(
-            f16::from_f64(min_sub_f * 2.50).to_bits(),
-            min_sub.to_bits() * 2
-        );
-        assert_eq!(
-            f16::from_f64(min_sub_f * 2.51).to_bits(),
-            min_sub.to_bits() * 3
-        );
+        assert_eq!(f16::from_f64(min_sub_f * 2.49).to_bits(), min_sub.to_bits() * 2);
+        assert_eq!(f16::from_f64(min_sub_f * 2.50).to_bits(), min_sub.to_bits() * 2);
+        assert_eq!(f16::from_f64(min_sub_f * 2.51).to_bits(), min_sub.to_bits() * 3);
 
-        assert_eq!(
-            f16::from_f64(2000.49f64).to_bits(),
-            f16::from_f64(2000.0).to_bits()
-        );
-        assert_eq!(
-            f16::from_f64(2000.50f64).to_bits(),
-            f16::from_f64(2000.0).to_bits()
-        );
-        assert_eq!(
-            f16::from_f64(2000.51f64).to_bits(),
-            f16::from_f64(2001.0).to_bits()
-        );
-        assert_eq!(
-            f16::from_f64(2001.49f64).to_bits(),
-            f16::from_f64(2001.0).to_bits()
-        );
-        assert_eq!(
-            f16::from_f64(2001.50f64).to_bits(),
-            f16::from_f64(2002.0).to_bits()
-        );
-        assert_eq!(
-            f16::from_f64(2001.51f64).to_bits(),
-            f16::from_f64(2002.0).to_bits()
-        );
-        assert_eq!(
-            f16::from_f64(2002.49f64).to_bits(),
-            f16::from_f64(2002.0).to_bits()
-        );
-        assert_eq!(
-            f16::from_f64(2002.50f64).to_bits(),
-            f16::from_f64(2002.0).to_bits()
-        );
-        assert_eq!(
-            f16::from_f64(2002.51f64).to_bits(),
-            f16::from_f64(2003.0).to_bits()
-        );
+        assert_eq!(f16::from_f64(2000.49f64).to_bits(), f16::from_f64(2000.0).to_bits());
+        assert_eq!(f16::from_f64(2000.50f64).to_bits(), f16::from_f64(2000.0).to_bits());
+        assert_eq!(f16::from_f64(2000.51f64).to_bits(), f16::from_f64(2001.0).to_bits());
+        assert_eq!(f16::from_f64(2001.49f64).to_bits(), f16::from_f64(2001.0).to_bits());
+        assert_eq!(f16::from_f64(2001.50f64).to_bits(), f16::from_f64(2002.0).to_bits());
+        assert_eq!(f16::from_f64(2001.51f64).to_bits(), f16::from_f64(2002.0).to_bits());
+        assert_eq!(f16::from_f64(2002.49f64).to_bits(), f16::from_f64(2002.0).to_bits());
+        assert_eq!(f16::from_f64(2002.50f64).to_bits(), f16::from_f64(2002.0).to_bits());
+        assert_eq!(f16::from_f64(2002.51f64).to_bits(), f16::from_f64(2003.0).to_bits());
     }
 
     #[test]

@@ -1,18 +1,27 @@
-use core::{mem::MaybeUninit, ptr};
-
+#[cfg(target_arch = "x86")]
+use core::arch::x86::_mm_cvtps_ph;
 #[cfg(target_arch = "x86")]
 use core::arch::x86::{
-    __m128, __m128i, __m256, _mm256_cvtph_ps, _mm256_cvtps_ph, _mm_cvtph_ps,
+    __m128,
+    __m128i,
+    __m256,
+    _mm256_cvtph_ps,
+    _mm256_cvtps_ph,
+    _mm_cvtph_ps,
     _MM_FROUND_TO_NEAREST_INT,
 };
 #[cfg(target_arch = "x86_64")]
 use core::arch::x86_64::{
-    __m128, __m128i, __m256, _mm256_cvtph_ps, _mm256_cvtps_ph, _mm_cvtph_ps, _mm_cvtps_ph,
+    __m128,
+    __m128i,
+    __m256,
+    _mm256_cvtph_ps,
+    _mm256_cvtps_ph,
+    _mm_cvtph_ps,
+    _mm_cvtps_ph,
     _MM_FROUND_TO_NEAREST_INT,
 };
-
-#[cfg(target_arch = "x86")]
-use core::arch::x86::_mm_cvtps_ph;
+use core::{mem::MaybeUninit, ptr};
 
 use super::convert_chunked_slice_8;
 
@@ -60,12 +69,7 @@ pub(super) unsafe fn f16x4_to_f64x4_x86_f16c(v: &[u16; 4]) -> [f64; 4] {
     let array = f16x4_to_f32x4_x86_f16c(v);
     // Let compiler vectorize this regular cast for now.
     // TODO: investigate auto-detecting sse2/avx convert features
-    [
-        array[0] as f64,
-        array[1] as f64,
-        array[2] as f64,
-        array[3] as f64,
-    ]
+    [array[0] as f64, array[1] as f64, array[2] as f64, array[3] as f64]
 }
 
 #[target_feature(enable = "f16c")]

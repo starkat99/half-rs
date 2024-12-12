@@ -1,6 +1,7 @@
 #![allow(dead_code, unused_imports)]
-use crate::leading_zeros::leading_zeros_u16;
 use core::mem;
+
+use crate::leading_zeros::leading_zeros_u16;
 
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 mod x86;
@@ -9,9 +10,9 @@ mod x86;
 mod aarch64;
 
 macro_rules! convert_fn {
-    (if x86_feature("f16c") { $f16c:expr }
-    else if aarch64_feature("fp16") { $aarch64:expr }
-    else { $fallback:expr }) => {
+    (
+        if x86_feature("f16c") { $f16c:expr }else if aarch64_feature("fp16") { $aarch64:expr }else { $fallback:expr }
+    ) => {
         cfg_if::cfg_if! {
             // Use intrinsics directly when a compile target or using no_std
             if #[cfg(all(
@@ -293,8 +294,7 @@ pub(crate) fn f16_to_f64_slice(src: &[u16], dst: &mut [f64]) {
 }
 
 macro_rules! math_fn {
-    (if aarch64_feature("fp16") { $aarch64:expr }
-    else { $fallback:expr }) => {
+    (if aarch64_feature("fp16") { $aarch64:expr }else { $fallback:expr }) => {
         cfg_if::cfg_if! {
             // Use intrinsics directly when a compile target or using no_std
             if #[cfg(all(
@@ -474,8 +474,8 @@ fn convert_chunked_slice_4<S: Copy + Default, D: Copy>(
 //     (mantissa & round_bit) != 0 && (mantissa & (2 * round_bit)) != 0
 // (If removed part == tie and retained part is even, do not round up.)
 // These two conditions can be combined into one:
-//     (mantissa & round_bit) != 0 && (mantissa & ((round_bit - 1) | (2 * round_bit))) != 0
-// which can be simplified into
+//     (mantissa & round_bit) != 0 && (mantissa & ((round_bit - 1) | (2 *
+// round_bit))) != 0 which can be simplified into
 //     (mantissa & round_bit) != 0 && (mantissa & (3 * round_bit - 1)) != 0
 
 #[inline]
@@ -492,7 +492,11 @@ pub(crate) const fn f32_to_f16_fallback(value: f32) -> u16 {
     // Check for all exponent bits being set, which is Infinity or NaN
     if exp == 0x7F80_0000u32 {
         // Set mantissa MSB for NaN (and also keep shifted mantissa bits)
-        let nan_bit = if man == 0 { 0 } else { 0x0200u32 };
+        let nan_bit = if man == 0 {
+            0
+        } else {
+            0x0200u32
+        };
         return ((sign >> 16) | 0x7C00u32 | nan_bit | (man >> 13)) as u16;
     }
 
@@ -541,8 +545,8 @@ pub(crate) const fn f32_to_f16_fallback(value: f32) -> u16 {
 
 #[inline]
 pub(crate) const fn f64_to_f16_fallback(value: f64) -> u16 {
-    // Convert to raw bytes, truncating the last 32-bits of mantissa; that precision will always
-    // be lost on half-precision.
+    // Convert to raw bytes, truncating the last 32-bits of mantissa; that precision
+    // will always be lost on half-precision.
     // TODO: Replace mem::transmute with to_bits() once to_bits is const-stabilized
     let val: u64 = unsafe { mem::transmute::<f64, u64>(value) };
     let x = (val >> 32) as u32;
@@ -610,7 +614,8 @@ pub(crate) const fn f64_to_f16_fallback(value: f64) -> u16 {
 #[inline]
 pub(crate) const fn f16_to_f32_fallback(i: u16) -> f32 {
     // Check for signed zero
-    // TODO: Replace mem::transmute with from_bits() once from_bits is const-stabilized
+    // TODO: Replace mem::transmute with from_bits() once from_bits is
+    // const-stabilized
     if i & 0x7FFFu16 == 0 {
         return unsafe { mem::transmute::<u32, f32>((i as u32) << 16) };
     }
@@ -657,7 +662,8 @@ pub(crate) const fn f16_to_f32_fallback(i: u16) -> f32 {
 #[inline]
 pub(crate) const fn f16_to_f64_fallback(i: u16) -> f64 {
     // Check for signed zero
-    // TODO: Replace mem::transmute with from_bits() once from_bits is const-stabilized
+    // TODO: Replace mem::transmute with from_bits() once from_bits is
+    // const-stabilized
     if i & 0x7FFFu16 == 0 {
         return unsafe { mem::transmute::<u64, f64>((i as u64) << 48) };
     }

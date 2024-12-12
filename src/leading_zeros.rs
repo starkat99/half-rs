@@ -62,20 +62,20 @@ const fn leading_zeros_u16_fallback_impl(mut x: u16) -> u32 {
     // NOTE: Crunchy isn't required since it's only required
     // if we use the loop variable, so we just use the first
     // 14 and then use the final one outside.
-    unrolled_leading_zeros!(x, c, msb);  // 1
-    unrolled_leading_zeros!(x, c, msb);  // 2
-    unrolled_leading_zeros!(x, c, msb);  // 3
-    unrolled_leading_zeros!(x, c, msb);  // 4
-    unrolled_leading_zeros!(x, c, msb);  // 5
-    unrolled_leading_zeros!(x, c, msb);  // 6
-    unrolled_leading_zeros!(x, c, msb);  // 7
-    unrolled_leading_zeros!(x, c, msb);  // 8
-    unrolled_leading_zeros!(x, c, msb);  // 9
-    unrolled_leading_zeros!(x, c, msb);  // 10
-    unrolled_leading_zeros!(x, c, msb);  // 11
-    unrolled_leading_zeros!(x, c, msb);  // 12
-    unrolled_leading_zeros!(x, c, msb);  // 13
-    unrolled_leading_zeros!(x, c, msb);  // 14
+    unrolled_leading_zeros!(x, c, msb); // 1
+    unrolled_leading_zeros!(x, c, msb); // 2
+    unrolled_leading_zeros!(x, c, msb); // 3
+    unrolled_leading_zeros!(x, c, msb); // 4
+    unrolled_leading_zeros!(x, c, msb); // 5
+    unrolled_leading_zeros!(x, c, msb); // 6
+    unrolled_leading_zeros!(x, c, msb); // 7
+    unrolled_leading_zeros!(x, c, msb); // 8
+    unrolled_leading_zeros!(x, c, msb); // 9
+    unrolled_leading_zeros!(x, c, msb); // 10
+    unrolled_leading_zeros!(x, c, msb); // 11
+    unrolled_leading_zeros!(x, c, msb); // 12
+    unrolled_leading_zeros!(x, c, msb); // 13
+    unrolled_leading_zeros!(x, c, msb); // 14
     if x & msb == 0 {
         c += 1;
     }

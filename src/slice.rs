@@ -1,23 +1,27 @@
-//! Contains utility functions and traits to convert between slices of [`u16`] bits and [`f16`] or
-//! [`bf16`] numbers.
+//! Contains utility functions and traits to convert between slices of [`u16`]
+//! bits and [`f16`] or [`bf16`] numbers.
 //!
-//! The utility [`HalfBitsSliceExt`] sealed extension trait is implemented for `[u16]` slices,
-//! while the utility [`HalfFloatSliceExt`] sealed extension trait is implemented for both `[f16]`
-//! and `[bf16]` slices. These traits provide efficient conversions and reinterpret casting of
-//! larger buffers of floating point values, and are automatically included in the
+//! The utility [`HalfBitsSliceExt`] sealed extension trait is implemented for
+//! `[u16]` slices, while the utility [`HalfFloatSliceExt`] sealed extension
+//! trait is implemented for both `[f16]` and `[bf16]` slices. These traits
+//! provide efficient conversions and reinterpret casting of larger buffers of
+//! floating point values, and are automatically included in the
 //! [`prelude`][crate::prelude] module.
 
-use crate::{bf16, binary16::arch, f16};
 use core::slice;
 
-/// Extensions to `[f16]` and `[bf16]` slices to support conversion and reinterpret operations.
+use crate::{bf16, binary16::arch, f16};
+
+/// Extensions to `[f16]` and `[bf16]` slices to support conversion and
+/// reinterpret operations.
 ///
 /// This trait is sealed and cannot be implemented outside of this crate.
 pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
-    /// Reinterprets a slice of [`f16`] or [`bf16`] numbers as a slice of [`u16`] bits.
+    /// Reinterprets a slice of [`f16`] or [`bf16`] numbers as a slice of
+    /// [`u16`] bits.
     ///
-    /// This is a zero-copy operation. The reinterpreted slice has the same lifetime and memory
-    /// location as `self`.
+    /// This is a zero-copy operation. The reinterpreted slice has the same
+    /// lifetime and memory location as `self`.
     ///
     /// # Examples
     ///
@@ -31,11 +35,12 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     #[must_use]
     fn reinterpret_cast(&self) -> &[u16];
 
-    /// Reinterprets a mutable slice of [`f16`] or [`bf16`] numbers as a mutable slice of [`u16`].
-    /// bits
+    /// Reinterprets a mutable slice of [`f16`] or [`bf16`] numbers as a mutable
+    /// slice of [`u16`]. bits
     ///
-    /// This is a zero-copy operation. The transmuted slice has the same lifetime as the original,
-    /// which prevents mutating `self` as long as the returned `&mut [u16]` is borrowed.
+    /// This is a zero-copy operation. The transmuted slice has the same
+    /// lifetime as the original, which prevents mutating `self` as long as
+    /// the returned `&mut [u16]` is borrowed.
     ///
     /// # Examples
     ///
@@ -58,13 +63,15 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     #[must_use]
     fn reinterpret_cast_mut(&mut self) -> &mut [u16];
 
-    /// Converts all of the elements of a `[f32]` slice into [`f16`] or [`bf16`] values in `self`.
+    /// Converts all of the elements of a `[f32]` slice into [`f16`] or [`bf16`]
+    /// values in `self`.
     ///
     /// The length of `src` must be the same as `self`.
     ///
-    /// The conversion operation is vectorized over the slice, meaning the conversion may be more
-    /// efficient than converting individual elements on some hardware that supports SIMD
-    /// conversions. See [crate documentation](crate) for more information on hardware conversion
+    /// The conversion operation is vectorized over the slice, meaning the
+    /// conversion may be more efficient than converting individual elements
+    /// on some hardware that supports SIMD conversions. See [crate
+    /// documentation](crate) for more information on hardware conversion
     /// support.
     ///
     /// # Panics
@@ -87,13 +94,15 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     /// ```
     fn convert_from_f32_slice(&mut self, src: &[f32]);
 
-    /// Converts all of the elements of a `[f64]` slice into [`f16`] or [`bf16`] values in `self`.
+    /// Converts all of the elements of a `[f64]` slice into [`f16`] or [`bf16`]
+    /// values in `self`.
     ///
     /// The length of `src` must be the same as `self`.
     ///
-    /// The conversion operation is vectorized over the slice, meaning the conversion may be more
-    /// efficient than converting individual elements on some hardware that supports SIMD
-    /// conversions. See [crate documentation](crate) for more information on hardware conversion
+    /// The conversion operation is vectorized over the slice, meaning the
+    /// conversion may be more efficient than converting individual elements
+    /// on some hardware that supports SIMD conversions. See [crate
+    /// documentation](crate) for more information on hardware conversion
     /// support.
     ///
     /// # Panics
@@ -116,13 +125,15 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     /// ```
     fn convert_from_f64_slice(&mut self, src: &[f64]);
 
-    /// Converts all of the [`f16`] or [`bf16`] elements of `self` into [`f32`] values in `dst`.
+    /// Converts all of the [`f16`] or [`bf16`] elements of `self` into [`f32`]
+    /// values in `dst`.
     ///
     /// The length of `src` must be the same as `self`.
     ///
-    /// The conversion operation is vectorized over the slice, meaning the conversion may be more
-    /// efficient than converting individual elements on some hardware that supports SIMD
-    /// conversions. See [crate documentation](crate) for more information on hardware conversion
+    /// The conversion operation is vectorized over the slice, meaning the
+    /// conversion may be more efficient than converting individual elements
+    /// on some hardware that supports SIMD conversions. See [crate
+    /// documentation](crate) for more information on hardware conversion
     /// support.
     ///
     /// # Panics
@@ -144,13 +155,15 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     /// ```
     fn convert_to_f32_slice(&self, dst: &mut [f32]);
 
-    /// Converts all of the [`f16`] or [`bf16`] elements of `self` into [`f64`] values in `dst`.
+    /// Converts all of the [`f16`] or [`bf16`] elements of `self` into [`f64`]
+    /// values in `dst`.
     ///
     /// The length of `src` must be the same as `self`.
     ///
-    /// The conversion operation is vectorized over the slice, meaning the conversion may be more
-    /// efficient than converting individual elements on some hardware that supports SIMD
-    /// conversions. See [crate documentation](crate) for more information on hardware conversion
+    /// The conversion operation is vectorized over the slice, meaning the
+    /// conversion may be more efficient than converting individual elements
+    /// on some hardware that supports SIMD conversions. See [crate
+    /// documentation](crate) for more information on hardware conversion
     /// support.
     ///
     /// # Panics
@@ -177,12 +190,14 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
 ///
 /// This trait is sealed and cannot be implemented outside of this crate.
 pub trait HalfBitsSliceExt: private::SealedHalfBitsSlice {
-    /// Reinterprets a slice of [`u16`] bits as a slice of [`f16`] or [`bf16`] numbers.
+    /// Reinterprets a slice of [`u16`] bits as a slice of [`f16`] or [`bf16`]
+    /// numbers.
     ///
-    /// `H` is the type to cast to, and must be either the [`f16`] or [`bf16`] type.
+    /// `H` is the type to cast to, and must be either the [`f16`] or [`bf16`]
+    /// type.
     ///
-    /// This is a zero-copy operation. The reinterpreted slice has the same lifetime and memory
-    /// location as `self`.
+    /// This is a zero-copy operation. The reinterpreted slice has the same
+    /// lifetime and memory location as `self`.
     ///
     /// # Examples
     ///
@@ -202,13 +217,15 @@ pub trait HalfBitsSliceExt: private::SealedHalfBitsSlice {
     where
         H: crate::private::SealedHalf;
 
-    /// Reinterprets a mutable slice of [`u16`] bits as a mutable slice of [`f16`] or [`bf16`]
-    /// numbers.
+    /// Reinterprets a mutable slice of [`u16`] bits as a mutable slice of
+    /// [`f16`] or [`bf16`] numbers.
     ///
-    /// `H` is the type to cast to, and must be either the [`f16`] or [`bf16`] type.
+    /// `H` is the type to cast to, and must be either the [`f16`] or [`bf16`]
+    /// type.
     ///
-    /// This is a zero-copy operation. The transmuted slice has the same lifetime as the original,
-    /// which prevents mutating `self` as long as the returned `&mut [f16]` is borrowed.
+    /// This is a zero-copy operation. The transmuted slice has the same
+    /// lifetime as the original, which prevents mutating `self` as long as
+    /// the returned `&mut [f16]` is borrowed.
     ///
     /// # Examples
     ///
@@ -242,11 +259,14 @@ mod private {
     use crate::{bf16, f16};
 
     pub trait SealedHalfFloatSlice {}
-    impl SealedHalfFloatSlice for [f16] {}
-    impl SealedHalfFloatSlice for [bf16] {}
+    impl SealedHalfFloatSlice for [f16] {
+    }
+    impl SealedHalfFloatSlice for [bf16] {
+    }
 
     pub trait SealedHalfBitsSlice {}
-    impl SealedHalfBitsSlice for [u16] {}
+    impl SealedHalfBitsSlice for [u16] {
+    }
 }
 
 impl HalfFloatSliceExt for [f16] {
@@ -254,8 +274,8 @@ impl HalfFloatSliceExt for [f16] {
     fn reinterpret_cast(&self) -> &[u16] {
         let pointer = self.as_ptr() as *const u16;
         let length = self.len();
-        // SAFETY: We are reconstructing full length of original slice, using its same lifetime,
-        // and the size of elements are identical
+        // SAFETY: We are reconstructing full length of original slice, using its same
+        // lifetime, and the size of elements are identical
         unsafe { slice::from_raw_parts(pointer, length) }
     }
 
@@ -263,51 +283,35 @@ impl HalfFloatSliceExt for [f16] {
     fn reinterpret_cast_mut(&mut self) -> &mut [u16] {
         let pointer = self.as_mut_ptr().cast::<u16>();
         let length = self.len();
-        // SAFETY: We are reconstructing full length of original slice, using its same lifetime,
-        // and the size of elements are identical
+        // SAFETY: We are reconstructing full length of original slice, using its same
+        // lifetime, and the size of elements are identical
         unsafe { slice::from_raw_parts_mut(pointer, length) }
     }
 
     #[inline]
     fn convert_from_f32_slice(&mut self, src: &[f32]) {
-        assert_eq!(
-            self.len(),
-            src.len(),
-            "destination and source slices have different lengths"
-        );
+        assert_eq!(self.len(), src.len(), "destination and source slices have different lengths");
 
         arch::f32_to_f16_slice(src, self.reinterpret_cast_mut())
     }
 
     #[inline]
     fn convert_from_f64_slice(&mut self, src: &[f64]) {
-        assert_eq!(
-            self.len(),
-            src.len(),
-            "destination and source slices have different lengths"
-        );
+        assert_eq!(self.len(), src.len(), "destination and source slices have different lengths");
 
         arch::f64_to_f16_slice(src, self.reinterpret_cast_mut())
     }
 
     #[inline]
     fn convert_to_f32_slice(&self, dst: &mut [f32]) {
-        assert_eq!(
-            self.len(),
-            dst.len(),
-            "destination and source slices have different lengths"
-        );
+        assert_eq!(self.len(), dst.len(), "destination and source slices have different lengths");
 
         arch::f16_to_f32_slice(self.reinterpret_cast(), dst)
     }
 
     #[inline]
     fn convert_to_f64_slice(&self, dst: &mut [f64]) {
-        assert_eq!(
-            self.len(),
-            dst.len(),
-            "destination and source slices have different lengths"
-        );
+        assert_eq!(self.len(), dst.len(), "destination and source slices have different lengths");
 
         arch::f16_to_f64_slice(self.reinterpret_cast(), dst)
     }
@@ -318,8 +322,8 @@ impl HalfFloatSliceExt for [bf16] {
     fn reinterpret_cast(&self) -> &[u16] {
         let pointer = self.as_ptr() as *const u16;
         let length = self.len();
-        // SAFETY: We are reconstructing full length of original slice, using its same lifetime,
-        // and the size of elements are identical
+        // SAFETY: We are reconstructing full length of original slice, using its same
+        // lifetime, and the size of elements are identical
         unsafe { slice::from_raw_parts(pointer, length) }
     }
 
@@ -327,18 +331,14 @@ impl HalfFloatSliceExt for [bf16] {
     fn reinterpret_cast_mut(&mut self) -> &mut [u16] {
         let pointer = self.as_mut_ptr().cast::<u16>();
         let length = self.len();
-        // SAFETY: We are reconstructing full length of original slice, using its same lifetime,
-        // and the size of elements are identical
+        // SAFETY: We are reconstructing full length of original slice, using its same
+        // lifetime, and the size of elements are identical
         unsafe { slice::from_raw_parts_mut(pointer, length) }
     }
 
     #[inline]
     fn convert_from_f32_slice(&mut self, src: &[f32]) {
-        assert_eq!(
-            self.len(),
-            src.len(),
-            "destination and source slices have different lengths"
-        );
+        assert_eq!(self.len(), src.len(), "destination and source slices have different lengths");
 
         // Just use regular loop here until there's any bf16 SIMD support.
         for (i, f) in src.iter().enumerate() {
@@ -348,11 +348,7 @@ impl HalfFloatSliceExt for [bf16] {
 
     #[inline]
     fn convert_from_f64_slice(&mut self, src: &[f64]) {
-        assert_eq!(
-            self.len(),
-            src.len(),
-            "destination and source slices have different lengths"
-        );
+        assert_eq!(self.len(), src.len(), "destination and source slices have different lengths");
 
         // Just use regular loop here until there's any bf16 SIMD support.
         for (i, f) in src.iter().enumerate() {
@@ -362,11 +358,7 @@ impl HalfFloatSliceExt for [bf16] {
 
     #[inline]
     fn convert_to_f32_slice(&self, dst: &mut [f32]) {
-        assert_eq!(
-            self.len(),
-            dst.len(),
-            "destination and source slices have different lengths"
-        );
+        assert_eq!(self.len(), dst.len(), "destination and source slices have different lengths");
 
         // Just use regular loop here until there's any bf16 SIMD support.
         for (i, f) in self.iter().enumerate() {
@@ -376,11 +368,7 @@ impl HalfFloatSliceExt for [bf16] {
 
     #[inline]
     fn convert_to_f64_slice(&self, dst: &mut [f64]) {
-        assert_eq!(
-            self.len(),
-            dst.len(),
-            "destination and source slices have different lengths"
-        );
+        assert_eq!(self.len(), dst.len(), "destination and source slices have different lengths");
 
         // Just use regular loop here until there's any bf16 SIMD support.
         for (i, f) in self.iter().enumerate() {
@@ -398,8 +386,8 @@ impl HalfBitsSliceExt for [u16] {
     {
         let pointer = self.as_ptr() as *const H;
         let length = self.len();
-        // SAFETY: We are reconstructing full length of original slice, using its same lifetime,
-        // and the size of elements are identical
+        // SAFETY: We are reconstructing full length of original slice, using its same
+        // lifetime, and the size of elements are identical
         unsafe { slice::from_raw_parts(pointer, length) }
     }
 
@@ -410,8 +398,8 @@ impl HalfBitsSliceExt for [u16] {
     {
         let pointer = self.as_mut_ptr() as *mut H;
         let length = self.len();
-        // SAFETY: We are reconstructing full length of original slice, using its same lifetime,
-        // and the size of elements are identical
+        // SAFETY: We are reconstructing full length of original slice, using its same
+        // lifetime, and the size of elements are identical
         unsafe { slice::from_raw_parts_mut(pointer, length) }
     }
 }

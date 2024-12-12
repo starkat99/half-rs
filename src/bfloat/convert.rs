@@ -1,5 +1,6 @@
-use crate::leading_zeros::leading_zeros_u16;
 use core::mem;
+
+use crate::leading_zeros::leading_zeros_u16;
 
 #[inline]
 pub(crate) const fn f32_to_bf16(value: f32) -> u16 {
@@ -9,7 +10,8 @@ pub(crate) const fn f32_to_bf16(value: f32) -> u16 {
 
     // check for NaN
     if x & 0x7FFF_FFFFu32 > 0x7F80_0000u32 {
-        // Keep high part of current mantissa but also set most significiant mantissa bit
+        // Keep high part of current mantissa but also set most significiant mantissa
+        // bit
         return ((x >> 16) | 0x0040u32) as u16;
     }
 
@@ -25,8 +27,8 @@ pub(crate) const fn f32_to_bf16(value: f32) -> u16 {
 #[inline]
 pub(crate) const fn f64_to_bf16(value: f64) -> u16 {
     // TODO: Replace mem::transmute with to_bits() once to_bits is const-stabilized
-    // Convert to raw bytes, truncating the last 32-bits of mantissa; that precision will always
-    // be lost on half-precision.
+    // Convert to raw bytes, truncating the last 32-bits of mantissa; that precision
+    // will always be lost on half-precision.
     let val: u64 = unsafe { mem::transmute::<f64, u64>(value) };
     let x = (val >> 32) as u32;
 
@@ -92,8 +94,9 @@ pub(crate) const fn f64_to_bf16(value: f64) -> u16 {
 
 #[inline]
 pub(crate) const fn bf16_to_f32(i: u16) -> f32 {
-    // TODO: Replace mem::transmute with from_bits() once from_bits is const-stabilized
-    // If NaN, keep current mantissa but also set most significiant mantissa bit
+    // TODO: Replace mem::transmute with from_bits() once from_bits is
+    // const-stabilized If NaN, keep current mantissa but also set most
+    // significiant mantissa bit
     if i & 0x7FFFu16 > 0x7F80u16 {
         unsafe { mem::transmute::<u32, f32>((i as u32 | 0x0040u32) << 16) }
     } else {
@@ -103,8 +106,8 @@ pub(crate) const fn bf16_to_f32(i: u16) -> f32 {
 
 #[inline]
 pub(crate) const fn bf16_to_f64(i: u16) -> f64 {
-    // TODO: Replace mem::transmute with from_bits() once from_bits is const-stabilized
-    // Check for signed zero
+    // TODO: Replace mem::transmute with from_bits() once from_bits is
+    // const-stabilized Check for signed zero
     if i & 0x7FFFu16 == 0 {
         return unsafe { mem::transmute::<u64, f64>((i as u64) << 48) };
     }
