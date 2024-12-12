@@ -188,7 +188,6 @@ version = "0.1.0"
 dependencies = [
  "cfg-if",
  "criterion",
- "crunchy",
  "quickcheck",
  "quickcheck_macros",
  "rand",

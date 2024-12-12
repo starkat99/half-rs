@@ -31,7 +31,6 @@ criterion = "0.5.1"
 quickcheck = "1.0"
 quickcheck_macros = "1.0"
 rand = "0.8.5"
-crunchy = "0.2.2"
 
 [[bench]]
 name = "convert"

@@ -64,7 +64,7 @@
 //!
 //! | Architecture | CPU Target Feature | Notes |
 //! | ------------ | ------------------ | ----- |
-//! | `x86`/`x86_64` | `f16c` | This supports conversion to/from [`f16`] only (including vector SIMD)and does not support any [`bf16`] or arithmetic operations. |
+//! | `x86`/`x86_64` | `f16c` | This supports conversion to/from [`f16`] only (including vector SIMD) and does not support any [`bf16`] or arithmetic operations. |
 //! | `aarch64` | `fp16` | This supports all operations on [`f16`] only. |
 //!
 //! # Cargo Features
@@ -94,75 +94,9 @@
 //! [`std`]: https://doc.rust-lang.org/std/
 //! [`binary16`]: https://en.wikipedia.org/wiki/Half-precision_floating-point_format
 //! [`bfloat16`]: https://en.wikipedia.org/wiki/Bfloat16_floating-point_format
-//! [`serde`]: https://crates.io/crates/serde
-//! [`bytemuck`]: https://crates.io/crates/bytemuck
-//! [`num-traits`]: https://crates.io/crates/num-traits
-//! [`rand_distr`]: https://crates.io/crates/rand_distr
-#![cfg_attr(
-    feature = "serde",
-    doc = "
-[`Serialize`]: serde::Serialize
-[`Deserialize`]: serde::Deserialize"
-)]
-#![cfg_attr(
-    not(feature = "serde"),
-    doc = "
-[`Serialize`]: https://docs.rs/serde/*/serde/trait.Serialize.html
-[`Deserialize`]: https://docs.rs/serde/*/serde/trait.Deserialize.html"
-)]
-#![cfg_attr(
-    feature = "num-traits",
-    doc = "
-[`ToPrimitive`]: ::num_traits::ToPrimitive
-[`FromPrimitive`]: ::num_traits::FromPrimitive
-[`AsPrimitive`]: ::num_traits::AsPrimitive
-[`Num`]: ::num_traits::Num
-[`Float`]: ::num_traits::Float
-[`FloatCore`]: ::num_traits::float::FloatCore
-[`Bounded`]: ::num_traits::Bounded"
-)]
-#![cfg_attr(
-    not(feature = "num-traits"),
-    doc = "
-[`ToPrimitive`]: https://docs.rs/num-traits/*/num_traits/cast/trait.ToPrimitive.html
-[`FromPrimitive`]: https://docs.rs/num-traits/*/num_traits/cast/trait.FromPrimitive.html
-[`AsPrimitive`]: https://docs.rs/num-traits/*/num_traits/cast/trait.AsPrimitive.html
-[`Num`]: https://docs.rs/num-traits/*/num_traits/trait.Num.html
-[`Float`]: https://docs.rs/num-traits/*/num_traits/float/trait.Float.html
-[`FloatCore`]: https://docs.rs/num-traits/*/num_traits/float/trait.FloatCore.html
-[`Bounded`]: https://docs.rs/num-traits/*/num_traits/bounds/trait.Bounded.html"
-)]
-#![cfg_attr(
-    feature = "bytemuck",
-    doc = "
-[`Zeroable`]: bytemuck::Zeroable
-[`Pod`]: bytemuck::Pod"
-)]
-#![cfg_attr(
-    not(feature = "bytemuck"),
-    doc = "
-[`Zeroable`]: https://docs.rs/bytemuck/*/bytemuck/trait.Zeroable.html
-[`Pod`]: https://docs.rs/bytemuck/*bytemuck/trait.Pod.html"
-)]
-#![cfg_attr(
-    feature = "rand_distr",
-    doc = "
-[`Distribution`]: rand::distributions::Distribution"
-)]
-#![cfg_attr(
-    not(feature = "rand_distr"),
-    doc = "
-[`Distribution`]: https://docs.rs/rand/*/rand/distributions/trait.Distribution.html"
-)]
-#![warn(
-    missing_docs,
-    missing_copy_implementations,
-    trivial_numeric_casts,
-    future_incompatible
-)]
 #![allow(clippy::verbose_bit_mask, clippy::cast_lossless)]
 #![cfg_attr(not(feature = "std"), no_std)]
-#![doc(html_root_url = "https://docs.rs/half/2.4.1")]
+#![doc(html_root_url = "https://docs.rs/float16/0.1.0")]
 #![doc(test(attr(deny(warnings), allow(unused))))]
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 

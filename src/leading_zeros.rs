@@ -36,20 +36,22 @@ pub(crate) const fn leading_zeros_u16(x: u16) -> u32 {
 ))]
 #[inline]
 const fn leading_zeros_u16_fallback(mut x: u16) -> u32 {
-    use crunchy::unroll;
     let mut c = 0;
     let msb = 1 << 15;
-    unroll! { for i in 0 .. 16 {
+    // NOTE: Crunchy isn't required since it's only required
+    // if we use the loop variable, so we just use the first
+    // 14 and then use the final one outside.
+    for i in 0..=14 {
         if x & msb == 0 {
             c += 1;
         } else {
             return c;
         }
-        #[allow(unused_assignments)]
-        if i < 15 {
-            x <<= 1;
-        }
-    }}
+        x <<= 1;
+    }
+    if x & msb == 0 {
+        c += 1;
+    }
     c
 }
 
