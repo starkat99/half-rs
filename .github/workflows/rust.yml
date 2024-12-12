@@ -1,6 +1,6 @@
 name: Rust
 
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
 
 env:
   CARGO_INCREMENTAL: 0
@@ -36,26 +36,22 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Linux Install Rust toolchain
       if: ${{ matrix.os == 'ubuntu-latest' }}
-      uses: actions-rs/toolchain@v1
+      uses: dtolnay/rust-toolchain@master
       with:
-        profile: minimal
         toolchain: ${{ matrix.rust }}
         target: ${{ matrix.target }}-unknown-linux-gnu
-        override: true
         components: clippy,rustfmt
 
     - name: Windows Install Rust toolchain
       if: ${{ matrix.os == 'windows-latest' }}
-      uses: actions-rs/toolchain@v1
+      uses: dtolnay/rust-toolchain@master
       with:
-        profile: minimal
         toolchain: ${{ matrix.rust }}
         target: ${{ matrix.target }}-pc-windows-msvc
-        override: true
         components: clippy,rustfmt
 
     - name: Cache Dependencies
@@ -91,13 +87,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
           toolchain: nightly
-          override: true
           components: miri
       - name: Run Miri
         uses: actions-rs/cargo@v1
