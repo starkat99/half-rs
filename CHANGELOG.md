@@ -5,6 +5,27 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.1.0][v0.1.0] - 2024-12-12 <a name="0.1.0"></a>
+
+## Changed
+
+- Forked the repository
+- Lowered the MSRV to 1.60.0.
+- Changed from `repr(transparent)` to `repr(C)`.
+
+## Removed
+
+- All features, including `zerocopy`, `serde`, `bytemuck`, `num-traits`, and `alloc` support.
+
+## Fixed
+
+- Disabled hardware instrinsics by default for `f16` to `f64` and `f64` to `f16` conversions, due to lossy results with an intermediate `f32` (see [#161](https://github.com/starkat99/half-rs/issues/116)).
+- Silenced most clippy lints.
+
+# Half Changelog
+
+These were all changes for half, which `float16` is a fork of.
+
 ## [2.4.1] - 2024-04-06 <a name="2.4.1"></a>
 
 ### Fixed
@@ -444,7 +465,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 <!-- Versions -->
 
 [Unreleased]: https://github.com/starkat99/half-rs/compare/v2.4.1...HEAD
-[2.4.1]: https://github.com/starkat99/half-rs/compare/v2.4.0...v2.4.1
+[v0.1.0]: https://github.com/starkat99/half-rs/compare/v2.4.0...v2.4.1
 [2.4.0]: https://github.com/starkat99/half-rs/compare/v2.3.1...v2.4.0
 [2.3.1]: https://github.com/starkat99/half-rs/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/starkat99/half-rs/compare/v2.2.1...v2.3.0
