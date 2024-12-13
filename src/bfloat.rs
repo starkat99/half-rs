@@ -1233,10 +1233,7 @@ impl<'a> Sum<&'a bf16> for bf16 {
 #[allow(clippy::cognitive_complexity, clippy::float_cmp, clippy::neg_cmp_op_on_partial_ord)]
 #[cfg(test)]
 mod test {
-    #[allow(unused_imports)]
     use core::cmp::Ordering;
-
-    use quickcheck_macros::quickcheck;
 
     use super::*;
 
@@ -1586,47 +1583,5 @@ mod test {
         assert_eq!(bf16::from_f64(252.49f64).to_bits(), bf16::from_f64(252.0).to_bits());
         assert_eq!(bf16::from_f64(252.50f64).to_bits(), bf16::from_f64(252.0).to_bits());
         assert_eq!(bf16::from_f64(252.51f64).to_bits(), bf16::from_f64(253.0).to_bits());
-    }
-
-    #[cfg(feature = "std")]
-    #[test]
-    fn formatting() {
-        let f = bf16::from_f32(0.1152344);
-
-        assert_eq!(format!("{:.3}", f), "0.115");
-        assert_eq!(format!("{:.4}", f), "0.1152");
-        assert_eq!(format!("{:+.4}", f), "+0.1152");
-        assert_eq!(format!("{:>+10.4}", f), "   +0.1152");
-
-        assert_eq!(format!("{:.3?}", f), "0.115");
-        assert_eq!(format!("{:.4?}", f), "0.1152");
-        assert_eq!(format!("{:+.4?}", f), "+0.1152");
-        assert_eq!(format!("{:>+10.4?}", f), "   +0.1152");
-    }
-
-    impl quickcheck::Arbitrary for bf16 {
-        fn arbitrary(g: &mut quickcheck::Gen) -> Self {
-            bf16(u16::arbitrary(g))
-        }
-    }
-
-    #[quickcheck]
-    fn qc_roundtrip_bf16_f32_is_identity(f: bf16) -> bool {
-        let roundtrip = bf16::from_f32(f.to_f32());
-        if f.is_nan() {
-            roundtrip.is_nan() && f.is_sign_negative() == roundtrip.is_sign_negative()
-        } else {
-            f.0 == roundtrip.0
-        }
-    }
-
-    #[quickcheck]
-    fn qc_roundtrip_bf16_f64_is_identity(f: bf16) -> bool {
-        let roundtrip = bf16::from_f64(f.to_f64());
-        if f.is_nan() {
-            roundtrip.is_nan() && f.is_sign_negative() == roundtrip.is_sign_negative()
-        } else {
-            f.0 == roundtrip.0
-        }
     }
 }

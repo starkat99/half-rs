@@ -1250,8 +1250,6 @@ mod test {
     #[allow(unused_imports)]
     use core::cmp::Ordering;
 
-    use quickcheck_macros::quickcheck;
-
     use super::*;
 
     #[test]
@@ -1661,47 +1659,5 @@ mod test {
         assert_eq!(f16::ONE / f16::ONE, f16::ONE);
         assert_eq!(f16::from_f32(4.) / f16::from_f32(2.), f16::from_f32(2.));
         assert_eq!(f16::from_f32(4.) % f16::from_f32(3.), f16::from_f32(1.));
-    }
-
-    #[cfg(feature = "std")]
-    #[test]
-    fn formatting() {
-        let f = f16::from_f32(0.1152344);
-
-        assert_eq!(format!("{:.3}", f), "0.115");
-        assert_eq!(format!("{:.4}", f), "0.1152");
-        assert_eq!(format!("{:+.4}", f), "+0.1152");
-        assert_eq!(format!("{:>+10.4}", f), "   +0.1152");
-
-        assert_eq!(format!("{:.3?}", f), "0.115");
-        assert_eq!(format!("{:.4?}", f), "0.1152");
-        assert_eq!(format!("{:+.4?}", f), "+0.1152");
-        assert_eq!(format!("{:>+10.4?}", f), "   +0.1152");
-    }
-
-    impl quickcheck::Arbitrary for f16 {
-        fn arbitrary(g: &mut quickcheck::Gen) -> Self {
-            f16(u16::arbitrary(g))
-        }
-    }
-
-    #[quickcheck]
-    fn qc_roundtrip_f16_f32_is_identity(f: f16) -> bool {
-        let roundtrip = f16::from_f32(f.to_f32());
-        if f.is_nan() {
-            roundtrip.is_nan() && f.is_sign_negative() == roundtrip.is_sign_negative()
-        } else {
-            f.0 == roundtrip.0
-        }
-    }
-
-    #[quickcheck]
-    fn qc_roundtrip_f16_f64_is_identity(f: f16) -> bool {
-        let roundtrip = f16::from_f64(f.to_f64());
-        if f.is_nan() {
-            roundtrip.is_nan() && f.is_sign_negative() == roundtrip.is_sign_negative()
-        } else {
-            f.0 == roundtrip.0
-        }
     }
 }

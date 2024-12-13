@@ -10,7 +10,7 @@ keywords = ["f16", "bfloat16", "no_std"]
 license = "MIT OR Apache-2.0"
 categories = ["no-std", "data-structures", "encoding"]
 edition = "2021"
-rust-version = "1.56"
+rust-version = "1.60"
 exclude = [".git*", ".editorconfig", ".circleci"]
 
 [features]
@@ -27,10 +27,7 @@ std = []
 
 [dependencies]
 cfg-if = "1.0.0"
-
-[dev-dependencies]
-quickcheck = "1.0"
-quickcheck_macros = "1.0"
+rustversion = "1.0"
 
 [package.metadata.docs.rs]
 rustdoc-args = ["--cfg", "docsrs"]

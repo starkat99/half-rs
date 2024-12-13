@@ -4,7 +4,7 @@
 
 This crate implements a half-precision floating point `f16` type for Rust implementing the IEEE 754-2008 standard [`binary16`](https://en.wikipedia.org/wiki/Half-precision_floating-point_format) a.k.a "half" format, as well as a `bf16` type implementing the [`bfloat16`](https://en.wikipedia.org/wiki/Bfloat16_floating-point_format) format.
 
-This is a minimal variant which removes some features, including a few compiler intrinsics that can reduce portability by causing issues compilation issues on certain environments.
+This is a minimal variant which removes some features and introduce many build dependencies. It also allows the crate to run on much older versions of rustc (1.60+) while retaining the performance, still using intrinsics when available (always on ARM64 and Rust 1.68+ on x86/x86_64).
 
 ## Usage
 
@@ -12,7 +12,7 @@ The `f16` and `bf16` types attempt to match existing Rust floating point type fu
 
 This crate provides [`no_std`](https://rust-embedded.github.io/book/intro/no-std.html) support so can easily be used in embedded code where a smaller float format is most useful.
 
-*Requires Rust 1.56 or greater.*
+*Requires Rust 1.60 or greater.*
 
 See the [crate documentation](https://docs.rs/float16/) for more details.
 

@@ -1,5 +1,11 @@
+#![allow(unused_imports)]
+// We feature gate the use of each.
+#![allow(clippy::incompatible_msrv)]
+
+#[rustversion::since(1.68)]
 #[cfg(target_arch = "x86")]
 use core::arch::x86::_mm_cvtps_ph;
+#[rustversion::since(1.68)]
 #[cfg(target_arch = "x86")]
 use core::arch::x86::{
     __m128,
@@ -10,6 +16,7 @@ use core::arch::x86::{
     _mm_cvtph_ps,
     _MM_FROUND_TO_NEAREST_INT,
 };
+#[rustversion::since(1.68)]
 #[cfg(target_arch = "x86_64")]
 use core::arch::x86_64::{
     __m128,
@@ -27,8 +34,9 @@ use super::convert_chunked_slice_8;
 
 /////////////// x86/x86_64 f16c ////////////////
 
-#[target_feature(enable = "f16c")]
 #[inline]
+#[rustversion::since(1.68)]
+#[target_feature(enable = "f16c")]
 pub(super) unsafe fn f16_to_f32_x86_f16c(i: u16) -> f32 {
     let mut vec = MaybeUninit::<__m128i>::zeroed();
     vec.as_mut_ptr().cast::<u16>().write(i);
@@ -36,8 +44,9 @@ pub(super) unsafe fn f16_to_f32_x86_f16c(i: u16) -> f32 {
     *(&retval as *const __m128).cast()
 }
 
-#[target_feature(enable = "f16c")]
 #[inline]
+#[rustversion::since(1.68)]
+#[target_feature(enable = "f16c")]
 pub(super) unsafe fn f32_to_f16_x86_f16c(f: f32) -> u16 {
     let mut vec = MaybeUninit::<__m128>::zeroed();
     vec.as_mut_ptr().cast::<f32>().write(f);
@@ -45,8 +54,9 @@ pub(super) unsafe fn f32_to_f16_x86_f16c(f: f32) -> u16 {
     *(&retval as *const __m128i).cast()
 }
 
-#[target_feature(enable = "f16c")]
 #[inline]
+#[rustversion::since(1.68)]
+#[target_feature(enable = "f16c")]
 pub(super) unsafe fn f16x4_to_f32x4_x86_f16c(v: &[u16; 4]) -> [f32; 4] {
     let mut vec = MaybeUninit::<__m128i>::zeroed();
     ptr::copy_nonoverlapping(v.as_ptr(), vec.as_mut_ptr().cast(), 4);
@@ -54,8 +64,9 @@ pub(super) unsafe fn f16x4_to_f32x4_x86_f16c(v: &[u16; 4]) -> [f32; 4] {
     *(&retval as *const __m128).cast()
 }
 
-#[target_feature(enable = "f16c")]
 #[inline]
+#[rustversion::since(1.68)]
+#[target_feature(enable = "f16c")]
 pub(super) unsafe fn f32x4_to_f16x4_x86_f16c(v: &[f32; 4]) -> [u16; 4] {
     let mut vec = MaybeUninit::<__m128>::uninit();
     ptr::copy_nonoverlapping(v.as_ptr(), vec.as_mut_ptr().cast(), 4);
@@ -63,8 +74,9 @@ pub(super) unsafe fn f32x4_to_f16x4_x86_f16c(v: &[f32; 4]) -> [u16; 4] {
     *(&retval as *const __m128i).cast()
 }
 
-#[target_feature(enable = "f16c")]
 #[inline]
+#[rustversion::since(1.68)]
+#[target_feature(enable = "f16c")]
 pub(super) unsafe fn f16x4_to_f64x4_x86_f16c(v: &[u16; 4]) -> [f64; 4] {
     let array = f16x4_to_f32x4_x86_f16c(v);
     // Let compiler vectorize this regular cast for now.
@@ -72,8 +84,9 @@ pub(super) unsafe fn f16x4_to_f64x4_x86_f16c(v: &[u16; 4]) -> [f64; 4] {
     [array[0] as f64, array[1] as f64, array[2] as f64, array[3] as f64]
 }
 
-#[target_feature(enable = "f16c")]
 #[inline]
+#[rustversion::since(1.68)]
+#[target_feature(enable = "f16c")]
 pub(super) unsafe fn f64x4_to_f16x4_x86_f16c(v: &[f64; 4]) -> [u16; 4] {
     // Let compiler vectorize this regular cast for now.
     // TODO: investigate auto-detecting sse2/avx convert features
@@ -81,8 +94,9 @@ pub(super) unsafe fn f64x4_to_f16x4_x86_f16c(v: &[f64; 4]) -> [u16; 4] {
     f32x4_to_f16x4_x86_f16c(&v)
 }
 
-#[target_feature(enable = "f16c")]
 #[inline]
+#[rustversion::since(1.68)]
+#[target_feature(enable = "f16c")]
 pub(super) unsafe fn f16x8_to_f32x8_x86_f16c(v: &[u16; 8]) -> [f32; 8] {
     let mut vec = MaybeUninit::<__m128i>::zeroed();
     ptr::copy_nonoverlapping(v.as_ptr(), vec.as_mut_ptr().cast(), 8);
@@ -90,8 +104,9 @@ pub(super) unsafe fn f16x8_to_f32x8_x86_f16c(v: &[u16; 8]) -> [f32; 8] {
     *(&retval as *const __m256).cast()
 }
 
-#[target_feature(enable = "f16c")]
 #[inline]
+#[rustversion::since(1.68)]
+#[target_feature(enable = "f16c")]
 pub(super) unsafe fn f32x8_to_f16x8_x86_f16c(v: &[f32; 8]) -> [u16; 8] {
     let mut vec = MaybeUninit::<__m256>::uninit();
     ptr::copy_nonoverlapping(v.as_ptr(), vec.as_mut_ptr().cast(), 8);
@@ -99,8 +114,9 @@ pub(super) unsafe fn f32x8_to_f16x8_x86_f16c(v: &[f32; 8]) -> [u16; 8] {
     *(&retval as *const __m128i).cast()
 }
 
-#[target_feature(enable = "f16c")]
 #[inline]
+#[rustversion::since(1.68)]
+#[target_feature(enable = "f16c")]
 pub(super) unsafe fn f16x8_to_f64x8_x86_f16c(v: &[u16; 8]) -> [f64; 8] {
     let array = f16x8_to_f32x8_x86_f16c(v);
     // Let compiler vectorize this regular cast for now.
@@ -117,8 +133,9 @@ pub(super) unsafe fn f16x8_to_f64x8_x86_f16c(v: &[u16; 8]) -> [f64; 8] {
     ]
 }
 
-#[target_feature(enable = "f16c")]
 #[inline]
+#[rustversion::since(1.68)]
+#[target_feature(enable = "f16c")]
 pub(super) unsafe fn f64x8_to_f16x8_x86_f16c(v: &[f64; 8]) -> [u16; 8] {
     // Let compiler vectorize this regular cast for now.
     // TODO: investigate auto-detecting sse2/avx convert features

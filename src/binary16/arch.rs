@@ -9,7 +9,7 @@ mod x86;
 #[cfg(target_arch = "aarch64")]
 mod aarch64;
 
-macro_rules! convert_fn {
+macro_rules! convert_fn_impl {
     (
         if x86_feature("f16c") { $f16c:expr }else if aarch64_feature("fp16") { $aarch64:expr }else { $fallback:expr }
     ) => {
@@ -26,7 +26,6 @@ macro_rules! convert_fn {
                 target_feature = "fp16"
             ))] {
                 $aarch64
-
             }
 
             // Use CPU feature detection if using std
@@ -55,6 +54,44 @@ macro_rules! convert_fn {
 
             // Fallback to software
             else {
+                $fallback
+            }
+        }
+    };
+}
+
+// Supports both x86 and aarch64 intrinsics.
+#[rustversion::since(1.68)]
+macro_rules! convert_fn {
+    (
+        if x86_feature("f16c") { $f16c:expr }else if aarch64_feature("fp16") { $aarch64:expr }else { $fallback:expr }
+    ) => {
+        convert_fn_impl! {
+            if x86_feature("f16c") {
+                $f16c
+            } else if aarch64_feature("fp16") {
+                $aarch64
+            } else {
+                $fallback
+            }
+        }
+    };
+}
+
+// Supports only aarch64 intrinsics.
+// Rust stabilizes support for `is_aarch64_feature_detected`
+// in 1.60.
+#[rustversion::before(1.68)]
+macro_rules! convert_fn {
+    (
+        if x86_feature("f16c") { $f16c:expr }else if aarch64_feature("fp16") { $aarch64:expr }else { $fallback:expr }
+    ) => {
+        convert_fn_impl! {
+            if x86_feature("f16c") {
+                $fallback
+            } else if aarch64_feature("fp16") {
+                $aarch64
+            } else {
                 $fallback
             }
         }
