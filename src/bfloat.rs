@@ -292,7 +292,14 @@ impl bf16 {
     #[inline]
     #[must_use]
     pub const fn is_nan(self) -> bool {
-        self.0 & 0x7FFFu16 > 0x7F80u16
+        self.0 & Self::NOT_SIGN > Self::EXP_MASK
+    }
+
+    /// Computes the absolute value of `self`.
+    #[must_use]
+    #[inline(always)]
+    pub const fn abs(self) -> Self {
+        Self(self.0 & !Self::SIGN_MASK)
     }
 
     /// Returns `true` if this value is ±∞ and `false` otherwise.
@@ -316,7 +323,7 @@ impl bf16 {
     #[inline]
     #[must_use]
     pub const fn is_infinite(self) -> bool {
-        self.0 & 0x7FFFu16 == 0x7F80u16
+        self.0 & Self::NOT_SIGN == Self::EXP_MASK
     }
 
     /// Returns `true` if this number is neither infinite nor NaN.
@@ -340,7 +347,16 @@ impl bf16 {
     #[inline]
     #[must_use]
     pub const fn is_finite(self) -> bool {
-        self.0 & 0x7F80u16 != 0x7F80u16
+        self.0 & Self::EXP_MASK != Self::EXP_MASK
+    }
+
+    /// Returns `true` if the number is [subnormal].
+    ///
+    /// [subnormal]: https://en.wikipedia.org/wiki/Denormal_number
+    #[must_use]
+    #[inline(always)]
+    pub const fn is_subnormal(self) -> bool {
+        matches!(self.classify(), FpCategory::Subnormal)
     }
 
     /// Returns `true` if the number is neither zero, infinite, subnormal, or
@@ -368,8 +384,8 @@ impl bf16 {
     #[inline]
     #[must_use]
     pub const fn is_normal(self) -> bool {
-        let exp = self.0 & 0x7F80u16;
-        exp != 0x7F80u16 && exp != 0
+        let exp = self.0 & Self::EXP_MASK;
+        exp != Self::EXP_MASK && exp != 0
     }
 
     /// Returns the floating point category of the number.
@@ -389,15 +405,16 @@ impl bf16 {
     /// assert_eq!(num.classify(), FpCategory::Normal);
     /// assert_eq!(inf.classify(), FpCategory::Infinite);
     /// ```
+    #[inline]
     #[must_use]
     pub const fn classify(self) -> FpCategory {
-        let exp = self.0 & 0x7F80u16;
-        let man = self.0 & 0x007Fu16;
+        let exp = self.0 & Self::EXP_MASK;
+        let man = self.0 & Self::MAN_MASK;
         match (exp, man) {
             (0, 0) => FpCategory::Zero,
             (0, _) => FpCategory::Subnormal,
-            (0x7F80u16, 0) => FpCategory::Infinite,
-            (0x7F80u16, _) => FpCategory::Nan,
+            (Self::EXP_MASK, 0) => FpCategory::Infinite,
+            (Self::EXP_MASK, _) => FpCategory::Nan,
             _ => FpCategory::Normal,
         }
     }
@@ -421,11 +438,12 @@ impl bf16 {
     ///
     /// assert!(bf16::NAN.signum().is_nan());
     /// ```
+    #[inline]
     #[must_use]
     pub const fn signum(self) -> bf16 {
         if self.is_nan() {
             self
-        } else if self.0 & 0x8000u16 != 0 {
+        } else if self.0 & Self::SIGN_MASK != 0 {
             Self::NEG_ONE
         } else {
             Self::ONE
@@ -452,7 +470,7 @@ impl bf16 {
     #[inline]
     #[must_use]
     pub const fn is_sign_positive(self) -> bool {
-        self.0 & 0x8000u16 == 0
+        self.0 & Self::SIGN_MASK == 0
     }
 
     /// Returns `true` if and only if `self` has a negative sign, including
@@ -475,7 +493,7 @@ impl bf16 {
     #[inline]
     #[must_use]
     pub const fn is_sign_negative(self) -> bool {
-        self.0 & 0x8000u16 != 0
+        self.0 & Self::SIGN_MASK != 0
     }
 
     /// Returns a number composed of the magnitude of `self` and the sign of
@@ -501,7 +519,28 @@ impl bf16 {
     #[inline]
     #[must_use]
     pub const fn copysign(self, sign: bf16) -> bf16 {
-        bf16((sign.0 & 0x8000u16) | (self.0 & 0x7FFFu16))
+        bf16((sign.0 & Self::SIGN_MASK) | (self.0 & Self::NOT_SIGN))
+    }
+
+    /// Takes the reciprocal (inverse) of a number, `1/x`.
+    #[must_use]
+    #[inline(always)]
+    pub fn recip(self) -> Self {
+        Self::ONE / self
+    }
+
+    /// Converts radians to degrees.
+    #[must_use]
+    #[inline(always)]
+    pub fn to_degrees(self) -> Self {
+        self * Self::from(180u8) / Self::PI
+    }
+
+    /// Converts degrees to radians.
+    #[must_use]
+    #[inline(always)]
+    pub fn to_radians(self) -> Self {
+        self * Self::PI / Self::from(180u8)
     }
 
     /// Returns the maximum of the two numbers.
@@ -519,8 +558,8 @@ impl bf16 {
     /// ```
     #[inline]
     #[must_use]
-    pub fn max(self, other: bf16) -> bf16 {
-        if other > self && !other.is_nan() {
+    pub const fn max(self, other: bf16) -> bf16 {
+        if gt(other, self) && !other.is_nan() {
             other
         } else {
             self
@@ -542,8 +581,8 @@ impl bf16 {
     /// ```
     #[inline]
     #[must_use]
-    pub fn min(self, other: bf16) -> bf16 {
-        if other < self && !other.is_nan() {
+    pub const fn min(self, other: bf16) -> bf16 {
+        if lt(other, self) && !other.is_nan() {
             other
         } else {
             self
@@ -572,13 +611,13 @@ impl bf16 {
     /// ```
     #[inline]
     #[must_use]
-    pub fn clamp(self, min: bf16, max: bf16) -> bf16 {
-        assert!(min <= max);
+    pub const fn clamp(self, min: bf16, max: bf16) -> bf16 {
+        assert!(le(min, max));
         let mut x = self;
-        if x < min {
+        if lt(x, min) {
             x = min;
         }
-        if x > max {
+        if gt(x, max) {
             x = max;
         }
         x
@@ -745,6 +784,49 @@ impl bf16 {
     pub const LOG2_10: bf16 = bf16(0x4055u16);
     /// [`struct@bf16`] √2
     pub const SQRT_2: bf16 = bf16(0x3FB5u16);
+
+    /// Sign bit
+    pub const SIGN_MASK: u16 = 0x8000;
+    // Private helper for comparisons.
+    const NOT_SIGN: u16 = !Self::SIGN_MASK;
+
+    /// Exponent mask
+    pub const EXP_MASK: u16 = 0x7F80;
+
+    /// Mask for the hidden bit.
+    pub const HIDDEN_BIT_MASK: u16 = 0x0080;
+
+    /// Mantissa mask
+    pub const MAN_MASK: u16 = 0x007F;
+
+    /// Minimum representable positive value (min subnormal)
+    pub const TINY_BITS: u16 = 0x1;
+
+    /// Minimum representable negative value (min negative subnormal)
+    pub const NEG_TINY_BITS: u16 = Self::TINY_BITS | Self::SIGN_MASK;
+}
+
+macro_rules! from_int_impl {
+    ($t:ty, $func:ident) => {
+        /// Create from the integral type, as if by an `as` cast.
+        #[inline(always)]
+        pub const fn $func(value: $t) -> Self {
+            Self::from_f32_const(value as f32)
+        }
+    };
+}
+
+impl bf16 {
+    from_int_impl!(u8, from_u8);
+    from_int_impl!(u16, from_u16);
+    from_int_impl!(u32, from_u32);
+    from_int_impl!(u64, from_u64);
+    from_int_impl!(u128, from_u128);
+    from_int_impl!(i8, from_i8);
+    from_int_impl!(i16, from_i16);
+    from_int_impl!(i32, from_i32);
+    from_int_impl!(i64, from_i64);
+    from_int_impl!(i128, from_i128);
 }
 
 impl From<bf16> for f32 {
@@ -779,11 +861,7 @@ impl From<u8> for bf16 {
 
 impl PartialEq for bf16 {
     fn eq(&self, other: &bf16) -> bool {
-        if self.is_nan() || other.is_nan() {
-            false
-        } else {
-            (self.0 == other.0) || ((self.0 | other.0) & 0x7FFFu16 == 0)
-        }
+        eq(*self, *other)
     }
 }
 
@@ -792,19 +870,19 @@ impl PartialOrd for bf16 {
         if self.is_nan() || other.is_nan() {
             None
         } else {
-            let neg = self.0 & 0x8000u16 != 0;
-            let other_neg = other.0 & 0x8000u16 != 0;
+            let neg = self.0 & Self::SIGN_MASK != 0;
+            let other_neg = other.0 & Self::SIGN_MASK != 0;
             match (neg, other_neg) {
                 (false, false) => Some(self.0.cmp(&other.0)),
                 (false, true) => {
-                    if (self.0 | other.0) & 0x7FFFu16 == 0 {
+                    if (self.0 | other.0) & Self::NOT_SIGN == 0 {
                         Some(Ordering::Equal)
                     } else {
                         Some(Ordering::Greater)
                     }
                 },
                 (true, false) => {
-                    if (self.0 | other.0) & 0x7FFFu16 == 0 {
+                    if (self.0 | other.0) & Self::NOT_SIGN == 0 {
                         Some(Ordering::Equal)
                     } else {
                         Some(Ordering::Less)
@@ -816,69 +894,27 @@ impl PartialOrd for bf16 {
     }
 
     fn lt(&self, other: &bf16) -> bool {
-        if self.is_nan() || other.is_nan() {
-            false
-        } else {
-            let neg = self.0 & 0x8000u16 != 0;
-            let other_neg = other.0 & 0x8000u16 != 0;
-            match (neg, other_neg) {
-                (false, false) => self.0 < other.0,
-                (false, true) => false,
-                (true, false) => (self.0 | other.0) & 0x7FFFu16 != 0,
-                (true, true) => self.0 > other.0,
-            }
-        }
+        lt(*self, *other)
     }
 
     fn le(&self, other: &bf16) -> bool {
-        if self.is_nan() || other.is_nan() {
-            false
-        } else {
-            let neg = self.0 & 0x8000u16 != 0;
-            let other_neg = other.0 & 0x8000u16 != 0;
-            match (neg, other_neg) {
-                (false, false) => self.0 <= other.0,
-                (false, true) => (self.0 | other.0) & 0x7FFFu16 == 0,
-                (true, false) => true,
-                (true, true) => self.0 >= other.0,
-            }
-        }
+        le(*self, *other)
     }
 
     fn gt(&self, other: &bf16) -> bool {
-        if self.is_nan() || other.is_nan() {
-            false
-        } else {
-            let neg = self.0 & 0x8000u16 != 0;
-            let other_neg = other.0 & 0x8000u16 != 0;
-            match (neg, other_neg) {
-                (false, false) => self.0 > other.0,
-                (false, true) => (self.0 | other.0) & 0x7FFFu16 != 0,
-                (true, false) => false,
-                (true, true) => self.0 < other.0,
-            }
-        }
+        gt(*self, *other)
     }
 
     fn ge(&self, other: &bf16) -> bool {
-        if self.is_nan() || other.is_nan() {
-            false
-        } else {
-            let neg = self.0 & 0x8000u16 != 0;
-            let other_neg = other.0 & 0x8000u16 != 0;
-            match (neg, other_neg) {
-                (false, false) => self.0 >= other.0,
-                (false, true) => true,
-                (true, false) => (self.0 | other.0) & 0x7FFFu16 == 0,
-                (true, true) => self.0 <= other.0,
-            }
-        }
+        ge(*self, *other)
     }
 }
 
 #[cfg(not(target_arch = "spirv"))]
 impl FromStr for bf16 {
     type Err = ParseFloatError;
+
+    #[inline]
     fn from_str(src: &str) -> Result<bf16, ParseFloatError> {
         f32::from_str(src).map(bf16::from_f32)
     }
@@ -886,6 +922,7 @@ impl FromStr for bf16 {
 
 #[cfg(not(target_arch = "spirv"))]
 impl Debug for bf16 {
+    #[inline]
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
         Debug::fmt(&self.to_f32(), f)
     }
@@ -893,6 +930,7 @@ impl Debug for bf16 {
 
 #[cfg(not(target_arch = "spirv"))]
 impl Display for bf16 {
+    #[inline]
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
         Display::fmt(&self.to_f32(), f)
     }
@@ -900,6 +938,7 @@ impl Display for bf16 {
 
 #[cfg(not(target_arch = "spirv"))]
 impl LowerExp for bf16 {
+    #[inline]
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
         write!(f, "{:e}", self.to_f32())
     }
@@ -907,6 +946,7 @@ impl LowerExp for bf16 {
 
 #[cfg(not(target_arch = "spirv"))]
 impl UpperExp for bf16 {
+    #[inline]
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
         write!(f, "{:E}", self.to_f32())
     }
@@ -914,6 +954,7 @@ impl UpperExp for bf16 {
 
 #[cfg(not(target_arch = "spirv"))]
 impl Binary for bf16 {
+    #[inline]
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
         write!(f, "{:b}", self.0)
     }
@@ -921,6 +962,7 @@ impl Binary for bf16 {
 
 #[cfg(not(target_arch = "spirv"))]
 impl Octal for bf16 {
+    #[inline]
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
         write!(f, "{:o}", self.0)
     }
@@ -928,6 +970,7 @@ impl Octal for bf16 {
 
 #[cfg(not(target_arch = "spirv"))]
 impl LowerHex for bf16 {
+    #[inline]
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
         write!(f, "{:x}", self.0)
     }
@@ -935,6 +978,7 @@ impl LowerHex for bf16 {
 
 #[cfg(not(target_arch = "spirv"))]
 impl UpperHex for bf16 {
+    #[inline]
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
         write!(f, "{:X}", self.0)
     }
@@ -943,8 +987,9 @@ impl UpperHex for bf16 {
 impl Neg for bf16 {
     type Output = Self;
 
+    #[inline]
     fn neg(self) -> Self::Output {
-        Self(self.0 ^ 0x8000)
+        Self(self.0 ^ Self::SIGN_MASK)
     }
 }
 
@@ -960,6 +1005,7 @@ impl Neg for &bf16 {
 impl Add for bf16 {
     type Output = Self;
 
+    #[inline]
     fn add(self, rhs: Self) -> Self::Output {
         Self::from_f32(Self::to_f32(self) + Self::to_f32(rhs))
     }
@@ -1009,6 +1055,7 @@ impl AddAssign<&bf16> for bf16 {
 impl Sub for bf16 {
     type Output = Self;
 
+    #[inline]
     fn sub(self, rhs: Self) -> Self::Output {
         Self::from_f32(Self::to_f32(self) - Self::to_f32(rhs))
     }
@@ -1058,6 +1105,7 @@ impl SubAssign<&bf16> for bf16 {
 impl Mul for bf16 {
     type Output = Self;
 
+    #[inline]
     fn mul(self, rhs: Self) -> Self::Output {
         Self::from_f32(Self::to_f32(self) * Self::to_f32(rhs))
     }
@@ -1107,6 +1155,7 @@ impl MulAssign<&bf16> for bf16 {
 impl Div for bf16 {
     type Output = Self;
 
+    #[inline]
     fn div(self, rhs: Self) -> Self::Output {
         Self::from_f32(Self::to_f32(self) / Self::to_f32(rhs))
     }
@@ -1227,6 +1276,79 @@ impl<'a> Sum<&'a bf16> for bf16 {
     #[inline]
     fn sum<I: Iterator<Item = &'a bf16>>(iter: I) -> Self {
         bf16::from_f32(iter.map(|f| f.to_f32()).sum())
+    }
+}
+
+#[inline]
+const fn eq(lhs: bf16, rhs: bf16) -> bool {
+    if lhs.is_nan() || rhs.is_nan() {
+        false
+    } else {
+        (lhs.0 == rhs.0) || ((lhs.0 | rhs.0) & bf16::NOT_SIGN == 0)
+    }
+}
+
+#[inline]
+const fn lt(lhs: bf16, rhs: bf16) -> bool {
+    if lhs.is_nan() || rhs.is_nan() {
+        false
+    } else {
+        let neg = lhs.0 & bf16::SIGN_MASK != 0;
+        let rhs_neg = rhs.0 & bf16::SIGN_MASK != 0;
+        match (neg, rhs_neg) {
+            (false, false) => lhs.0 < rhs.0,
+            (false, true) => false,
+            (true, false) => (lhs.0 | rhs.0) & bf16::NOT_SIGN != 0,
+            (true, true) => lhs.0 > rhs.0,
+        }
+    }
+}
+
+#[inline]
+const fn le(lhs: bf16, rhs: bf16) -> bool {
+    if lhs.is_nan() || rhs.is_nan() {
+        false
+    } else {
+        let neg = lhs.0 & bf16::SIGN_MASK != 0;
+        let rhs_neg = rhs.0 & bf16::SIGN_MASK != 0;
+        match (neg, rhs_neg) {
+            (false, false) => lhs.0 <= rhs.0,
+            (false, true) => (lhs.0 | rhs.0) & bf16::NOT_SIGN == 0,
+            (true, false) => true,
+            (true, true) => lhs.0 >= rhs.0,
+        }
+    }
+}
+
+#[inline]
+const fn gt(lhs: bf16, rhs: bf16) -> bool {
+    if lhs.is_nan() || rhs.is_nan() {
+        false
+    } else {
+        let neg = lhs.0 & bf16::SIGN_MASK != 0;
+        let rhs_neg = rhs.0 & bf16::SIGN_MASK != 0;
+        match (neg, rhs_neg) {
+            (false, false) => lhs.0 > rhs.0,
+            (false, true) => (lhs.0 | rhs.0) & bf16::NOT_SIGN != 0,
+            (true, false) => false,
+            (true, true) => lhs.0 < rhs.0,
+        }
+    }
+}
+
+#[inline]
+const fn ge(lhs: bf16, rhs: bf16) -> bool {
+    if lhs.is_nan() || rhs.is_nan() {
+        false
+    } else {
+        let neg = lhs.0 & bf16::SIGN_MASK != 0;
+        let rhs_neg = rhs.0 & bf16::SIGN_MASK != 0;
+        match (neg, rhs_neg) {
+            (false, false) => lhs.0 >= rhs.0,
+            (false, true) => true,
+            (true, false) => (lhs.0 | rhs.0) & bf16::NOT_SIGN == 0,
+            (true, true) => lhs.0 <= rhs.0,
+        }
     }
 }
 
