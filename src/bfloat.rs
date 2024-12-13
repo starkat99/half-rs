@@ -251,6 +251,18 @@ impl bf16 {
         convert::bf16_to_f32(self.0)
     }
 
+    /// Convert the data to an `f32` type, used for numerical operations.
+    #[inline(always)]
+    pub fn as_f32(self) -> f32 {
+        self.to_f32_const()
+    }
+
+    /// Convert the data to an `f32` type, used for numerical operations.
+    #[inline(always)]
+    pub const fn as_f32_const(self) -> f32 {
+        self.to_f32_const()
+    }
+
     /// Converts a [`struct@bf16`] value into an [`f64`] value.
     ///
     /// This conversion is lossless as all values can be represented exactly in
@@ -274,6 +286,18 @@ impl bf16 {
     #[must_use]
     pub const fn to_f64_const(self) -> f64 {
         convert::bf16_to_f64(self.0)
+    }
+
+    /// Convert the data to an `f64` type, used for numerical operations.
+    #[inline(always)]
+    pub fn as_f64(self) -> f64 {
+        self.to_f64_const()
+    }
+
+    /// Convert the data to an `f64` type, used for numerical operations.
+    #[inline(always)]
+    pub const fn as_f64_const(self) -> f64 {
+        self.to_f64_const()
     }
 
     /// Returns `true` if this value is NaN and `false` otherwise.
