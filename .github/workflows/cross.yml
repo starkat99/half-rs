@@ -1,0 +1,45 @@
+name: Cross
+
+on:
+  [pull_request, workflow_dispatch]
+
+jobs:
+  cross:
+    name: Rust ${{matrix.target}}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          # Android
+          - aarch64-linux-android
+          - armv7-linux-androideabi
+
+          # Linux
+          - arm-unknown-linux-gnueabi
+          - armv7-unknown-linux-gnueabihf
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          target: ${{matrix.target}}
+
+      - name: Install Cross
+        run: |
+          cargo install cross@0.2.5
+          rustup toolchain add 1.65.0
+
+      - name: Run Check
+        run: |
+          cross +1.65.0 check --target ${{matrix.target}}
+
+      - name: Run Simple Test
+        run: |
+          cross +1.65.0 test --target ${{matrix.target}}
+
+      - name: Run Simple Test
+        run: |
+          cd devel
+          cross +1.65.0 test --target ${{matrix.target}}

@@ -9,19 +9,21 @@ mod x86;
 #[cfg(target_arch = "aarch64")]
 mod aarch64;
 
-macro_rules! convert_fn_impl {
+macro_rules! convert_fn {
     (
         if x86_feature("f16c") { $f16c:expr }else if aarch64_feature("fp16") { $aarch64:expr }else { $fallback:expr }
     ) => {
         cfg_if::cfg_if! {
             // Use intrinsics directly when a compile target or using no_std
             if #[cfg(all(
+                has_x86_intrinsics,
                 any(target_arch = "x86", target_arch = "x86_64"),
                 target_feature = "f16c"
             ))] {
                 $f16c
             }
             else if #[cfg(all(
+                has_aarch64_intrinsics,
                 target_arch = "aarch64",
                 target_feature = "fp16"
             ))] {
@@ -30,6 +32,7 @@ macro_rules! convert_fn_impl {
 
             // Use CPU feature detection if using std
             else if #[cfg(all(
+                has_x86_intrinsics,
                 feature = "std",
                 any(target_arch = "x86", target_arch = "x86_64")
             ))] {
@@ -41,6 +44,7 @@ macro_rules! convert_fn_impl {
                 }
             }
             else if #[cfg(all(
+                has_aarch64_intrinsics,
                 feature = "std",
                 target_arch = "aarch64",
             ))] {
@@ -54,44 +58,6 @@ macro_rules! convert_fn_impl {
 
             // Fallback to software
             else {
-                $fallback
-            }
-        }
-    };
-}
-
-// Supports both x86 and aarch64 intrinsics.
-#[rustversion::since(1.68)]
-macro_rules! convert_fn {
-    (
-        if x86_feature("f16c") { $f16c:expr }else if aarch64_feature("fp16") { $aarch64:expr }else { $fallback:expr }
-    ) => {
-        convert_fn_impl! {
-            if x86_feature("f16c") {
-                $f16c
-            } else if aarch64_feature("fp16") {
-                $aarch64
-            } else {
-                $fallback
-            }
-        }
-    };
-}
-
-// Supports only aarch64 intrinsics.
-// Rust stabilizes support for `is_aarch64_feature_detected`
-// in 1.60.
-#[rustversion::before(1.68)]
-macro_rules! convert_fn {
-    (
-        if x86_feature("f16c") { $f16c:expr }else if aarch64_feature("fp16") { $aarch64:expr }else { $fallback:expr }
-    ) => {
-        convert_fn_impl! {
-            if x86_feature("f16c") {
-                $fallback
-            } else if aarch64_feature("fp16") {
-                $aarch64
-            } else {
                 $fallback
             }
         }
@@ -335,6 +301,7 @@ macro_rules! math_fn {
         cfg_if::cfg_if! {
             // Use intrinsics directly when a compile target or using no_std
             if #[cfg(all(
+                has_aarch64_intrinsics,
                 target_arch = "aarch64",
                 target_feature = "fp16"
             ))] {
@@ -343,6 +310,7 @@ macro_rules! math_fn {
 
             // Use CPU feature detection if using std
             else if #[cfg(all(
+                has_aarch64_intrinsics,
                 feature = "std",
                 target_arch = "aarch64",
                 not(target_feature = "fp16")

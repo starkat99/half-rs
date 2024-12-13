@@ -1,4 +1,6 @@
-#[rustversion::since(1.59)]
+#![cfg(has_aarch64_intrinsics)]
+#![allow(unknown_lints)]
+
 use core::{
     arch::{
         aarch64::{float32x4_t, float64x2_t, uint16x4_t},
@@ -9,7 +11,6 @@ use core::{
 };
 
 #[inline]
-#[rustversion::since(1.59)]
 #[target_feature(enable = "fp16")]
 pub(super) unsafe fn f16_to_f32_fp16(i: u16) -> f32 {
     let result: f32;
@@ -22,7 +23,6 @@ pub(super) unsafe fn f16_to_f32_fp16(i: u16) -> f32 {
 }
 
 #[inline]
-#[rustversion::since(1.59)]
 #[target_feature(enable = "fp16")]
 pub(super) unsafe fn f16_to_f64_fp16(i: u16) -> f64 {
     let result: f64;
@@ -35,7 +35,6 @@ pub(super) unsafe fn f16_to_f64_fp16(i: u16) -> f64 {
 }
 
 #[inline]
-#[rustversion::since(1.59)]
 #[target_feature(enable = "fp16")]
 pub(super) unsafe fn f32_to_f16_fp16(f: f32) -> u16 {
     let result: u16;
@@ -48,7 +47,6 @@ pub(super) unsafe fn f32_to_f16_fp16(f: f32) -> u16 {
 }
 
 #[inline]
-#[rustversion::since(1.59)]
 #[target_feature(enable = "fp16")]
 pub(super) unsafe fn f64_to_f16_fp16(f: f64) -> u16 {
     let result: u16;
@@ -61,7 +59,6 @@ pub(super) unsafe fn f64_to_f16_fp16(f: f64) -> u16 {
 }
 
 #[inline]
-#[rustversion::since(1.59)]
 #[target_feature(enable = "fp16")]
 pub(super) unsafe fn f16x4_to_f32x4_fp16(v: &[u16; 4]) -> [f32; 4] {
     let mut vec = MaybeUninit::<uint16x4_t>::uninit();
@@ -76,7 +73,6 @@ pub(super) unsafe fn f16x4_to_f32x4_fp16(v: &[u16; 4]) -> [f32; 4] {
 }
 
 #[inline]
-#[rustversion::since(1.59)]
 #[target_feature(enable = "fp16")]
 pub(super) unsafe fn f32x4_to_f16x4_fp16(v: &[f32; 4]) -> [u16; 4] {
     let mut vec = MaybeUninit::<float32x4_t>::uninit();
@@ -91,7 +87,6 @@ pub(super) unsafe fn f32x4_to_f16x4_fp16(v: &[f32; 4]) -> [u16; 4] {
 }
 
 #[inline]
-#[rustversion::since(1.59)]
 #[target_feature(enable = "fp16")]
 pub(super) unsafe fn f16x4_to_f64x4_fp16(v: &[u16; 4]) -> [f64; 4] {
     let mut vec = MaybeUninit::<uint16x4_t>::uninit();
@@ -111,7 +106,6 @@ pub(super) unsafe fn f16x4_to_f64x4_fp16(v: &[u16; 4]) -> [f64; 4] {
 }
 
 #[inline]
-#[rustversion::since(1.59)]
 #[target_feature(enable = "fp16")]
 pub(super) unsafe fn f64x4_to_f16x4_fp16(v: &[f64; 4]) -> [u16; 4] {
     let mut low = MaybeUninit::<float64x2_t>::uninit();
@@ -132,7 +126,6 @@ pub(super) unsafe fn f64x4_to_f16x4_fp16(v: &[f64; 4]) -> [u16; 4] {
 }
 
 #[inline]
-#[rustversion::since(1.59)]
 #[target_feature(enable = "fp16")]
 pub(super) unsafe fn add_f16_fp16(a: u16, b: u16) -> u16 {
     let result: u16;
@@ -146,7 +139,6 @@ pub(super) unsafe fn add_f16_fp16(a: u16, b: u16) -> u16 {
 }
 
 #[inline]
-#[rustversion::since(1.59)]
 #[target_feature(enable = "fp16")]
 pub(super) unsafe fn subtract_f16_fp16(a: u16, b: u16) -> u16 {
     let result: u16;
@@ -160,7 +152,6 @@ pub(super) unsafe fn subtract_f16_fp16(a: u16, b: u16) -> u16 {
 }
 
 #[inline]
-#[rustversion::since(1.59)]
 #[target_feature(enable = "fp16")]
 pub(super) unsafe fn multiply_f16_fp16(a: u16, b: u16) -> u16 {
     let result: u16;
@@ -174,7 +165,6 @@ pub(super) unsafe fn multiply_f16_fp16(a: u16, b: u16) -> u16 {
 }
 
 #[inline]
-#[rustversion::since(1.59)]
 #[target_feature(enable = "fp16")]
 pub(super) unsafe fn divide_f16_fp16(a: u16, b: u16) -> u16 {
     let result: u16;

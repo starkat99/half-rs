@@ -18,16 +18,20 @@ default = ["std"]
 std = []
 
 [lints.rust.unexpected_cfgs]
- level = "warn"
- check-cfg = [
+level = "warn"
+check-cfg = [
     'cfg(kani)',
     'cfg(target_arch, values("spirv"))',
     'cfg(target_feature, values("IntegerFunctions2INTEL", "SPV_INTEL_shader_integer_functions2"))',
+    'cfg(has_x86_intrinsics)',
+    'cfg(has_aarch64_intrinsics)',
 ]
 
 [dependencies]
 cfg-if = "1.0.0"
-rustversion = "1.0"
+
+[build-dependencies]
+rustc_version = "0.2"
 
 [package.metadata.docs.rs]
 rustdoc-args = ["--cfg", "docsrs"]
