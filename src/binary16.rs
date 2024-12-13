@@ -128,7 +128,7 @@ impl f16 {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// let bytes = f16::from_f32(12.5).to_le_bytes();
     /// assert_eq!(bytes, [0x40, 0x4A]);
     /// ```
@@ -144,7 +144,7 @@ impl f16 {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// let bytes = f16::from_f32(12.5).to_be_bytes();
     /// assert_eq!(bytes, [0x4A, 0x40]);
     /// ```
@@ -164,7 +164,7 @@ impl f16 {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// let bytes = f16::from_f32(12.5).to_ne_bytes();
     /// assert_eq!(bytes, if cfg!(target_endian = "big") {
     ///     [0x4A, 0x40]
@@ -184,7 +184,7 @@ impl f16 {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// let value = f16::from_le_bytes([0x40, 0x4A]);
     /// assert_eq!(value, f16::from_f32(12.5));
     /// ```
@@ -200,7 +200,7 @@ impl f16 {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// let value = f16::from_be_bytes([0x4A, 0x40]);
     /// assert_eq!(value, f16::from_f32(12.5));
     /// ```
@@ -220,7 +220,7 @@ impl f16 {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// let value = f16::from_ne_bytes(if cfg!(target_endian = "big") {
     ///     [0x4A, 0x40]
     /// } else {
@@ -289,7 +289,7 @@ impl f16 {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     ///
     /// let nan = f16::NAN;
     /// let f = f16::from_f32(7.0_f32);
@@ -309,7 +309,7 @@ impl f16 {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     ///
     /// let f = f16::from_f32(7.0f32);
     /// let inf = f16::INFINITY;
@@ -333,7 +333,7 @@ impl f16 {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     ///
     /// let f = f16::from_f32(7.0f32);
     /// let inf = f16::INFINITY;
@@ -358,7 +358,7 @@ impl f16 {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     ///
     /// let min = f16::MIN_POSITIVE;
     /// let max = f16::MAX;
@@ -390,7 +390,7 @@ impl f16 {
     ///
     /// ```rust
     /// use std::num::FpCategory;
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     ///
     /// let num = f16::from_f32(12.4_f32);
     /// let inf = f16::INFINITY;
@@ -421,7 +421,7 @@ impl f16 {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     ///
     /// let f = f16::from_f32(3.5_f32);
     ///
@@ -447,7 +447,7 @@ impl f16 {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     ///
     /// let nan = f16::NAN;
     /// let f = f16::from_f32(7.0_f32);
@@ -470,7 +470,7 @@ impl f16 {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     ///
     /// let nan = f16::NAN;
     /// let f = f16::from_f32(7.0f32);
@@ -497,7 +497,7 @@ impl f16 {
     /// # Examples
     ///
     /// ```
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// let f = f16::from_f32(3.5);
     ///
     /// assert_eq!(f.copysign(f16::from_f32(0.42)), f16::from_f32(3.5));
@@ -520,7 +520,7 @@ impl f16 {
     /// # Examples
     ///
     /// ```
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// let x = f16::from_f32(1.0);
     /// let y = f16::from_f32(2.0);
     ///
@@ -543,7 +543,7 @@ impl f16 {
     /// # Examples
     ///
     /// ```
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// let x = f16::from_f32(1.0);
     /// let y = f16::from_f32(2.0);
     ///
@@ -573,7 +573,7 @@ impl f16 {
     /// # Examples
     ///
     /// ```
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// assert!(f16::from_f32(-3.0).clamp(f16::from_f32(-2.0), f16::from_f32(1.0)) == f16::from_f32(-2.0));
     /// assert!(f16::from_f32(0.0).clamp(f16::from_f32(-2.0), f16::from_f32(1.0)) == f16::from_f32(0.0));
     /// assert!(f16::from_f32(2.0).clamp(f16::from_f32(-2.0), f16::from_f32(1.0)) == f16::from_f32(1.0));

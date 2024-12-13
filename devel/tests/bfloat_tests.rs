@@ -1,4 +1,4 @@
-use float16::prelude::*;
+use float16::*;
 use quickcheck_macros::quickcheck;
 
 #[test]

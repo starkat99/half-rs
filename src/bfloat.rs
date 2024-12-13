@@ -120,7 +120,7 @@ impl bf16 {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// let bytes = bf16::from_f32(12.5).to_le_bytes();
     /// assert_eq!(bytes, [0x48, 0x41]);
     /// ```
@@ -136,7 +136,7 @@ impl bf16 {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// let bytes = bf16::from_f32(12.5).to_be_bytes();
     /// assert_eq!(bytes, [0x41, 0x48]);
     /// ```
@@ -156,7 +156,7 @@ impl bf16 {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// let bytes = bf16::from_f32(12.5).to_ne_bytes();
     /// assert_eq!(bytes, if cfg!(target_endian = "big") {
     ///     [0x41, 0x48]
@@ -176,7 +176,7 @@ impl bf16 {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// let value = bf16::from_le_bytes([0x48, 0x41]);
     /// assert_eq!(value, bf16::from_f32(12.5));
     /// ```
@@ -192,7 +192,7 @@ impl bf16 {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// let value = bf16::from_be_bytes([0x41, 0x48]);
     /// assert_eq!(value, bf16::from_f32(12.5));
     /// ```
@@ -212,7 +212,7 @@ impl bf16 {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// let value = bf16::from_ne_bytes(if cfg!(target_endian = "big") {
     ///     [0x41, 0x48]
     /// } else {
@@ -281,7 +281,7 @@ impl bf16 {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     ///
     /// let nan = bf16::NAN;
     /// let f = bf16::from_f32(7.0_f32);
@@ -300,7 +300,7 @@ impl bf16 {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     ///
     /// let f = bf16::from_f32(7.0f32);
     /// let inf = bf16::INFINITY;
@@ -324,7 +324,7 @@ impl bf16 {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     ///
     /// let f = bf16::from_f32(7.0f32);
     /// let inf = bf16::INFINITY;
@@ -349,7 +349,7 @@ impl bf16 {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     ///
     /// let min = bf16::MIN_POSITIVE;
     /// let max = bf16::MAX;
@@ -381,7 +381,7 @@ impl bf16 {
     ///
     /// ```rust
     /// use std::num::FpCategory;
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     ///
     /// let num = bf16::from_f32(12.4_f32);
     /// let inf = bf16::INFINITY;
@@ -412,7 +412,7 @@ impl bf16 {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     ///
     /// let f = bf16::from_f32(3.5_f32);
     ///
@@ -438,7 +438,7 @@ impl bf16 {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     ///
     /// let nan = bf16::NAN;
     /// let f = bf16::from_f32(7.0_f32);
@@ -461,7 +461,7 @@ impl bf16 {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     ///
     /// let nan = bf16::NAN;
     /// let f = bf16::from_f32(7.0f32);
@@ -488,7 +488,7 @@ impl bf16 {
     /// # Examples
     ///
     /// ```
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// let f = bf16::from_f32(3.5);
     ///
     /// assert_eq!(f.copysign(bf16::from_f32(0.42)), bf16::from_f32(3.5));
@@ -511,7 +511,7 @@ impl bf16 {
     /// # Examples
     ///
     /// ```
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// let x = bf16::from_f32(1.0);
     /// let y = bf16::from_f32(2.0);
     ///
@@ -534,7 +534,7 @@ impl bf16 {
     /// # Examples
     ///
     /// ```
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// let x = bf16::from_f32(1.0);
     /// let y = bf16::from_f32(2.0);
     ///
@@ -564,7 +564,7 @@ impl bf16 {
     /// # Examples
     ///
     /// ```
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// assert!(bf16::from_f32(-3.0).clamp(bf16::from_f32(-2.0), bf16::from_f32(1.0)) == bf16::from_f32(-2.0));
     /// assert!(bf16::from_f32(0.0).clamp(bf16::from_f32(-2.0), bf16::from_f32(1.0)) == bf16::from_f32(0.0));
     /// assert!(bf16::from_f32(2.0).clamp(bf16::from_f32(-2.0), bf16::from_f32(1.0)) == bf16::from_f32(1.0));

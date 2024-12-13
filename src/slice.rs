@@ -5,8 +5,7 @@
 //! `[u16]` slices, while the utility [`HalfFloatSliceExt`] sealed extension
 //! trait is implemented for both `[f16]` and `[bf16]` slices. These traits
 //! provide efficient conversions and reinterpret casting of larger buffers of
-//! floating point values, and are automatically included in the
-//! [`prelude`][crate::prelude] module.
+//! floating point values, and are automatically included in the crate.
 
 use core::slice;
 
@@ -26,7 +25,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// let float_buffer = [f16::from_f32(1.), f16::from_f32(2.), f16::from_f32(3.)];
     /// let int_buffer = float_buffer.reinterpret_cast();
     ///
@@ -45,7 +44,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// let mut float_buffer = [f16::from_f32(1.), f16::from_f32(2.), f16::from_f32(3.)];
     ///
     /// {
@@ -80,7 +79,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     ///
     /// # Examples
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// // Initialize an empty buffer
     /// let mut buffer = [0u16; 4];
     /// let buffer = buffer.reinterpret_cast_mut::<f16>();
@@ -111,7 +110,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     ///
     /// # Examples
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// // Initialize an empty buffer
     /// let mut buffer = [0u16; 4];
     /// let buffer = buffer.reinterpret_cast_mut::<f16>();
@@ -142,7 +141,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     ///
     /// # Examples
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// // Initialize an empty buffer
     /// let mut buffer = [0f32; 4];
     ///
@@ -172,7 +171,7 @@ pub trait HalfFloatSliceExt: private::SealedHalfFloatSlice {
     ///
     /// # Examples
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// // Initialize an empty buffer
     /// let mut buffer = [0f64; 4];
     ///
@@ -202,7 +201,7 @@ pub trait HalfBitsSliceExt: private::SealedHalfBitsSlice {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// let int_buffer = [f16::from_f32(1.).to_bits(), f16::from_f32(2.).to_bits(), f16::from_f32(3.).to_bits()];
     /// let float_buffer: &[f16] = int_buffer.reinterpret_cast();
     ///
@@ -230,7 +229,7 @@ pub trait HalfBitsSliceExt: private::SealedHalfBitsSlice {
     /// # Examples
     ///
     /// ```rust
-    /// # use float16::prelude::*;
+    /// # use float16::*;
     /// let mut int_buffer = [f16::from_f32(1.).to_bits(), f16::from_f32(2.).to_bits(), f16::from_f32(3.).to_bits()];
     ///
     /// {

@@ -27,19 +27,10 @@
 //! you don't care about lossy conversions and need trait conversions, use the
 //! appropriate [`num-traits`] traits that are implemented.
 //!
-//! This crate also provides [`prelude::HalfBitsSliceExt`] and
-//! [`prelude::HalfFloatSliceExt`] types for zero-copy in-place conversions of
-//! [`u16`] slices to both [`struct@f16`] and [`struct@bf16`], as well
-//! as efficient vectorized conversions of larger buffers of floating point
-//! values to and from these half formats.
-//!
 //! The crate supports `#[no_std]` when the `std` cargo feature is not enabled,
 //! so can be used in embedded environments without using the Rust [`std`]
 //! library. The `std` feature enables support for the standard library and is
 //! enabled by default, see the [Cargo Features](#cargo-features) section below.
-//!
-//! A [`prelude`] module is provided for easy importing of available utility
-//! traits.
 //!
 //! # Hardware support
 //!
@@ -47,7 +38,7 @@
 //! whenever hardware support is available—either through instrinsics or
 //! targeted assembly—although a nightly Rust toolchain may be required for some
 //! hardware. When hardware supports it the functions and traits
-//! [`prelude::HalfBitsSliceExt`] and [`prelude::HalfFloatSliceExt`] are used it
+//! [`HalfBitsSliceExt`] and [`HalfFloatSliceExt`] are used it
 //! will also use vectorized SIMD intructions for increased efficiency.
 //!
 //! The following list details hardware support for floating point types in this
@@ -85,21 +76,8 @@ mod slice;
 pub use bfloat::bf16;
 pub use binary16::f16;
 
-/// A collection of the most used items and traits in this crate for easy
-/// importing.
-///
-/// # Examples
-///
-/// ```rust
-/// use float16::prelude::*;
-/// ```
-pub mod prelude {
-    #[cfg(not(target_arch = "spirv"))]
-    #[doc(no_inline)]
-    pub use crate::slice::{HalfBitsSliceExt, HalfFloatSliceExt};
-    #[doc(no_inline)]
-    pub use crate::{bf16, f16};
-}
+#[cfg(not(target_arch = "spirv"))]
+pub use crate::slice::{HalfBitsSliceExt, HalfFloatSliceExt};
 
 // Keep this module private to crate
 mod private {
