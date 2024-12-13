@@ -27,19 +27,17 @@ jobs:
           target: ${{matrix.target}}
 
       - name: Install Cross
-        run: |
-          cargo install cross@0.2.5
-          rustup toolchain add 1.65.0
+        run: cargo install cross@0.2.5
 
       - name: Run Check
         run: |
-          cross +1.65.0 check --target ${{matrix.target}}
+          cross check --target ${{matrix.target}}
 
       - name: Run Simple Test
         run: |
-          cross +1.65.0 test --target ${{matrix.target}}
+          cross test --target ${{matrix.target}}
 
       - name: Run Simple Test
         run: |
           cd devel
-          cross +1.65.0 test --target ${{matrix.target}}
+          cross test --target ${{matrix.target}}
