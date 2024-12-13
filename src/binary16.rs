@@ -54,10 +54,13 @@ impl f16 {
     /// Exponents that underflow the minimum 16-bit exponent will result in
     /// 16-bit subnormals or ±0. All other values are truncated and rounded
     /// to the nearest representable 16-bit value.
+    ///
+    /// This will prefer correctness over speed. Currently, this always
+    /// uses an intrinsic if available.
     #[inline]
     #[must_use]
     pub fn from_f32(value: f32) -> f16 {
-        f16(arch::f32_to_f16(value))
+        Self::from_f32_instrinsic(value)
     }
 
     /// Constructs a 16-bit floating point value from a 32-bit floating point
@@ -80,6 +83,21 @@ impl f16 {
         f16(arch::f32_to_f16_fallback(value))
     }
 
+    /// Constructs a 16-bit floating point value from a 32-bit floating point
+    /// value.
+    ///
+    /// This operation is lossy. If the 32-bit value is to large to fit in
+    /// 16-bits, ±∞ will result. NaN values are preserved. 32-bit subnormal
+    /// values are too tiny to be represented in 16-bits and result in ±0.
+    /// Exponents that underflow the minimum 16-bit exponent will result in
+    /// 16-bit subnormals or ±0. All other values are truncated and rounded
+    /// to the nearest representable 16-bit value.
+    #[inline]
+    #[must_use]
+    pub fn from_f32_instrinsic(value: f32) -> f16 {
+        f16(arch::f32_to_f16(value))
+    }
+
     /// Constructs a 16-bit floating point value from a 64-bit floating point
     /// value.
     ///
@@ -89,10 +107,18 @@ impl f16 {
     /// Exponents that underflow the minimum 16-bit exponent will result in
     /// 16-bit subnormals or ±0. All other values are truncated and rounded
     /// to the nearest representable 16-bit value.
+    ///
+    /// This will prefer correctness over speed: on x86 systems, this currently
+    /// uses a software rather than an instrinsic implementation on x86.
     #[inline]
     #[must_use]
     pub fn from_f64(value: f64) -> f16 {
-        f16(arch::f64_to_f16(value))
+        // FIXME: Once `_mm_cvtpd_ph` is stablized, move to using the intrinsic.
+        if cfg!(any(target_arch = "x86", target_arch = "x86_64")) {
+            Self::from_f64_const(value)
+        } else {
+            Self::from_f64_instrinsic(value)
+        }
     }
 
     /// Constructs a 16-bit floating point value from a 64-bit floating point
@@ -113,6 +139,25 @@ impl f16 {
     #[must_use]
     pub const fn from_f64_const(value: f64) -> f16 {
         f16(arch::f64_to_f16_fallback(value))
+    }
+
+    /// Constructs a 16-bit floating point value from a 64-bit floating point
+    /// value.
+    ///
+    /// This operation is lossy. If the 64-bit value is to large to fit in
+    /// 16-bits, ±∞ will result. NaN values are preserved. 64-bit subnormal
+    /// values are too tiny to be represented in 16-bits and result in ±0.
+    /// Exponents that underflow the minimum 16-bit exponent will result in
+    /// 16-bit subnormals or ±0. All other values are truncated and rounded
+    /// to the nearest representable 16-bit value.
+    ///
+    /// This prefers to use vendor instrinsics if possible, otherwise, it
+    /// goes to a fallback. On x86 and x86_64, this can be more lossy than
+    /// `from_f64`.
+    #[inline]
+    #[must_use]
+    pub fn from_f64_instrinsic(value: f64) -> f16 {
+        f16(arch::f64_to_f16(value))
     }
 
     /// Converts a [`struct@f16`] into the underlying bit representation.
@@ -238,10 +283,13 @@ impl f16 {
     ///
     /// This conversion is lossless as all 16-bit floating point values can be
     /// represented exactly in 32-bit floating point.
+    ///
+    /// This will prefer correctness over speed. Currently, this always
+    /// uses an intrinsic if available.
     #[inline]
     #[must_use]
     pub fn to_f32(self) -> f32 {
-        arch::f16_to_f32(self.0)
+        self.to_f32_intrinsic()
     }
 
     /// Converts a [`struct@f16`] value into a `f32` value.
@@ -257,6 +305,16 @@ impl f16 {
     #[must_use]
     pub const fn to_f32_const(self) -> f32 {
         arch::f16_to_f32_fallback(self.0)
+    }
+
+    /// Converts a [`struct@f16`] value into a `f32` value.
+    ///
+    /// This conversion is lossless as all 16-bit floating point values can be
+    /// represented exactly in 32-bit floating point.
+    #[inline]
+    #[must_use]
+    pub fn to_f32_intrinsic(self) -> f32 {
+        arch::f16_to_f32(self.0)
     }
 
     /// Convert the data to an `f32` type, used for numerical operations.
@@ -275,10 +333,13 @@ impl f16 {
     ///
     /// This conversion is lossless as all 16-bit floating point values can be
     /// represented exactly in 64-bit floating point.
+    ///
+    /// This will prefer correctness over speed: on x86 systems, this currently
+    /// uses a software rather than an instrinsic implementation on x86.
     #[inline]
     #[must_use]
     pub fn to_f64(self) -> f64 {
-        arch::f16_to_f64(self.0)
+        self.to_f64_const()
     }
 
     /// Converts a [`struct@f16`] value into a `f64` value.
@@ -294,6 +355,16 @@ impl f16 {
     #[must_use]
     pub const fn to_f64_const(self) -> f64 {
         arch::f16_to_f64_fallback(self.0)
+    }
+
+    /// Converts a [`struct@f16`] value into a `f32` value.
+    ///
+    /// This conversion is lossless as all 16-bit floating point values can be
+    /// represented exactly in 32-bit floating point.
+    #[inline]
+    #[must_use]
+    pub fn to_f64_intrinsic(self) -> f64 {
+        arch::f16_to_f64(self.0)
     }
 
     /// Convert the data to an `f64` type, used for numerical operations.
@@ -1395,8 +1466,8 @@ const fn ge(lhs: f16, rhs: f16) -> bool {
 #[allow(clippy::cognitive_complexity, clippy::float_cmp, clippy::neg_cmp_op_on_partial_ord)]
 #[cfg(test)]
 mod test {
-    #[allow(unused_imports)]
     use core::cmp::Ordering;
+    use core::mem;
 
     use super::*;
 
@@ -1807,5 +1878,34 @@ mod test {
         assert_eq!(f16::ONE / f16::ONE, f16::ONE);
         assert_eq!(f16::from_f32(4.) / f16::from_f32(2.), f16::from_f32(2.));
         assert_eq!(f16::from_f32(4.) % f16::from_f32(3.), f16::from_f32(1.));
+    }
+
+    #[test]
+    fn issue_116() {
+        // SEE: https://github.com/starkat99/half-rs/issues/116
+        //  This is lossy until `_mm_cvtpd_ph` will be stable on x86.
+        let max_diff = if cfg!(any(target_arch = "x86", target_arch = "x86_64")) {
+            1
+        } else {
+            0
+        };
+
+        // from the round-to-even section of the test case
+        let x: f64 = unsafe { mem::transmute(0x3f0ffbfffffffffcu64) };
+        let bits = f16::from_f64(x).to_bits();
+        let const_bits = f16::from_f64_const(x).to_bits();
+        let inst_bits = f16::from_f64_instrinsic(x).to_bits();
+        assert_eq!(const_bits, bits);
+        assert!(inst_bits.abs_diff(bits) <= max_diff);
+
+        // from the double rounding section of the test case
+        // comment from the cpython test case: should be 2047, if double-rounded
+        // 64>32>16, becomes 2048
+        let x: f64 = unsafe { mem::transmute(0x409ffdffffff0000u64) };
+        let bits = f16::from_f64(x).to_bits();
+        let const_bits = f16::from_f64_const(x).to_bits();
+        let inst_bits = f16::from_f64_instrinsic(x).to_bits();
+        assert_eq!(const_bits, bits);
+        assert!(inst_bits.abs_diff(bits) <= max_diff);
     }
 }

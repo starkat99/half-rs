@@ -43,11 +43,25 @@ pub(super) unsafe fn f16_to_f32_x86_f16c(i: u16) -> f32 {
 
 #[inline]
 #[target_feature(enable = "f16c")]
+pub(super) unsafe fn f16_to_f64_x86_f16c(i: u16) -> f64 {
+    // FIXME: Change to use `_mm_cvtph_pd` when stable.
+    f16_to_f32_x86_f16c(i) as f64
+}
+
+#[inline]
+#[target_feature(enable = "f16c")]
 pub(super) unsafe fn f32_to_f16_x86_f16c(f: f32) -> u16 {
     let mut vec = MaybeUninit::<__m128>::zeroed();
     vec.as_mut_ptr().cast::<f32>().write(f);
     let retval = _mm_cvtps_ph(vec.assume_init(), _MM_FROUND_TO_NEAREST_INT);
     *(&retval as *const __m128i).cast()
+}
+
+#[inline]
+#[target_feature(enable = "f16c")]
+pub(super) unsafe fn f64_to_f16_x86_f16c(f: f64) -> u16 {
+    // FIXME: Change to use `_mm_cvtpd_ph` when stable.
+    f32_to_f16_x86_f16c(f as f32)
 }
 
 #[inline]

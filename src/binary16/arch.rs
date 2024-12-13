@@ -81,7 +81,7 @@ pub(crate) fn f32_to_f16(f: f32) -> u16 {
 pub(crate) fn f64_to_f16(f: f64) -> u16 {
     convert_fn! {
         if x86_feature("f16c") {
-            unsafe { x86::f32_to_f16_x86_f16c(f as f32) }
+            unsafe { x86::f64_to_f16_x86_f16c(f) }
         } else if aarch64_feature("fp16") {
             unsafe { aarch64::f64_to_f16_fp16(f) }
         } else {
@@ -107,7 +107,7 @@ pub(crate) fn f16_to_f32(i: u16) -> f32 {
 pub(crate) fn f16_to_f64(i: u16) -> f64 {
     convert_fn! {
         if x86_feature("f16c") {
-            unsafe { x86::f16_to_f32_x86_f16c(i) as f64 }
+            unsafe { x86::f16_to_f64_x86_f16c(i) }
         } else if aarch64_feature("fp16") {
             unsafe { aarch64::f16_to_f64_fp16(i) }
         } else {
