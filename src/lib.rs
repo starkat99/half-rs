@@ -1,34 +1,35 @@
 //! A crate that provides support for half-precision 16-bit floating point
 //! types.
 //!
-//! This crate provides the [`f16`] type, which is an implementation of the IEEE
-//! 754-2008 standard [`binary16`] a.k.a "half" floating point type. This 16-bit
-//! floating point type is intended for efficient storage where the full range
-//! and precision of a larger floating point value is not required. This is
-//! especially useful for image storage formats.
+//! This crate provides the [`struct@f16`] type, which is an implementation of
+//! the IEEE 754-2008 standard [`binary16`] a.k.a "half" floating point type.
+//! This 16-bit floating point type is intended for efficient storage where the
+//! full range and precision of a larger floating point value is not required.
+//! This is especially useful for image storage formats.
 //!
-//! This crate also provides a [`bf16`] type, an alternative 16-bit floating
-//! point format. The [`bfloat16`] format is a truncated IEEE 754 standard
-//! `binary32` float that preserves the exponent to allow the same range as
-//! [`f32`] but with only 8 bits of precision (instead of 11 bits for [`f16`]).
-//! See the [`bf16`] type for details.
+//! This crate also provides a [`struct@bf16`] type, an alternative 16-bit
+//! floating point format. The [`bfloat16`] format is a truncated IEEE 754
+//! standard `binary32` float that preserves the exponent to allow the same
+//! range as [`f32`] but with only 8 bits of precision (instead of 11 bits for
+//! [`struct@f16`]). See the [`struct@bf16`] type for details.
 //!
-//! Because [`f16`] and [`bf16`] are primarily for efficient storage, floating
-//! point operations such as addition, multiplication, etc. are not always
-//! implemented by hardware. When hardware does not support these operations,
-//! this crate emulates them by converting the value to [`f32`] before
-//! performing the operation and then back afterward.
+//! Because [`struct@f16`] and [`struct@bf16`] are primarily for efficient
+//! storage, floating point operations such as addition, multiplication, etc.
+//! are not always implemented by hardware. When hardware does not support these
+//! operations, this crate emulates them by converting the value to [`f32`]
+//! before performing the operation and then back afterward.
 //!
-//! Note that conversion from [`f32`]/[`f64`] to both [`f16`] and [`bf16`] are
-//! lossy operations, and just as converting a [`f64`] to [`f32`] is lossy and
-//! does not have `Into`/`From` trait implementations, so too do these smaller
-//! types not have those trait implementations either. Instead, use
-//! `from_f32`/`from_f64` functions for the types in this crate. If you don't
-//! care about lossy conversions and need trait conversions, use the appropriate
-//! [`num-traits`] traits that are implemented.
+//! Note that conversion from [`f32`]/[`f64`] to both [`struct@f16`] and
+//! [`struct@bf16`] are lossy operations, and just as converting a [`f64`] to
+//! [`f32`] is lossy and does not have `Into`/`From` trait implementations, so
+//! too do these smaller types not have those trait implementations either.
+//! Instead, use `from_f32`/`from_f64` functions for the types in this crate. If
+//! you don't care about lossy conversions and need trait conversions, use the
+//! appropriate [`num-traits`] traits that are implemented.
 //!
-//! This crate also provides a [`slice`][mod@slice] module for zero-copy
-//! in-place conversions of [`u16`] slices to both [`f16`] and [`bf16`], as well
+//! This crate also provides [`prelude::HalfBitsSliceExt`] and
+//! [`prelude::HalfFloatSliceExt`] types for zero-copy in-place conversions of
+//! [`u16`] slices to both [`struct@f16`] and [`struct@bf16`], as well
 //! as efficient vectorized conversions of larger buffers of floating point
 //! values to and from these half formats.
 //!
@@ -45,9 +46,9 @@
 //! Hardware support for these conversions and arithmetic will be used
 //! whenever hardware support is available—either through instrinsics or
 //! targeted assembly—although a nightly Rust toolchain may be required for some
-//! hardware. When hardware supports it the functions and traits in the
-//! [`slice`][mod@slice] and [`vec`] modules will also use vectorized
-//! SIMD intructions for increased efficiency.
+//! hardware. When hardware supports it the functions and traits
+//! [`prelude::HalfBitsSliceExt`] and [`prelude::HalfFloatSliceExt`] are used it
+//! will also use vectorized SIMD intructions for increased efficiency.
 //!
 //! The following list details hardware support for floating point types in this
 //! crate. When using `std` cargo feature, runtime CPU target detection will be
@@ -57,8 +58,8 @@
 //!
 //! | Architecture | CPU Target Feature | Notes |
 //! | ------------ | ------------------ | ----- |
-//! | `x86`/`x86_64` | `f16c` | This supports conversion to/from [`f16`] only (including vector SIMD) and does not support any [`bf16`] or arithmetic operations. |
-//! | `aarch64` | `fp16` | This supports all operations on [`f16`] only. |
+//! | `x86`/`x86_64` | `f16c` | This supports conversion to/from [`struct@f16`] only (including vector SIMD) and does not support any [`struct@bf16`] or arithmetic operations. |
+//! | `aarch64` | `fp16` | This supports all operations on [`struct@f16`] only. |
 //!
 //! # Cargo Features
 //!

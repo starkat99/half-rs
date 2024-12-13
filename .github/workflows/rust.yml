@@ -32,7 +32,7 @@ jobs:
           - stable
           - beta
           - nightly
-          - 1.56.0
+          - 1.60.0
 
     steps:
     - name: Checkout
@@ -54,33 +54,21 @@ jobs:
         target: ${{ matrix.target }}-pc-windows-msvc
         components: clippy,rustfmt
 
-    - name: Cache Dependencies
-      uses: Swatinem/rust-cache@v2
-
     - name: Install Cargo Make
       if: ${{ matrix.target == 'x86_64' }}
       uses: davidB/rust-cargo-make@v1
 
     - name: cargo-make ci-flow
       if: ${{ matrix.target == 'x86_64' }}
-      uses: actions-rs/cargo@v1
-      with:
-        command: make
-        args: ci-flow
+      run: cargo make ci-flow
 
     - name: linux cargo-make build-only
       if: ${{ matrix.target != 'x86_64' && matrix.os == 'ubuntu-latest' }}
-      uses: actions-rs/cargo@v1
-      with:
-        command: build
-        args: --all-features --target ${{ matrix.target }}-unknown-linux-gnu
+      run: cargo build --target ${{ matrix.target }}-unknown-linux-gnu
 
     - name: windows cargo-make build-only
       if: ${{ matrix.target != 'x86_64' && matrix.os == 'windows-latest' }}
-      uses: actions-rs/cargo@v1
-      with:
-        command: build
-        args: --all-features --target ${{ matrix.target }}-pc-windows-msvc
+      run: cargo build --all-features --target ${{ matrix.target }}-pc-windows-msvc
 
   miri:
     name: Miri
