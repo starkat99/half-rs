@@ -1,5 +1,7 @@
 # float16
 
+This a fork of [half](https://crates.io/crates/half/) for remove pulling in most dependencies and fixing minor correctness issues.
+
 [![Crates.io](https://img.shields.io/crates/v/float16.svg)](https://crates.io/crates/float16/) [![Documentation](https://docs.rs/float16/badge.svg)](https://docs.rs/float16/) ![Crates.io](https://img.shields.io/crates/l/half) [![Build status](https://github.com/Alexhuszagh/float16/actions/workflows/rust.yml/badge.svg?branch=main&event=push)](https://github.com/Alexhuszagh/float16/actions/workflows/rust.yml)
 
 This crate implements a half-precision floating point `f16` type for Rust implementing the IEEE 754-2008 standard [`binary16`](https://en.wikipedia.org/wiki/Half-precision_floating-point_format) a.k.a "half" format, as well as a `bf16` type implementing the [`bfloat16`](https://en.wikipedia.org/wiki/Bfloat16_floating-point_format) format.
