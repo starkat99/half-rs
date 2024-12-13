@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.1.1][v0.1.1] - 2024-12-12 <a name="0.1.0"></a>
+
+## Changed
+
+- Fixed package documentation for better attribution.
+
 ## [0.1.0][v0.1.0] - 2024-12-12 <a name="0.1.0"></a>
 
 ## Changed
@@ -465,7 +471,8 @@ These were all changes for half, which `float16` is a fork of.
 <!-- Versions -->
 
 [Unreleased]: https://github.com/starkat99/half-rs/compare/v2.4.1...HEAD
-[v0.1.0]: https://github.com/starkat99/half-rs/compare/v2.4.0...v2.4.1
+[v0.1.1]: https://github.com/Alexhuszagh/float16/compare/0.1.1...0.1.0
+[v0.1.0]: https://github.com/Alexhuszagh/float16/compare/0.1.0...v2.4.0
 [2.4.0]: https://github.com/starkat99/half-rs/compare/v2.3.1...v2.4.0
 [2.3.1]: https://github.com/starkat99/half-rs/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/starkat99/half-rs/compare/v2.2.1...v2.3.0

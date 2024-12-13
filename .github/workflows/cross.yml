@@ -12,7 +12,8 @@ jobs:
       matrix:
         target:
           # Android
-          - aarch64-linux-android
+          # This has linker issues
+          #- aarch64-linux-android
           - armv7-linux-androideabi
 
           # Linux
