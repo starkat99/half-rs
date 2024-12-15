@@ -22,6 +22,9 @@ use core::{
     str::FromStr,
 };
 
+use crate::error::TryFromFloatError;
+use crate::try_from::try_from_lossless;
+
 pub(crate) mod arch;
 
 /// A 16-bit floating point type implementing the IEEE 754-2008 standard
@@ -98,6 +101,41 @@ impl f16 {
         f16(arch::f32_to_f16(value))
     }
 
+    /// Create a [`struct@f16`] loslessly from an [`f32`].
+    ///
+    /// This is only true if the [`f32`] is non-finite
+    /// (infinite or NaN), or the exponent can be represented
+    /// by a normal [`struct@f16`] and no non-zero bits would
+    /// be truncated.
+    ///
+    /// "Lossless" does not mean the data is represented the
+    /// same as a decimal number. For example, an [`f32`]
+    /// and [`f64`] have the significant digits (excluding the
+    /// hidden bit) for a value closest to `1e35` of:
+    /// - `f32`: `110100001001100001100`
+    /// - `f64`: `11010000100110000110000000000000000000000000000000`
+    ///
+    /// However, the [`f64`] is displayed as `1.0000000409184788e+35`,
+    /// while the value closest to `1e35` in [`f64`] is
+    /// `11010000100110000101110010110001110100110110000010`. This
+    /// makes it look like precision has been lost but this is
+    /// due to the approximations used to represent binary values as
+    /// a decimal.
+    ///
+    /// This does not respect signalling NaNs: if the value
+    /// is NaN or inf, then it will return that value.
+    #[inline]
+    pub const fn from_f32_lossless(value: f32) -> Option<f16> {
+        try_from_lossless!(
+            value => value,
+            half => f16,
+            full => f32,
+            half_bits => u16,
+            full_bits => u32,
+            to_half => from_f32
+        )
+    }
+
     /// Constructs a 16-bit floating point value from a 64-bit floating point
     /// value.
     ///
@@ -158,6 +196,41 @@ impl f16 {
     #[must_use]
     pub fn from_f64_instrinsic(value: f64) -> f16 {
         f16(arch::f64_to_f16(value))
+    }
+
+    /// Create a [`struct@f16`] loslessly from an [`f64`].
+    ///
+    /// This is only true if the [`f64`] is non-finite
+    /// (infinite or NaN), or the exponent can be represented
+    /// by a normal [`struct@f16`] and no non-zero bits would
+    /// be truncated.
+    ///
+    /// "Lossless" does not mean the data is represented the
+    /// same as a decimal number. For example, an [`f32`]
+    /// and [`f64`] have the significant digits (excluding the
+    /// hidden bit) for a value closest to `1e35` of:
+    /// - `f32`: `110100001001100001100`
+    /// - `f64`: `11010000100110000110000000000000000000000000000000`
+    ///
+    /// However, the [`f64`] is displayed as `1.0000000409184788e+35`,
+    /// while the value closest to `1e35` in [`f64`] is
+    /// `11010000100110000101110010110001110100110110000010`. This
+    /// makes it look like precision has been lost but this is
+    /// due to the approximations used to represent binary values as
+    /// a decimal.
+    ///
+    /// This does not respect signalling NaNs: if the value
+    /// is NaN or inf, then it will return that value.
+    #[inline]
+    pub const fn from_f64_lossless(value: f64) -> Option<f16> {
+        try_from_lossless!(
+            value => value,
+            half => f16,
+            full => f64,
+            half_bits => u16,
+            full_bits => u64,
+            to_half => from_f64
+        )
     }
 
     /// Converts a [`struct@f16`] into the underlying bit representation.
@@ -960,6 +1033,24 @@ impl From<u8> for f16 {
     fn from(x: u8) -> f16 {
         // Convert to f32, then to f16
         f16::from_f32(f32::from(x))
+    }
+}
+
+impl TryFrom<f32> for f16 {
+    type Error = TryFromFloatError;
+
+    #[inline]
+    fn try_from(x: f32) -> Result<Self, Self::Error> {
+        Self::from_f32_lossless(x).ok_or(TryFromFloatError(()))
+    }
+}
+
+impl TryFrom<f64> for f16 {
+    type Error = TryFromFloatError;
+
+    #[inline]
+    fn try_from(x: f64) -> Result<Self, Self::Error> {
+        Self::from_f64_lossless(x).ok_or(TryFromFloatError(()))
     }
 }
 
@@ -1907,5 +1998,127 @@ mod test {
         let inst_bits = f16::from_f64_instrinsic(x).to_bits();
         assert_eq!(const_bits, bits);
         assert!(inst_bits.abs_diff(bits) <= max_diff);
+    }
+
+    #[test]
+    fn from_f32_lossless() {
+        let from_f32 = |v: f32| f16::from_f32_lossless(v);
+        let roundtrip = |v: f32, expected: Option<f16>| {
+            let half = from_f32(v);
+            assert_eq!(half, expected);
+            if !expected.is_none() {
+                let as_f32 = expected.unwrap().to_f32_const();
+                assert_eq!(v, as_f32);
+            }
+        };
+
+        assert_eq!(from_f32(f32::NAN).map(f16::is_nan), Some(true));
+        roundtrip(f32::INFINITY, Some(f16::INFINITY));
+        roundtrip(f32::NEG_INFINITY, Some(f16::NEG_INFINITY));
+        roundtrip(f32::from_bits(0b0_00000000_00000000000000000000000), Some(f16(0)));
+        roundtrip(f32::from_bits(0b1_00000000_00000000000000000000000), Some(f16(f16::SIGN_MASK)));
+        roundtrip(f32::from_bits(1), None);
+
+        // special truncation with denormals, etc.
+        roundtrip(f32::from_bits(0b0_01100111_00000000000000000000000), Some(f16(1)));
+        roundtrip(f32::from_bits(0b0_01101000_00000000000000000000000), Some(f16(2)));
+        roundtrip(f32::from_bits(0b0_01101000_10000000000000000000000), Some(f16(3)));
+        roundtrip(f32::from_bits(0b0_01100111_10000000000000000000000), None);
+        roundtrip(f32::from_bits(0b0_01101000_11000000000000000000000), None);
+        // ~2.2888184e-5 and has bits until 16 to the end, so truncated 2. but this is
+        // denormal as f16
+        roundtrip(f32::from_bits(0b0_01101111_00000000000000000000000), Some(f16(0x100)));
+        roundtrip(f32::from_bits(0b0_01101111_10000000000000000000000), Some(f16(0x180)));
+        roundtrip(f32::from_bits(0b0_01101111_11000000000000000000000), Some(f16(0x1c0)));
+        roundtrip(f32::from_bits(0b0_01101111_11000001000000000000000), Some(f16(0x1c1)));
+        roundtrip(f32::from_bits(0b0_01101111_11000001100000000000000), None);
+        //2.0f32
+        roundtrip(f32::from_bits(0b0_10000000_00000000000000000000000), Some(f16(0x4000)));
+        roundtrip(f32::from_bits(0b0_10000000_10000000000000000000000), Some(f16(0x4200)));
+        roundtrip(f32::from_bits(0b0_10000000_10000000010000000000000), Some(f16(0x4201)));
+        roundtrip(f32::from_bits(0b0_10000000_10000000011000000000000), None);
+        // check overflow
+        roundtrip(f32::from_bits(0b0_10001111_00000000000000000000000), None);
+        roundtrip(f32::from_bits(0b0_10001110_00000000000000000000000), Some(f16(0x7800)));
+    }
+
+    #[test]
+    fn from_f64_lossless() {
+        let from_f64 = |v: f64| f16::from_f64_lossless(v);
+        let roundtrip = |v: f64, expected: Option<f16>| {
+            let half = from_f64(v);
+            assert_eq!(half, expected);
+            if !expected.is_none() {
+                let as_f64 = expected.unwrap().to_f64_const();
+                assert_eq!(v, as_f64);
+            }
+        };
+
+        assert_eq!(from_f64(f64::NAN).map(f16::is_nan), Some(true));
+        roundtrip(f64::INFINITY, Some(f16::INFINITY));
+        roundtrip(f64::NEG_INFINITY, Some(f16::NEG_INFINITY));
+        roundtrip(
+            f64::from_bits(0b0_00000000000_0000000000000000000000000000000000000000000000000000),
+            Some(f16(0)),
+        );
+        roundtrip(
+            f64::from_bits(0b1_00000000000_0000000000000000000000000000000000000000000000000000),
+            Some(f16(f16::SIGN_MASK)),
+        );
+        roundtrip(
+            f64::from_bits(0b0_01110001010_1010100101011010010110110111111110000111101000001111),
+            None,
+        );
+        // check overflow to inf
+        roundtrip(
+            f64::from_bits(0b0_10000001110_1000000000000000000000000000000000000000000000000000),
+            Some(f16(0x7a00)),
+        );
+        roundtrip(
+            f64::from_bits(0b0_10000001111_1000000000000000000000000000000000000000000000000000),
+            None,
+        );
+        // check denormals and truncation
+        roundtrip(
+            f64::from_bits(0b0_01111100111_0000000000000000000000000000000000000000000000000000),
+            Some(f16(1)),
+        );
+        roundtrip(
+            f64::from_bits(0b0_01111100111_1000000000000000000000000000000000000000000000000000),
+            None,
+        );
+        roundtrip(
+            f64::from_bits(0b0_01111101000_0000000000000000000000000000000000000000000000000000),
+            Some(f16(2)),
+        );
+        roundtrip(
+            f64::from_bits(0b0_01111101000_1000000000000000000000000000000000000000000000000000),
+            Some(f16(3)),
+        );
+        roundtrip(
+            f64::from_bits(0b0_01111101000_1100000000000000000000000000000000000000000000000000),
+            None,
+        );
+        // check basic, normal and positive numbers
+        roundtrip(
+            f64::from_bits(0b0_01111111000_0000000000000000000000000000000000000000000000000000),
+            Some(f16(0x2000)),
+        );
+        roundtrip(
+            f64::from_bits(0b0_01111111000_1000000000000000000000000000000000000000000000000000),
+            Some(f16(0x2200)),
+        );
+        roundtrip(
+            f64::from_bits(0b0_01111111000_1110000000000000000000000000000000000000000000000000),
+            Some(f16(0x2380)),
+        );
+        roundtrip(
+            f64::from_bits(0b0_01111111000_1110000001000000000000000000000000000000000000000000),
+            Some(f16(0x2381)),
+        );
+        roundtrip(
+            f64::from_bits(0b0_01111111000_1110000001100000000000000000000000000000000000000000),
+            None,
+        );
     }
 }

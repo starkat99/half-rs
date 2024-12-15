@@ -5,6 +5,9 @@ authors = ["Alex Huszagh <ahuszagh@gmail.com>"]
 edition = "2021"
 publish = false
 
+[features]
+std = ["float16/std"]
+
 [dependencies.float16]
 path = ".."
 default-features = false

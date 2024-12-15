@@ -70,11 +70,14 @@
 
 mod bfloat;
 mod binary16;
+mod error;
 mod leading_zeros;
 mod slice;
+mod try_from;
 
 pub use bfloat::bf16;
 pub use binary16::f16;
+pub use error::TryFromFloatError;
 
 #[cfg(not(target_arch = "spirv"))]
 pub use crate::slice::{HalfBitsSliceExt, HalfFloatSliceExt};

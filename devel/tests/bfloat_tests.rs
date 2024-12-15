@@ -37,3 +37,24 @@ fn qc_roundtrip_bf16_f64_is_identity(bits: u16) -> bool {
         f.to_bits() == roundtrip.to_bits()
     }
 }
+
+#[quickcheck]
+fn qc_roundtrip_from_f32_lossless(f: f32) -> bool {
+    if let Some(b) = bf16::from_f32_lossless(f) {
+        (b.is_nan() == f.is_nan()) || b.as_f32() == f
+    } else {
+        true
+    }
+}
+
+#[quickcheck]
+fn qc_roundtrip_from_f64_lossless(f: f64) -> bool {
+    if let Some(b) = bf16::from_f64_lossless(f) {
+        if !((b.is_nan() && f.is_nan()) || b.as_f64() == f) {
+            println!("b {}, f {}", b.to_bits(), f.to_bits());
+        }
+        (b.is_nan() == f.is_nan()) || b.as_f64() == f
+    } else {
+        true
+    }
+}
