@@ -2,7 +2,8 @@ use crate::{bf16, f16};
 use core::cmp::Ordering;
 use core::{num::FpCategory, ops::Div};
 use num_traits::{
-    AsPrimitive, Bounded, FloatConst, FromPrimitive, Num, NumCast, One, ToPrimitive, Zero,
+    AsPrimitive, Bounded, FloatConst, FromBytes, FromPrimitive, Num, NumCast, One, ToBytes,
+    ToPrimitive, Zero,
 };
 
 impl ToPrimitive for f16 {
@@ -744,6 +745,38 @@ impl_as_primitive_f16_from!(usize, from_f32);
 impl_as_primitive_f16_from!(f32, from_f32);
 impl_as_primitive_f16_from!(f64, from_f64);
 
+impl ToBytes for f16 {
+    type Bytes = [u8; 2];
+
+    fn to_be_bytes(&self) -> Self::Bytes {
+        Self::to_be_bytes(*self)
+    }
+
+    fn to_le_bytes(&self) -> Self::Bytes {
+        Self::to_le_bytes(*self)
+    }
+
+    fn to_ne_bytes(&self) -> Self::Bytes {
+        Self::to_ne_bytes(*self)
+    }
+}
+
+impl FromBytes for f16 {
+    type Bytes = [u8; 2];
+
+    fn from_be_bytes(bytes: &Self::Bytes) -> Self {
+        Self::from_be_bytes(*bytes)
+    }
+
+    fn from_le_bytes(bytes: &Self::Bytes) -> Self {
+        Self::from_le_bytes(*bytes)
+    }
+
+    fn from_ne_bytes(bytes: &Self::Bytes) -> Self {
+        Self::from_ne_bytes(*bytes)
+    }
+}
+
 impl ToPrimitive for bf16 {
     #[inline]
     fn to_i64(&self) -> Option<i64> {
@@ -1483,3 +1516,35 @@ impl_as_primitive_bf16_from!(isize, from_f32);
 impl_as_primitive_bf16_from!(usize, from_f32);
 impl_as_primitive_bf16_from!(f32, from_f32);
 impl_as_primitive_bf16_from!(f64, from_f64);
+
+impl ToBytes for bf16 {
+    type Bytes = [u8; 2];
+
+    fn to_be_bytes(&self) -> Self::Bytes {
+        Self::to_be_bytes(*self)
+    }
+
+    fn to_le_bytes(&self) -> Self::Bytes {
+        Self::to_le_bytes(*self)
+    }
+
+    fn to_ne_bytes(&self) -> Self::Bytes {
+        Self::to_ne_bytes(*self)
+    }
+}
+
+impl FromBytes for bf16 {
+    type Bytes = [u8; 2];
+
+    fn from_be_bytes(bytes: &Self::Bytes) -> Self {
+        Self::from_be_bytes(*bytes)
+    }
+
+    fn from_le_bytes(bytes: &Self::Bytes) -> Self {
+        Self::from_le_bytes(*bytes)
+    }
+
+    fn from_ne_bytes(bytes: &Self::Bytes) -> Self {
+        Self::from_ne_bytes(*bytes)
+    }
+}

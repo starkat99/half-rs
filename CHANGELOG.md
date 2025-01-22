@@ -4,6 +4,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- New `num-traits` implementations: `FromBytes` and `ToBytes` for `f16` and `bf16`. By [@kpreid].
 
 ## [2.4.1] - 2024-04-06 <a name="2.4.1"></a>
 ### Fixed
@@ -351,6 +353,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [@wx-csy]: https://github.com/wx-csy
 [@eiz]: https://github.com/eiz
 [@comath]: https://github.com/comath
+[@kpreid]: https://github.com/kpreid
 
 
 [Unreleased]: https://github.com/starkat99/half-rs/compare/v2.4.1...HEAD

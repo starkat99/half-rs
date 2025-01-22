@@ -1348,7 +1348,7 @@ mod test {
     #[allow(unused_imports)]
     use core::cmp::Ordering;
     #[cfg(feature = "num-traits")]
-    use num_traits::{AsPrimitive, FromPrimitive, ToPrimitive};
+    use num_traits::{AsPrimitive, FromBytes, FromPrimitive, ToBytes, ToPrimitive};
     use quickcheck_macros::quickcheck;
 
     #[cfg(feature = "num-traits")]
@@ -1381,6 +1381,16 @@ mod test {
         assert_eq!(<f16 as FromPrimitive>::from_i32(2).unwrap(), two);
         assert_eq!(<f16 as FromPrimitive>::from_f32(2.0).unwrap(), two);
         assert_eq!(<f16 as FromPrimitive>::from_f64(2.0).unwrap(), two);
+    }
+
+    #[cfg(feature = "num-traits")]
+    #[test]
+    fn to_and_from_bytes() {
+        let two = f16::from_f32(2.0);
+        assert_eq!(<f16 as ToBytes>::to_le_bytes(&two), [0, 64]);
+        assert_eq!(<f16 as FromBytes>::from_le_bytes(&[0, 64]), two);
+        assert_eq!(<f16 as ToBytes>::to_be_bytes(&two), [64, 0]);
+        assert_eq!(<f16 as FromBytes>::from_be_bytes(&[64, 0]), two);
     }
 
     #[test]
