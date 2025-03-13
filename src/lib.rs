@@ -102,6 +102,8 @@
 //!
 //! - **`rkyv`** -- Enable zero-copy deserializtion with [`rkyv`] crate.
 //!
+//! - **`aribtrary`** -- Enable fuzzing support with [`arbitrary`] crate.
+//!
 //! [`alloc`]: https://doc.rust-lang.org/alloc/
 //! [`std`]: https://doc.rust-lang.org/std/
 //! [`binary16`]: https://en.wikipedia.org/wiki/Half-precision_floating-point_format
@@ -112,6 +114,7 @@
 //! [`zerocopy`]: https://crates.io/crates/zerocopy
 //! [`rand_distr`]: https://crates.io/crates/rand_distr
 //! [`rkyv`]: (https://crates.io/crates/rkyv)
+//! [`rkyv`]: (https://crates.io/crates/arbitrary)
 #![cfg_attr(
     feature = "alloc",
     doc = "
@@ -198,7 +201,7 @@
     future_incompatible
 )]
 #![cfg_attr(not(target_arch = "spirv"), warn(missing_debug_implementations))]
-#![allow(clippy::verbose_bit_mask, clippy::cast_lossless)]
+#![allow(clippy::verbose_bit_mask, clippy::cast_lossless, unexpected_cfgs)]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![doc(html_root_url = "https://docs.rs/half/2.4.1")]
 #![doc(test(attr(deny(warnings), allow(unused))))]

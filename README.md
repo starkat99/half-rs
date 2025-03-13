@@ -52,6 +52,9 @@ See the [crate documentation](https://docs.rs/half/) for more details.
 
 - **`rkyv`** -- Enable zero-copy deserializtion with [`rkyv`](https://crates.io/crates/rkyv) crate.
 
+- **`aribtrary`** -- Enable fuzzing support with [`arbitrary`](https://crates.io/crates/arbitrary) 
+  crate.
+
 ### Hardware support
 
 The following list details hardware support for floating point types in this crate. When using `std`
