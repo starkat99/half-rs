@@ -47,8 +47,8 @@ See the [crate documentation](https://docs.rs/half/) for more details.
 - **`zerocopy`** — Enable `IntoBytes` and `FromBytes` trait implementations from the 
   [`zerocopy`](https://crates.io/crates/zerocopy) crate.
 
-- **`rand_distr`** — Enable sampling from distributions like `Uniform` and `Normal` from the
-  [`rand_distr`](https://crates.io/crates/rand_distr) crate.
+- **`rand_distr`** — Enable sampling from distributions like `StandardUniform` and `StandardNormal` 
+  from the [`rand_distr`](https://crates.io/crates/rand_distr) crate.
 
 - **`rkyv`** -- Enable zero-copy deserializtion with [`rkyv`](https://crates.io/crates/rkyv) crate.
 

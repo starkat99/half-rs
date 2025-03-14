@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Updated optional dependencies to latest versions: 
   * `zercopy` 0.6 -> 0.8
+  * `rand` 0.8 -> 0.9
+  * `rand_distr` 0.4 -> 0.5
 
 ### Added
 - Added support for `arbitrary` crate. Fixes [#110]. By [@FL33TW00D].

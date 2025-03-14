@@ -188,12 +188,12 @@
 #![cfg_attr(
     feature = "rand_distr",
     doc = "
-[`Distribution`]: rand::distributions::Distribution"
+[`Distribution`]: rand::distr::Distribution"
 )]
 #![cfg_attr(
     not(feature = "rand_distr"),
     doc = "
-[`Distribution`]: https://docs.rs/rand/*/rand/distributions/trait.Distribution.html"
+[`Distribution`]: https://docs.rs/rand/*/rand/distr/trait.Distribution.html"
 )]
 #![cfg_attr(
     feature = "arbitrary",
