@@ -88,7 +88,7 @@
 //!   [`Deserialize`] traits for both [`struct@f16`] and [`struct@bf16`].
 //!
 //! - **`num-traits`** — Adds support for the [`num-traits`] crate by implementing [`ToPrimitive`],
-//!   [`FromPrimitive`], [`ToBytes`], [`FromBytes`], [`AsPrimitive`], [`Num`], [`Float`],
+//!   [`FromPrimitive`], [`ToBytes`], `FromBytes`, [`AsPrimitive`], [`Num`], [`Float`],
 //!   [`FloatCore`], and [`Bounded`] traits for both [`struct@f16`] and [`struct@bf16`].
 //!
 //! - **`bytemuck`** — Adds support for the [`bytemuck`] crate by implementing [`Zeroable`] and
@@ -144,6 +144,7 @@
     doc = "
 [`ToPrimitive`]: ::num_traits::ToPrimitive
 [`FromPrimitive`]: ::num_traits::FromPrimitive
+[`ToBytes`]: ::num_traits::ToBytes
 [`AsPrimitive`]: ::num_traits::AsPrimitive
 [`Num`]: ::num_traits::Num
 [`Float`]: ::num_traits::Float
@@ -156,7 +157,6 @@
 [`ToPrimitive`]: https://docs.rs/num-traits/*/num_traits/cast/trait.ToPrimitive.html
 [`FromPrimitive`]: https://docs.rs/num-traits/*/num_traits/cast/trait.FromPrimitive.html
 [`ToBytes`]: https://docs.rs/num-traits/*/num_traits/ops/bytes/trait.ToBytes.html
-[`FromBytes`]: https://docs.rs/num-traits/*/num_traits/ops/bytes/trait.FromBytes.html
 [`AsPrimitive`]: https://docs.rs/num-traits/*/num_traits/cast/trait.AsPrimitive.html
 [`Num`]: https://docs.rs/num-traits/*/num_traits/trait.Num.html
 [`Float`]: https://docs.rs/num-traits/*/num_traits/float/trait.Float.html
