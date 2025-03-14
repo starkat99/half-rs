@@ -94,13 +94,16 @@
 //! - **`bytemuck`** — Adds support for the [`bytemuck`] crate by implementing [`Zeroable`] and
 //!   [`Pod`] traits for both [`f16`] and [`bf16`].
 //!
-//! - **`zerocopy`** — Adds support for the [`zerocopy`] crate by implementing [`AsBytes`] and
+//! - **`zerocopy`** — Adds support for the [`zerocopy`] crate by implementing [`IntoBytes`] and
 //!   [`FromBytes`] traits for both [`f16`] and [`bf16`].
 //!
 //! - **`rand_distr`** — Adds support for the [`rand_distr`] crate by implementing [`Distribution`]
 //!   and other traits for both [`f16`] and [`bf16`].
 //!
 //! - **`rkyv`** -- Enable zero-copy deserializtion with [`rkyv`] crate.
+//!
+//! - **`aribtrary`** -- Enable fuzzing support with [`arbitrary`] crate by implementing
+//!   [`Arbitrary`] trait.
 //!
 //! [`alloc`]: https://doc.rust-lang.org/alloc/
 //! [`std`]: https://doc.rust-lang.org/std/
@@ -112,6 +115,7 @@
 //! [`zerocopy`]: https://crates.io/crates/zerocopy
 //! [`rand_distr`]: https://crates.io/crates/rand_distr
 //! [`rkyv`]: (https://crates.io/crates/rkyv)
+//! [`arbitrary`]: (https://crates.io/crates/arbitrary)
 #![cfg_attr(
     feature = "alloc",
     doc = "
@@ -172,13 +176,13 @@
 #![cfg_attr(
     feature = "zerocopy",
     doc = "
-[`AsBytes`]: zerocopy::AsBytes
+[`IntoBytes`]: zerocopy::IntoBytes
 [`FromBytes`]: zerocopy::FromBytes"
 )]
 #![cfg_attr(
     not(feature = "zerocopy"),
     doc = "
-[`AsBytes`]: https://docs.rs/zerocopy/*/zerocopy/trait.AsBytes.html
+[`IntoBytes`]: https://docs.rs/zerocopy/*/zerocopy/trait.IntoBytes.html
 [`FromBytes`]: https://docs.rs/zerocopy/*/zerocopy/trait.FromBytes.html"
 )]
 #![cfg_attr(
@@ -191,6 +195,16 @@
     doc = "
 [`Distribution`]: https://docs.rs/rand/*/rand/distributions/trait.Distribution.html"
 )]
+#![cfg_attr(
+    feature = "arbitrary",
+    doc = "
+[`Arbitrary`]: arbitrary::Arbitrary"
+)]
+#![cfg_attr(
+    not(feature = "arbitrary"),
+    doc = "
+[`Arbitrary`]: https://docs.rs/arbitrary/*/arbitrary/trait.Arbitrary.html"
+)]
 #![warn(
     missing_docs,
     missing_copy_implementations,
@@ -198,7 +212,7 @@
     future_incompatible
 )]
 #![cfg_attr(not(target_arch = "spirv"), warn(missing_debug_implementations))]
-#![allow(clippy::verbose_bit_mask, clippy::cast_lossless)]
+#![allow(clippy::verbose_bit_mask, clippy::cast_lossless, unexpected_cfgs)]
 #![cfg_attr(not(feature = "std"), no_std)]
 #![doc(html_root_url = "https://docs.rs/half/2.4.1")]
 #![doc(test(attr(deny(warnings), allow(unused))))]
