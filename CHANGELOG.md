@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   * `rand_distr` 0.4 -> 0.5
   * `rkyv` 0.7 -> 0.8
   * (dev) `criterion` 0.4 -> 0.5
+- Minimum supported Rust version has been changed to 1.81 due to above dependency updates.
 
 ### Added
 - Added support for `arbitrary` crate. Fixes [#110]. By [@FL33TW00D].

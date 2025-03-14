@@ -1,4 +1,4 @@
-//! Contains utility functions and traits to convert between vectors of [`u16`] bits and [`f16`] or
+//! Contains utility functions and traits to convert between vectors of [`u16`] bits and [`struct@f16`] or
 //! [`bf16`] vectors.
 //!
 //! The utility [`HalfBitsVecExt`] sealed extension trait is implemented for [`Vec<u16>`] vectors,
@@ -19,7 +19,7 @@ use core::mem;
 ///
 /// This trait is sealed and cannot be implemented outside of this crate.
 pub trait HalfFloatVecExt: private::SealedHalfFloatVec {
-    /// Reinterprets a vector of [`f16`]or [`bf16`] numbers as a vector of [`u16`] bits.
+    /// Reinterprets a vector of [`struct@f16`]or [`bf16`] numbers as a vector of [`u16`] bits.
     ///
     /// This is a zero-copy operation. The reinterpreted vector has the same memory location as
     /// `self`.
@@ -36,7 +36,7 @@ pub trait HalfFloatVecExt: private::SealedHalfFloatVec {
     #[must_use]
     fn reinterpret_into(self) -> Vec<u16>;
 
-    /// Converts all of the elements of a `[f32]` slice into a new [`f16`] or [`bf16`] vector.
+    /// Converts all of the elements of a `[f32]` slice into a new [`struct@f16`] or [`bf16`] vector.
     ///
     /// The conversion operation is vectorized over the slice, meaning the conversion may be more
     /// efficient than converting individual elements on some hardware that supports SIMD
@@ -54,7 +54,7 @@ pub trait HalfFloatVecExt: private::SealedHalfFloatVec {
     #[must_use]
     fn from_f32_slice(slice: &[f32]) -> Self;
 
-    /// Converts all of the elements of a `[f64]` slice into a new [`f16`] or [`bf16`] vector.
+    /// Converts all of the elements of a `[f64]` slice into a new [`struct@f16`] or [`bf16`] vector.
     ///
     /// The conversion operation is vectorized over the slice, meaning the conversion may be more
     /// efficient than converting individual elements on some hardware that supports SIMD
@@ -77,9 +77,9 @@ pub trait HalfFloatVecExt: private::SealedHalfFloatVec {
 ///
 /// This trait is sealed and cannot be implemented outside of this crate.
 pub trait HalfBitsVecExt: private::SealedHalfBitsVec {
-    /// Reinterprets a vector of [`u16`] bits as a vector of [`f16`] or [`bf16`] numbers.
+    /// Reinterprets a vector of [`u16`] bits as a vector of [`struct@f16`] or [`bf16`] numbers.
     ///
-    /// `H` is the type to cast to, and must be either the [`f16`] or [`bf16`] type.
+    /// `H` is the type to cast to, and must be either the [`struct@f16`] or [`bf16`] type.
     ///
     /// This is a zero-copy operation. The reinterpreted vector has the same memory location as
     /// `self`.
