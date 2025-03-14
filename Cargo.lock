@@ -135,7 +135,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "57663b653d948a338bfb3eeba9bb2fd5fcfaecb9e199e87e1eda4d9e8b240fd9"
 dependencies = [
  "ciborium-io",
- "half 2.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "half 2.4.1",
 ]
 
 [[package]]
@@ -289,6 +289,16 @@ dependencies = [
 [[package]]
 name = "half"
 version = "2.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6dd08c532ae367adf81c312a4580bc67f1d0fe8bc9c460520283f4c0ff277888"
+dependencies = [
+ "cfg-if",
+ "crunchy",
+]
+
+[[package]]
+name = "half"
+version = "2.5.0"
 dependencies = [
  "arbitrary",
  "bytemuck",
@@ -303,16 +313,6 @@ dependencies = [
  "rkyv",
  "serde",
  "zerocopy",
-]
-
-[[package]]
-name = "half"
-version = "2.4.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6dd08c532ae367adf81c312a4580bc67f1d0fe8bc9c460520283f4c0ff277888"
-dependencies = [
- "cfg-if",
- "crunchy",
 ]
 
 [[package]]

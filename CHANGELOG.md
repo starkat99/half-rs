@@ -4,6 +4,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+
+## [2.5.0] - 2024-03-13 <a name="2.5.0"></a>
 ### Changed
 - Updated optional dependencies to latest major versions: 
   * `zercopy` 0.6 -> 0.8
@@ -12,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   * `rkyv` 0.7 -> 0.8
   * (dev) `criterion` 0.4 -> 0.5
 - Minimum supported Rust version has been changed to 1.81 due to above dependency updates.
+- Minor restructing of included license file locations to be more consistent with crates ecosystem.
 
 ### Added
 - Added support for `arbitrary` crate. Fixes [#110]. By [@FL33TW00D].
@@ -19,6 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - Suppressed unexpected_cfg lint warnings on newer versions of stable Rust.
+- Resolved ambiguous rustdoc warnings due to new unstable `f16` primitive in compiler.
 
 ## [2.4.1] - 2024-04-06 <a name="2.4.1"></a>
 ### Fixed
@@ -371,7 +376,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [@kpreid]: https://github.com/kpreid
 
 
-[Unreleased]: https://github.com/starkat99/half-rs/compare/v2.4.1...HEAD
+[Unreleased]: https://github.com/starkat99/half-rs/compare/v2.5.0...HEAD
+[2.5.0]: https://github.com/starkat99/half-rs/compare/v2.4.1...v2.5.0
 [2.4.1]: https://github.com/starkat99/half-rs/compare/v2.4.0...v2.4.1
 [2.4.0]: https://github.com/starkat99/half-rs/compare/v2.3.1...v2.4.0
 [2.3.1]: https://github.com/starkat99/half-rs/compare/v2.3.0...v2.3.1

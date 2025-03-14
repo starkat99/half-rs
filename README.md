@@ -74,19 +74,14 @@ for specific CPU features which avoids the runtime overhead and works in a `no_s
 
 ## License
 
-This library is distributed under the terms of either of:
+All files in this library are dual-licensed and distributed under the terms of either of:
 
-* [MIT License](LICENSES/MIT.txt)
+* [MIT License](LICENSE-MIT)
   ([http://opensource.org/licenses/MIT](http://opensource.org/licenses/MIT))
-* [Apache License, Version 2.0](LICENSES/Apache-2.0.txt)
+* [Apache License, Version 2.0](LICENSE-APACHE)
   ([http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0))
 
 at your option.
-
-This project is [REUSE-compliant](https://reuse.software/spec/). Copyrights are retained by their
-contributors. Some files may include explicit copyright notices and/or license
-[SPDX identifiers](https://spdx.dev/ids/). For full authorship information, see the version control
-history.
 
 ### Contributing
 
