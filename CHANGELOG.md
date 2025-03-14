@@ -3,12 +3,13 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased
+## [Unreleased]
 ### Changed
-- Updated optional dependencies to latest versions: 
+- Updated optional dependencies to latest major versions: 
   * `zercopy` 0.6 -> 0.8
   * `rand` 0.8 -> 0.9
   * `rand_distr` 0.4 -> 0.5
+  * `rkyv` 0.7 -> 0.8
 
 ### Added
 - Added support for `arbitrary` crate. Fixes [#110]. By [@FL33TW00D].
