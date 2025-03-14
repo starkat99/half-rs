@@ -220,11 +220,14 @@
 #![doc(test(attr(deny(warnings), allow(unused))))]
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 
+
+
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
 mod bfloat;
-mod binary16;
+#[allow(missing_docs)]
+pub mod binary16;
 mod leading_zeros;
 #[cfg(feature = "num-traits")]
 mod num_traits;

@@ -22,7 +22,7 @@ use serde::{Deserialize, Serialize};
 #[cfg(feature = "zerocopy")]
 use zerocopy::{FromBytes, IntoBytes};
 
-pub(crate) mod arch;
+pub mod arch;
 
 /// A 16-bit floating point type implementing the IEEE 754-2008 standard [`binary16`] a.k.a "half"
 /// format.
