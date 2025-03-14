@@ -99,7 +99,7 @@ mod tests {
 
     #[allow(unused_imports)]
     use rand::{rng, Rng};
-    use rand_distr::{StandardUniform, StandardNormal, Uniform};
+    use rand_distr::{StandardNormal, StandardUniform, Uniform};
 
     #[test]
     fn test_sample_f16() {
