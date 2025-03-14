@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 - Added support for `arbitrary` crate. Fixes [#110]. By [@FL33TW00D].
+- New `num-traits` implementations: `FromBytes` and `ToBytes` for `f16` and `bf16`. By [@kpreid].
 
 ### Fixed
 - Suppressed unexpected_cfg lint warnings on newer versions of stable Rust.
@@ -364,6 +365,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [@eiz]: https://github.com/eiz
 [@comath]: https://github.com/comath
 [@FL33TW00D]: https://github.com/FL33TW00D
+[@kpreid]: https://github.com/kpreid
 
 
 [Unreleased]: https://github.com/starkat99/half-rs/compare/v2.4.1...HEAD
