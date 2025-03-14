@@ -3,9 +3,19 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [Unreleased
+### Changed
+- Updated optional dependencies to latest versions: 
+  * `zercopy` 0.6 -> 0.8
+  * `rand` 0.8 -> 0.9
+  * `rand_distr` 0.4 -> 0.5
+
 ### Added
+- Added support for `arbitrary` crate. Fixes [#110]. By [@FL33TW00D].
 - New `num-traits` implementations: `FromBytes` and `ToBytes` for `f16` and `bf16`. By [@kpreid].
+
+### Fixed
+- Suppressed unexpected_cfg lint warnings on newer versions of stable Rust.
 
 ## [2.4.1] - 2024-04-06 <a name="2.4.1"></a>
 ### Fixed
@@ -332,6 +342,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#100]: https://github.com/starkat99/half-rs/issues/100
 [#103]: https://github.com/starkat99/half-rs/issues/103
 [#107]: https://github.com/starkat99/half-rs/issues/107
+[#110]: https://github.com/starkat99/half-rs/issues/110
 
 [@tspiteri]: https://github.com/tspiteri
 [@PSeitz]: https://github.com/PSeitz
@@ -353,6 +364,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [@wx-csy]: https://github.com/wx-csy
 [@eiz]: https://github.com/eiz
 [@comath]: https://github.com/comath
+[@FL33TW00D]: https://github.com/FL33TW00D
 [@kpreid]: https://github.com/kpreid
 
 
